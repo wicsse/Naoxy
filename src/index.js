@@ -71,8 +71,8 @@ app.use(express.json());
 app.get("/", (req, res) => res.redirect("/login"));
 app.use(express.static(path.join(__dirname, 'dashboard/public')));
 app.use(dashboardRoutes(client, app));
-const PORT = process.env.DASHBOARD_PORT || 3001;
-app.listen(PORT, () => console.log('🌐 Dashboard sur http://localhost:' + PORT));
+const PORT = process.env.PORT || process.env.DASHBOARD_PORT || 3001;
+app.listen(PORT, "0.0.0.0", () => console.log('🌐 Dashboard sur http://localhost:' + PORT));
 
 client.login(TOKEN);
 
