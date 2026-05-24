@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbis Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07050f;
+    --bg2: #0e0a1a;
+    --bg3: #131020;
+    --border: rgba(124,58,237,0.15);
+    --border-hover: rgba(124,58,237,0.4);
+    --purple: #7c3aed;
+    --purple-light: #a78bfa;
+    --purple-dim: rgba(124,58,237,0.08);
+    --text: #ede9fe;
+    --text-muted: #7c6fa0;
+    --text-dim: #4a4060;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --radius: 12px;
+    --sidebar-w: 240px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; display:flex; min-height:100vh; overflow-x:hidden; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width:var(--sidebar-w); min-height:100vh; background:var(--bg2);
+    border-right:1px solid var(--border); display:flex; flex-direction:column;
+    position:fixed; left:0; top:0; bottom:0; z-index:100;
+  }
+  .sidebar-logo {
+    padding:24px 20px; display:flex; align-items:center; gap:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .logo-icon {
+    width:36px; height:36px; background:var(--purple); border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:14px; color:#fff;
+  }
+  .logo-text { font-family:'Syne',sans-serif; font-weight:700; font-size:16px; color:var(--text); }
+  .logo-badge { font-size:10px; color:var(--purple-light); background:var(--purple-dim); padding:2px 6px; border-radius:4px; border:1px solid var(--border); }
+
+  .server-select {
+    margin:16px 12px; padding:10px 12px; background:var(--bg3);
+    border:1px solid var(--border); border-radius:var(--radius);
+    display:flex; align-items:center; gap:10px; cursor:pointer;
+    transition:border-color .2s;
+  }
+  .server-select:hover { border-color:var(--border-hover); }
+  .server-avatar { width:28px; height:28px; border-radius:8px; background:var(--purple); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+  .server-name { font-size:13px; font-weight:500; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .server-arrow { color:var(--text-muted); font-size:10px; }
+
+  .nav-section { padding:8px 12px 4px; font-size:10px; font-weight:600; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; }
+  .nav-item {
+    display:flex; align-items:center; gap:10px; padding:9px 16px;
+    margin:2px 8px; border-radius:8px; cursor:pointer; color:var(--text-muted);
+    font-size:13px; font-weight:500; transition:all .15s; position:relative;
+  }
+  .nav-item:hover { background:var(--purple-dim); color:var(--text); }
+  .nav-item.active { background:var(--purple-dim); color:var(--purple-light); border:1px solid var(--border); }
+  .nav-item.active::before { content:''; position:absolute; left:-8px; top:50%; transform:translateY(-50%); width:3px; height:16px; background:var(--purple); border-radius:2px; }
+  .nav-icon { font-size:16px; width:18px; text-align:center; }
+  .nav-badge { margin-left:auto; background:var(--purple); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; }
+
+  .sidebar-footer { margin-top:auto; padding:16px 12px; border-top:1px solid var(--border); }
+  .user-card { display:flex; align-items:center; gap:10px; }
+  .user-avatar { width:32px; height:32px; border-radius:50%; background:var(--purple); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+  .user-info { flex:1; }
+  .user-name { font-size:13px; font-weight:500; }
+  .user-role { font-size:11px; color:var(--text-muted); }
+
+  /* ── Main ── */
+  .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
+  .topbar {
+    padding:16px 28px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--bg2); position:sticky; top:0; z-index:50;
+  }
+  .page-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; }
+  .page-sub { font-size:12px; color:var(--text-muted); margin-top:2px; }
+  .topbar-actions { display:flex; gap:10px; align-items:center; }
+  .btn {
+    padding:8px 16px; border-radius:8px; font-size:13px; font-weight:500;
+    cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:all .15s;
+  }
+  .btn-primary { background:var(--purple); color:#fff; }
+  .btn-primary:hover { background:#6d28d9; }
+  .btn-ghost { background:transparent; color:var(--text-muted); border:1px solid var(--border); }
+  .btn-ghost:hover { border-color:var(--border-hover); color:var(--text); }
+  .btn-danger { background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); }
+
+  .content { padding:28px; flex:1; }
+
+  /* ── Pages ── */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* ── Stats ── */
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+  .stat-card {
+    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px; position:relative; overflow:hidden; transition:border-color .2s;
+  }
+  .stat-card:hover { border-color:var(--border-hover); }
+  .stat-card::before { content:''; position:absolute; top:0; right:0; width:60px; height:60px; background:var(--purple-dim); border-radius:0 var(--radius) 0 60px; }
+  .stat-icon { font-size:20px; margin-bottom:12px; }
+  .stat-value { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; color:var(--text); }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .stat-change { font-size:11px; margin-top:8px; }
+  .stat-change.up { color:var(--success); }
+  .stat-change.down { color:var(--danger); }
+
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .grid-3 { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:16px; }
+
+  .card {
+    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px;
+  }
+  .card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .card-title span { color:var(--text-muted); font-size:12px; font-family:'DM Sans',sans-serif; font-weight:400; margin-left:auto; }
+
+  /* Activity */
+  .activity-list { display:flex; flex-direction:column; gap:10px; }
+  .activity-item { display:flex; align-items:center; gap:12px; padding:10px; background:var(--bg3); border-radius:8px; }
+  .activity-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .activity-dot.join { background:var(--success); }
+  .activity-dot.leave { background:var(--danger); }
+  .activity-dot.mod { background:var(--warning); }
+  .activity-dot.msg { background:var(--purple-light); }
+  .activity-text { flex:1; font-size:13px; }
+  .activity-text strong { color:var(--text); }
+  .activity-time { font-size:11px; color:var(--text-dim); }
+
+  /* Members table */
+  .table { width:100%; border-collapse:collapse; }
+  .table th { text-align:left; padding:10px 12px; font-size:11px; color:var(--text-dim); font-weight:600; letter-spacing:.5px; text-transform:uppercase; border-bottom:1px solid var(--border); }
+  .table td { padding:12px; border-bottom:1px solid var(--border); font-size:13px; }
+  .table tr:last-child td { border-bottom:none; }
+  .table tr:hover td { background:var(--purple-dim); }
+  .member-cell { display:flex; align-items:center; gap:10px; }
+  .member-avatar { width:28px; height:28px; border-radius:50%; background:var(--purple); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+  .role-badge { padding:2px 8px; border-radius:10px; font-size:11px; font-weight:500; }
+  .role-admin { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+  .role-mod { background:rgba(245,158,11,0.1); color:#fbbf24; border:1px solid rgba(245,158,11,0.2); }
+  .role-member { background:var(--purple-dim); color:var(--purple-light); border:1px solid var(--border); }
+  .status-dot { width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .status-online { background:var(--success); }
+  .status-offline { background:var(--text-dim); }
+  .action-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:4px 10px; border-radius:6px; cursor:pointer; font-size:12px; transition:all .15s; }
+  .action-btn:hover { border-color:var(--border-hover); color:var(--text); }
+  .action-btn.danger:hover { border-color:rgba(239,68,68,0.4); color:var(--danger); }
+
+  /* Search */
+  .search-bar { display:flex; gap:10px; margin-bottom:16px; }
+  .input {
+    background:var(--bg3); border:1px solid var(--border); color:var(--text);
+    padding:9px 14px; border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif;
+    outline:none; transition:border-color .2s; width:100%;
+  }
+  .input:focus { border-color:var(--purple); }
+  .input::placeholder { color:var(--text-dim); }
+  select.input { cursor:pointer; }
+
+  /* ── Modération ── */
+  .mod-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+  .toggle-row:last-child { border-bottom:none; }
+  .toggle-label { font-size:13px; }
+  .toggle-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .toggle { position:relative; width:40px; height:22px; }
+  .toggle input { opacity:0; width:0; height:0; }
+  .toggle-slider {
+    position:absolute; cursor:pointer; inset:0;
+    background:var(--bg3); border:1px solid var(--border); border-radius:22px; transition:.2s;
+  }
+  .toggle-slider:before {
+    content:''; position:absolute; width:16px; height:16px; left:2px; bottom:2px;
+    background:var(--text-dim); border-radius:50%; transition:.2s;
+  }
+  .toggle input:checked + .toggle-slider { background:var(--purple); border-color:var(--purple); }
+  .toggle input:checked + .toggle-slider:before { transform:translateX(18px); background:#fff; }
+
+  .sanction-list { display:flex; flex-direction:column; gap:8px; }
+  .sanction-item { display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg3); border-radius:8px; border:1px solid var(--border); }
+  .sanction-type { padding:3px 10px; border-radius:6px; font-size:11px; font-weight:600; }
+  .s-ban { background:rgba(239,68,68,0.15); color:#f87171; }
+  .s-kick { background:rgba(245,158,11,0.15); color:#fbbf24; }
+  .s-warn { background:rgba(124,58,237,0.15); color:var(--purple-light); }
+  .s-mute { background:rgba(99,102,241,0.15); color:#818cf8; }
+  .sanction-info { flex:1; }
+  .sanction-user { font-size:13px; font-weight:500; }
+  .sanction-reason { font-size:11px; color:var(--text-muted); }
+  .sanction-date { font-size:11px; color:var(--text-dim); }
+
+  /* ── Tickets ── */
+  .ticket-config { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .form-group { margin-bottom:16px; }
+  .form-label { font-size:12px; color:var(--text-muted); margin-bottom:6px; display:block; font-weight:500; }
+  textarea.input { resize:vertical; min-height:80px; }
+  .category-list { display:flex; flex-direction:column; gap:8px; }
+  .category-item {
+    display:flex; align-items:center; gap:12px; padding:12px 14px;
+    background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+  }
+  .category-icon { font-size:18px; }
+  .category-name { flex:1; font-size:13px; font-weight:500; }
+  .category-count { font-size:11px; color:var(--text-muted); }
+  .add-category {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px; border:1px dashed var(--border); border-radius:8px;
+    color:var(--text-muted); cursor:pointer; font-size:13px; transition:all .2s;
+  }
+  .add-category:hover { border-color:var(--purple); color:var(--purple-light); background:var(--purple-dim); }
+
+  .ticket-preview {
+    background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:16px;
+  }
+  .embed-bar { width:3px; background:var(--purple); border-radius:2px; margin-right:12px; flex-shrink:0; }
+  .embed-content { flex:1; }
+  .embed-title { font-size:14px; font-weight:600; color:var(--purple-light); margin-bottom:6px; }
+  .embed-desc { font-size:12px; color:var(--text-muted); line-height:1.6; }
+  .embed-wrap { display:flex; background:var(--bg2); border-radius:6px; padding:12px; border-left:3px solid var(--purple); }
+  .ticket-buttons { display:flex; gap:8px; margin-top:10px; }
+  .ticket-btn { padding:8px 16px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; border:none; }
+  .ticket-btn-primary { background:var(--purple); color:#fff; }
+  .ticket-btn-secondary { background:var(--bg3); color:var(--text-muted); border:1px solid var(--border); }
+
+  /* ── Charts ── */
+  .chart-bar { display:flex; flex-direction:column; gap:6px; }
+  .bar-row { display:flex; align-items:center; gap:10px; }
+  .bar-label { width:70px; font-size:12px; color:var(--text-muted); text-align:right; }
+  .bar-track { flex:1; height:8px; background:var(--bg3); border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; background:var(--purple); border-radius:4px; transition:width .6s ease; }
+  .bar-val { width:30px; font-size:12px; color:var(--text-muted); }
+
+  /* Online chart */
+  .online-chart { display:flex; align-items:flex-end; gap:4px; height:60px; }
+  .online-bar { flex:1; background:var(--purple-dim); border-radius:3px 3px 0 0; border:1px solid var(--border); transition:background .2s; cursor:pointer; }
+  .online-bar:hover { background:rgba(124,58,237,0.3); }
+
+  /* Notifications */
+  .toast {
+    position:fixed; bottom:24px; right:24px; background:var(--bg2);
+    border:1px solid var(--purple); border-radius:10px; padding:14px 18px;
+    display:flex; align-items:center; gap:10px; font-size:13px;
+    transform:translateY(80px); opacity:0; transition:all .3s; z-index:999;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast-icon { font-size:16px; }
+
+  /* Responsive */
+  @media(max-width:1200px) { .stats-grid { grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:900px) { .grid-2,.mod-grid,.ticket-config { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">O</div>
+    <div>
+      <div class="logo-text">Orbis</div>
+      <div class="logo-badge">Dashboard</div>
+    </div>
+  </div>
+
+  <div class="server-select" onclick="showServerModal()">
+    <div class="server-avatar">N</div>
+    <div class="server-name">Naoxy Comm</div>
+    <div class="server-arrow">▼</div>
+  </div>
+
+  <div class="nav-section">Général</div>
+  <div class="nav-item active" onclick="showPage('overview')">
+    <span class="nav-icon">📊</span> Vue d'ensemble
+  </div>
+  <div class="nav-item" onclick="showPage('members')">
+    <span class="nav-icon">👥</span> Membres
+    <span class="nav-badge">71</span>
+  </div>
+
+  <div class="nav-section">Configuration</div>
+  <div class="nav-item" onclick="showPage('moderation')">
+    <span class="nav-icon">🛡️</span> Modération
+  </div>
+  <div class="nav-item" onclick="showPage('tickets')">
+    <span class="nav-icon">🎫</span> Tickets
+  </div>
+  <div class="nav-item" onclick="showPage('roles')">
+    <span class="nav-icon">🎭</span> Rôles
+  </div>
+  <div class="nav-item" onclick="showPage('welcome')">
+    <span class="nav-icon">👋</span> Bienvenue
+  </div>
+  <div class="nav-item" onclick="showPage('logs')">
+    <span class="nav-icon">📋</span> Logs
+  </div>
+
+  <div class="nav-section">Modules</div>
+  <div class="nav-item" onclick="showPage('economy')">
+    <span class="nav-icon">💰</span> Économie
+  </div>
+  <div class="nav-item" onclick="showPage('levels')">
+    <span class="nav-icon">📈</span> Niveaux
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">N</div>
+      <div class="user-info">
+        <div class="user-name">Naoxy</div>
+        <div class="user-role">Administrateur</div>
+      </div>
+      <button class="action-btn danger" onclick="logout()" style="padding:4px 8px;">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pageTitle">Vue d'ensemble</div>
+      <div class="page-sub" id="pageSub">Naoxy Comm — Statistiques générales</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="refreshData()">↻ Actualiser</button>
+      <button class="btn btn-primary" onclick="saveChanges()">Sauvegarder</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ PAGE OVERVIEW ═══ -->
+    <div class="page active" id="page-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value">71</div>
+          <div class="stat-label">Membres total</div>
+          <div class="stat-change up">▲ +3 cette semaine</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🟢</div>
+          <div class="stat-value">24</div>
+          <div class="stat-label">En ligne maintenant</div>
+          <div class="stat-change up">▲ +5 vs hier</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎫</div>
+          <div class="stat-value">8</div>
+          <div class="stat-label">Tickets ouverts</div>
+          <div class="stat-change down">▼ 2 en attente</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛡️</div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Sanctions ce mois</div>
+          <div class="stat-change up">▲ -4 vs mois dernier</div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">📊 Activité des membres <span>7 derniers jours</span></div>
+          <div class="online-chart" id="activityChart"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;">
+            <span style="font-size:10px;color:var(--text-dim)">Lun</span>
+            <span style="font-size:10px;color:var(--text-dim)">Mar</span>
+            <span style="font-size:10px;color:var(--text-dim)">Mer</span>
+            <span style="font-size:10px;color:var(--text-dim)">Jeu</span>
+            <span style="font-size:10px;color:var(--text-dim)">Ven</span>
+            <span style="font-size:10px;color:var(--text-dim)">Sam</span>
+            <span style="font-size:10px;color:var(--text-dim)">Dim</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎭 Rôles populaires</div>
+          <div class="chart-bar">
+            <div class="bar-row"><div class="bar-label">Membres</div><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><div class="bar-val">60</div></div>
+            <div class="bar-row"><div class="bar-label">PRESTIGE</div><div class="bar-track"><div class="bar-fill" style="width:15%"></div></div><div class="bar-val">11</div></div>
+            <div class="bar-row"><div class="bar-label">Ami(e)</div><div class="bar-track"><div class="bar-fill" style="width:14%"></div></div><div class="bar-val">10</div></div>
+            <div class="bar-row"><div class="bar-label">Légende</div><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><div class="bar-val">4</div></div>
+            <div class="bar-row"><div class="bar-label">VIP</div><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><div class="bar-val">4</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚡ Activité récente <span>En temps réel</span></div>
+        <div class="activity-list">
+          <div class="activity-item"><div class="activity-dot join"></div><div class="activity-text"><strong>Alexis</strong> a rejoint le serveur</div><div class="activity-time">il y a 2 min</div></div>
+          <div class="activity-item"><div class="activity-dot msg"></div><div class="activity-text"><strong>Naoxy</strong> a envoyé un message dans #général</div><div class="activity-time">il y a 5 min</div></div>
+          <div class="activity-item"><div class="activity-dot mod"></div><div class="activity-text"><strong>ModBot</strong> a warn <strong>Thomas</strong> — spam</div><div class="activity-time">il y a 12 min</div></div>
+          <div class="activity-item"><div class="activity-dot leave"></div><div class="activity-text"><strong>User#1234</strong> a quitté le serveur</div><div class="activity-time">il y a 18 min</div></div>
+          <div class="activity-item"><div class="activity-dot join"></div><div class="activity-text"><strong>Clara</strong> a rejoint le serveur</div><div class="activity-time">il y a 24 min</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE MEMBERS ═══ -->
+    <div class="page" id="page-members">
+      <div class="search-bar">
+        <input class="input" type="text" placeholder="🔍 Rechercher un membre..." oninput="filterMembers(this.value)">
+        <select class="input" style="width:180px;">
+          <option>Tous les rôles</option>
+          <option>Administrateur</option>
+          <option>Modérateur</option>
+          <option>Membres</option>
+          <option>VIP</option>
+        </select>
+        <button class="btn btn-primary">Filtrer</button>
+      </div>
+      <div class="card">
+        <table class="table" id="membersTable">
+          <thead>
+            <tr>
+              <th>Membre</th>
+              <th>Rôle principal</th>
+              <th>Statut</th>
+              <th>Rejoint le</th>
+              <th>Messages</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="membersBody">
+            <tr><td><div class="member-cell"><div class="member-avatar">N</div><div><div>Naoxy</div><div style="font-size:11px;color:var(--text-muted)">#0001</div></div></div></td><td><span class="role-badge role-admin">Admin</span></td><td><span class="status-dot status-online"></span>En ligne</td><td>12 Jan 2024</td><td>1,842</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
+            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#6d28d9">A</div><div><div>Alexis</div><div style="font-size:11px;color:var(--text-muted)">#4521</div></div></div></td><td><span class="role-badge role-mod">Modérateur</span></td><td><span class="status-dot status-online"></span>En ligne</td><td>3 Mars 2024</td><td>542</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
+            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#4c1d95">C</div><div><div>Clara</div><div style="font-size:11px;color:var(--text-muted)">#8832</div></div></div></td><td><span class="role-badge role-member">Membres</span></td><td><span class="status-dot status-offline"></span>Hors ligne</td><td>15 Avr 2024</td><td>128</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
+            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#5b21b6">T</div><div><div>Thomas</div><div style="font-size:11px;color:var(--text-muted)">#2210</div></div></div></td><td><span class="role-badge role-member">Membres</span></td><td><span class="status-dot status-offline"></span>Hors ligne</td><td>22 Fév 2024</td><td>87</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
+            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#7c3aed">L</div><div><div>Lucas</div><div style="font-size:11px;color:var(--text-muted)">#5509</div></div></div></td><td><span class="role-badge role-member">VIP</span></td><td><span class="status-dot status-online"></span>En ligne</td><td>8 Jan 2024</td><td>412</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE MODERATION ═══ -->
+    <div class="page" id="page-moderation">
+      <div class="mod-grid">
+        <div class="card">
+          <div class="card-title">⚙️ Protection automatique</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Anti-spam</div><div class="toggle-sub">Limite les messages répétitifs</div></div>
+            <label class="toggle"><input type="checkbox" checked onchange="saveToggle(this,'anti-spam')"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Anti-raid</div><div class="toggle-sub">Protection contre les raids</div></div>
+            <label class="toggle"><input type="checkbox" checked onchange="saveToggle(this,'anti-raid')"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Anti-liens</div><div class="toggle-sub">Supprime les liens non autorisés</div></div>
+            <label class="toggle"><input type="checkbox" onchange="saveToggle(this,'anti-liens')"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Anti-majuscules</div><div class="toggle-sub">Limite les messages en caps</div></div>
+            <label class="toggle"><input type="checkbox" onchange="saveToggle(this,'anti-caps')"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Logs de modération</div><div class="toggle-sub">Enregistre toutes les actions</div></div>
+            <label class="toggle"><input type="checkbox" checked onchange="saveToggle(this,'logs-mod')"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 Configuration</div>
+          <div class="form-group">
+            <label class="form-label">Salon des logs de modération</label>
+            <select class="input">
+              <option>🔒 mod-logs</option>
+              <option>📋 audit-logs</option>
+              <option>⚠️ warnings</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Seuil anti-spam (messages/10s)</label>
+            <input class="input" type="number" value="5" min="1" max="20">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rôle muet</label>
+            <select class="input">
+              <option>🔇 Muted</option>
+              <option>⛔ Banned</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Action anti-spam</label>
+            <select class="input">
+              <option>Warn</option>
+              <option>Mute (5 min)</option>
+              <option>Kick</option>
+              <option>Ban temporaire</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚖️ Dernières sanctions</div>
+        <div class="sanction-list">
+          <div class="sanction-item"><span class="sanction-type s-warn">WARN</span><div class="sanction-info"><div class="sanction-user">Thomas#2210</div><div class="sanction-reason">Spam dans #général</div></div><div class="sanction-date">Aujourd'hui 14:32</div><button class="action-btn danger">Retirer</button></div>
+          <div class="sanction-item"><span class="sanction-type s-mute">MUTE</span><div class="sanction-info"><div class="sanction-user">User#9981</div><div class="sanction-reason">Liens non autorisés</div></div><div class="sanction-date">Hier 20:15</div><button class="action-btn danger">Retirer</button></div>
+          <div class="sanction-item"><span class="sanction-type s-kick">KICK</span><div class="sanction-info"><div class="sanction-user">Troll#0042</div><div class="sanction-reason">Comportement toxique</div></div><div class="sanction-date">22 Mai 2026</div><button class="action-btn">Voir</button></div>
+          <div class="sanction-item"><span class="sanction-type s-ban">BAN</span><div class="sanction-info"><div class="sanction-user">Raider#6661</div><div class="sanction-reason">Raid / flood</div></div><div class="sanction-date">20 Mai 2026</div><button class="action-btn">Voir</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE TICKETS ═══ -->
+    <div class="page" id="page-tickets">
+      <div class="ticket-config">
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">🎫 Message d'ouverture</div>
+            <div class="form-group">
+              <label class="form-label">Titre de l'embed</label>
+              <input class="input" type="text" id="ticketTitle" value="🎫 Support — Naoxy Comm" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="input" id="ticketDesc" oninput="updatePreview()">Clique sur le bouton ci-dessous pour ouvrir un ticket. Notre équipe vous répondra dans les plus brefs délais.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Texte du bouton</label>
+              <input class="input" type="text" id="ticketBtn" value="📩 Ouvrir un ticket" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Salon où envoyer le message</label>
+              <select class="input">
+                <option>🎫 tickets</option>
+                <option>📋 support</option>
+                <option>💬 général</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="sendTicketPanel()">📤 Envoyer le panneau</button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">⚙️ Paramètres</div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Transcription auto</div><div class="toggle-sub">Sauvegarde les tickets fermés</div></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Ping du staff</div><div class="toggle-sub">Notifie le staff à l'ouverture</div></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Message de bienvenue</div><div class="toggle-sub">Message auto dans le ticket</div></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="form-group" style="margin-top:14px">
+              <label class="form-label">Catégorie Discord pour les tickets</label>
+              <select class="input">
+                <option>📁 TICKETS</option>
+                <option>📁 SUPPORT</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rôle staff (accès aux tickets)</label>
+              <select class="input">
+                <option>🔧 Support</option>
+                <option>🛡️ Modérateur</option>
+                <option>⚙️ Administrateur</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">👁️ Aperçu</div>
+            <div class="ticket-preview">
+              <div class="embed-wrap">
+                <div class="embed-bar"></div>
+                <div class="embed-content">
+                  <div class="embed-title" id="previewTitle">🎫 Support — Naoxy Comm</div>
+                  <div class="embed-desc" id="previewDesc">Clique sur le bouton ci-dessous pour ouvrir un ticket. Notre équipe vous répondra dans les plus brefs délais.</div>
+                </div>
+              </div>
+              <div class="ticket-buttons">
+                <button class="ticket-btn ticket-btn-primary" id="previewBtn">📩 Ouvrir un ticket</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📂 Catégories de tickets</div>
+            <div class="category-list" id="categoryList">
+              <div class="category-item"><span class="category-icon">🛠️</span><div class="category-name">Support technique</div><div class="category-count">3 ouverts</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
+              <div class="category-item"><span class="category-icon">💰</span><div class="category-name">Commandes / Achats</div><div class="category-count">1 ouvert</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
+              <div class="category-item"><span class="category-icon">⚖️</span><div class="category-name">Signalement</div><div class="category-count">2 ouverts</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
+              <div class="category-item"><span class="category-icon">❓</span><div class="category-name">Question générale</div><div class="category-count">2 ouverts</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
+            </div>
+            <div class="add-category" style="margin-top:10px" onclick="addCategory()">
+              ＋ Ajouter une catégorie
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE ROLES ═══ -->
+    <div class="page" id="page-roles">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🎭 Autorole</div>
+          <div class="form-group">
+            <label class="form-label">Rôle donné à l'arrivée (humains)</label>
+            <select class="input">
+              <option>👤 Membres</option>
+              <option>Aucun</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rôle donné à l'arrivée (bots)</label>
+            <select class="input">
+              <option>Aucun</option>
+              <option>🤖 Bots</option>
+            </select>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Autorole actif</div></div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔇 Rôle muet</div>
+          <div class="form-group">
+            <label class="form-label">Rôle utilisé pour /mute</label>
+            <select class="input">
+              <option>🔇 Muted</option>
+              <option>Créer automatiquement</option>
+            </select>
+          </div>
+          <button class="btn btn-ghost" style="width:100%">⚙️ Configurer les permissions</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE WELCOME ═══ -->
+    <div class="page" id="page-welcome">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">👋 Message de bienvenue</div>
+          <div class="form-group">
+            <label class="form-label">Salon</label>
+            <select class="input"><option>👋 bienvenue</option><option>💬 général</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message (utilisez {user}, {server}, {count})</label>
+            <textarea class="input">Bienvenue {user} sur {server} ! Tu es notre {count}ème membre 🎉</textarea>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Message de bienvenue actif</div></div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">👋 Message d'au revoir</div>
+          <div class="form-group">
+            <label class="form-label">Salon</label>
+            <select class="input"><option>👋 bienvenue</option><option>💬 général</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="input">{user} a quitté le serveur. On était {count} membres.</textarea>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Message d'au revoir actif</div></div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE LOGS ═══ -->
+    <div class="page" id="page-logs">
+      <div class="card">
+        <div class="card-title">📋 Configuration des logs</div>
+        <div class="mod-grid">
+          <div>
+            <div class="toggle-row"><div><div class="toggle-label">Logs des messages</div><div class="toggle-sub">Éditions et suppressions</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Logs des membres</div><div class="toggle-sub">Arrivées et départs</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Logs des rôles</div><div class="toggle-sub">Changements de rôles</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Logs vocaux</div><div class="toggle-sub">Connexions salons vocaux</div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label class="form-label">Salon pour les logs messages</label>
+              <select class="input"><option>📋 message-logs</option><option>📋 audit-logs</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Salon pour les logs membres</label>
+              <select class="input"><option>👥 member-logs</option><option>📋 audit-logs</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Salon pour les logs modération</label>
+              <select class="input"><option>🛡️ mod-logs</option><option>📋 audit-logs</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE ECONOMY ═══ -->
+    <div class="page" id="page-economy">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">💰 Configuration</div>
+          <div class="form-group"><label class="form-label">Nom de la monnaie</label><input class="input" value="Orbis Coins"></div>
+          <div class="form-group"><label class="form-label">Symbole</label><input class="input" value="🪙"></div>
+          <div class="form-group"><label class="form-label">Récompense /daily</label><input class="input" type="number" value="100"></div>
+          <div class="form-group"><label class="form-label">Récompense par message</label><input class="input" type="number" value="5"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🏆 Top 5 richesse</div>
+          <div class="activity-list">
+            <div class="activity-item"><div class="activity-dot" style="background:#fbbf24"></div><div class="activity-text"><strong>Naoxy</strong></div><div class="activity-time">12,450 🪙</div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:#9ca3af"></div><div class="activity-text"><strong>Lucas</strong></div><div class="activity-time">8,200 🪙</div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:#b45309"></div><div class="activity-text"><strong>Alexis</strong></div><div class="activity-time">5,100 🪙</div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--purple)"></div><div class="activity-text"><strong>Clara</strong></div><div class="activity-time">3,800 🪙</div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--purple)"></div><div class="activity-text"><strong>Thomas</strong></div><div class="activity-time">2,200 🪙</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE LEVELS ═══ -->
+    <div class="page" id="page-levels">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📈 Configuration XP</div>
+          <div class="form-group"><label class="form-label">XP par message</label><input class="input" type="number" value="15"></div>
+          <div class="form-group"><label class="form-label">Cooldown entre XP (secondes)</label><input class="input" type="number" value="60"></div>
+          <div class="form-group"><label class="form-label">Salon d'annonce de niveau</label><select class="input"><option>📈 niveaux</option><option>💬 général</option></select></div>
+          <div class="toggle-row"><div><div class="toggle-label">Annonce de montée de niveau</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🏆 Top niveaux</div>
+          <div class="activity-list">
+            <div class="activity-item"><div class="activity-dot" style="background:#fbbf24"></div><div class="activity-text"><strong>Naoxy</strong> — Niveau 42</div><div class="activity-time">18,420 XP</div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:#9ca3af"></div><div class="activity-text"><strong>Lucas</strong> — Niveau 28</div><div class="activity-time">11,200 XP</div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:#b45309"></div><div class="activity-text"><strong>Alexis</strong> — Niveau 21</div><div class="activity-time">8,400 XP</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✅</span>
+  <span id="toastMsg">Sauvegardé avec succès</span>
+</div>
+
+<script>
+const pages = {
+  overview: { title: 'Vue d\'ensemble', sub: 'Naoxy Comm — Statistiques générales' },
+  members: { title: 'Gestion des membres', sub: 'Naoxy Comm — 71 membres' },
+  moderation: { title: 'Modération', sub: 'Configuration de la protection automatique' },
+  tickets: { title: 'Système de tickets', sub: 'Configuration du support' },
+  roles: { title: 'Gestion des rôles', sub: 'Autoroles et rôles réaction' },
+  welcome: { title: 'Messages de bienvenue', sub: 'Personnaliser l\'accueil des membres' },
+  logs: { title: 'Logs', sub: 'Configuration des journaux d\'événements' },
+  economy: { title: 'Économie', sub: 'Configuration de la monnaie virtuelle' },
+  levels: { title: 'Système de niveaux', sub: 'Configuration XP et récompenses' },
+};
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const nav = [...document.querySelectorAll('.nav-item')].find(n => n.getAttribute('onclick')?.includes(id));
+  if (nav) nav.classList.add('active');
+  document.getElementById('pageTitle').textContent = pages[id]?.title || id;
+  document.getElementById('pageSub').textContent = pages[id]?.sub || '';
+}
+
+function showToast(msg, icon = '✅') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.querySelector('.toast-icon').textContent = icon;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function saveChanges() { showToast('Configuration sauvegardée !'); }
+function refreshData() { loadRealData(); } const GUILD_ID = "1499908548585459792"; async function loadRealData() { try { const res = await fetch("/api/guild/" + GUILD_ID); const g = await res.json(); if (!g.error) { document.querySelectorAll(".stat-value")[0].textContent = g.memberCount; document.querySelectorAll(".stat-value")[1].textContent = g.onlineCount; document.querySelectorAll(".stat-value")[2].textContent = g.channelCount; document.querySelectorAll(".stat-value")[3].textContent = g.roleCount; } } catch(e) {} } loadRealData();
+function saveToggle(el, name) { showToast((el.checked ? '✅ ' : '❌ ') + name + ' ' + (el.checked ? 'activé' : 'désactivé'), el.checked ? '✅' : '❌'); }
+function logout() { showToast('Déconnexion...', '👋'); }
+function showServerModal() { showToast('Sélection du serveur bientôt disponible', '🔧'); }
+
+function sendTicketPanel() {
+  showToast('Panneau de tickets envoyé !', '📤');
+}
+
+function updatePreview() {
+  document.getElementById('previewTitle').textContent = document.getElementById('ticketTitle').value;
+  document.getElementById('previewDesc').textContent = document.getElementById('ticketDesc').value;
+  document.getElementById('previewBtn').textContent = document.getElementById('ticketBtn').value;
+}
+
+function removeCategory(btn) {
+  btn.closest('.category-item').remove();
+  showToast('Catégorie supprimée', '🗑️');
+}
+
+function addCategory() {
+  const name = prompt('Nom de la catégorie :');
+  if (!name) return;
+  const emoji = prompt('Emoji (ex: 🎮) :') || '📁';
+  const list = document.getElementById('categoryList');
+  const div = document.createElement('div');
+  div.className = 'category-item';
+  div.innerHTML = `<span class="category-icon">${emoji}</span><div class="category-name">${name}</div><div class="category-count">0 ouvert</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button>`;
+  list.appendChild(div);
+  showToast('Catégorie ajoutée !', '✅');
+}
+
+function filterMembers(query) {
+  const rows = document.querySelectorAll('#membersBody tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// Build activity chart
+const chart = document.getElementById('activityChart');
+const vals = [18, 24, 15, 30, 22, 35, 28];
+const max = Math.max(...vals);
+vals.forEach(v => {
+  const bar = document.createElement('div');
+  bar.className = 'online-bar';
+  bar.style.height = (v / max * 100) + '%';
+  bar.title = v + ' membres actifs';
+  chart.appendChild(bar);
+});
+</script>
+</body>
+</html>

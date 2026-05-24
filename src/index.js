@@ -1,5 +1,7 @@
+const express = require('express');
+const path = require('path');
+const dashboardRoutes = require('./dashboard/routes.js');
 const { Client, GatewayIntentBits, Partials, Collection, REST, Routes } = require("discord.js");
-const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
 
@@ -62,4 +64,15 @@ client.once("ready", async () => {
   } catch (e) { console.error(e); }
 });
 
+
+// ── Dashboard ──
+const app = express();
+app.use(express.json());
+app.get("/", (req, res) => res.redirect("/login"));
+app.use(express.static(path.join(__dirname, 'dashboard/public')));
+app.use(dashboardRoutes(client, app));
+const PORT = process.env.DASHBOARD_PORT || 3001;
+app.listen(PORT, () => console.log('🌐 Dashboard sur http://localhost:' + PORT));
+
 client.login(TOKEN);
+
