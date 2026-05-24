@@ -147,3 +147,47 @@ function levelFromXp(xp) {
 }
 
 module.exports = { db, getGuildSettings, getMemberLevel, getMemberEconomy, xpForLevel, levelFromXp };
+
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS backups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    backup_id TEXT UNIQUE NOT NULL,
+    guild_id TEXT NOT NULL,
+    owner_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    guild_name TEXT,
+    role_count INTEGER DEFAULT 0,
+    channel_count INTEGER DEFAULT 0,
+    created_at INTEGER NOT NULL
+  )
+`).run();
+
+db.prepare(`CREATE TABLE IF NOT EXISTS autoroles (
+  guild_id TEXT NOT NULL,
+  role_id TEXT NOT NULL,
+  type TEXT DEFAULT 'all',
+  PRIMARY KEY (guild_id, role_id)
+)`).run();
+
+db.prepare(`CREATE TABLE IF NOT EXISTS reactionroles (
+  message_id TEXT PRIMARY KEY,
+  guild_id TEXT NOT NULL,
+  channel_id TEXT NOT NULL,
+  mode TEXT DEFAULT 'button'
+)`).run();
+
+db.prepare(`CREATE TABLE IF NOT EXISTS reactionrole_items (
+  message_id TEXT NOT NULL,
+  role_id TEXT NOT NULL,
+  label TEXT,
+  emoji TEXT,
+  PRIMARY KEY (message_id, role_id)
+)`).run();
+
+db.prepare(`CREATE TABLE IF NOT EXISTS guild_settings (
+  guild_id TEXT NOT NULL,
+  key TEXT NOT NULL,
+  value TEXT,
+  PRIMARY KEY (guild_id, key)
+)`).run();

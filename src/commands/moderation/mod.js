@@ -80,6 +80,18 @@ const commands = [
     }
   },
   {
+    data: new SlashCommandBuilder().setName("unbanall").setDescription("Débannir tous les utilisateurs").setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
+    async execute(interaction) {
+      await interaction.deferReply();
+      const bans = await interaction.guild.bans.fetch();
+      let count = 0;
+      for (const [, ban] of bans) {
+        try { await interaction.guild.members.unban(ban.user.id, "Unban all"); count++; await new Promise(r => setTimeout(r, 500)); } catch {}
+      }
+      await interaction.editReply({ embeds: [successEmbed("✅ Unban all !", `**${count}** utilisateur(s) débanni(s).`)] });
+    }
+  },
+  {
     data: new SlashCommandBuilder().setName("mute").setDescription("Mettre en sourdine un membre").addUserOption(o => o.setName("membre").setDescription("Le membre").setRequired(true)).addStringOption(o => o.setName("duree").setDescription("Durée ex: 10m, 1h, 1d").setRequired(true)).addStringOption(o => o.setName("raison").setDescription("Raison").setRequired(false)).setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     async execute(interaction) {
       const target = interaction.options.getMember("membre");
@@ -136,15 +148,27 @@ const commands = [
     }
   },
   {
-    data: new SlashCommandBuilder().setName("clear").setDescription("Supprimer des messages").addIntegerOption(o => o.setName("nombre").setDescription("Nombre (1-100)").setMinValue(1).setMaxValue(100).setRequired(true)).addUserOption(o => o.setName("membre").setDescription("Seulement ce membre").setRequired(false)).setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
+    data: new SlashCommandBuilder().setName("clear").setDescription("Supprimer des messages").addIntegerOption(o => o.setName("nombre").setDescription("Nombre (1-500)").setMinValue(1).setMaxValue(500).setRequired(true)).addUserOption(o => o.setName("membre").setDescription("Seulement ce membre").setRequired(false)).setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
     async execute(interaction) {
       const amount = interaction.options.getInteger("nombre", true);
       const target = interaction.options.getUser("membre");
-      let messages = await interaction.channel.messages.fetch({ limit: amount + 1 });
-      if (target) messages = messages.filter(m => m.author.id === target.id);
-      const toDelete = [...messages.values()].slice(0, amount);
-      await interaction.channel.bulkDelete(toDelete, true).catch(() => {});
-      await interaction.reply({ embeds: [successEmbed("Messages supprimés", `**${toDelete.length}** message(s) supprimé(s).`)], ephemeral: true });
+      await interaction.deferReply({ ephemeral: true });
+      let deleted = 0;
+      let remaining = amount;
+      while (remaining > 0) {
+        const fetchLimit = Math.min(remaining, 100);
+        const messages = await interaction.channel.messages.fetch({ limit: fetchLimit });
+        if (messages.size === 0) break;
+        let toDelete = [...messages.values()];
+        if (target) toDelete = toDelete.filter(m => m.author.id === target.id);
+        if (toDelete.length === 0) break;
+        const bulked = await interaction.channel.bulkDelete(toDelete, true).catch(() => new Map());
+        deleted += bulked.size;
+        remaining -= bulked.size;
+        if (bulked.size < fetchLimit) break;
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      await interaction.editReply({ embeds: [successEmbed("Messages supprimés", `**${deleted}** message(s) supprimé(s).`)] });
     }
   },
   {
