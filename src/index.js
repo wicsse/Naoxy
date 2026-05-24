@@ -68,6 +68,7 @@ client.once("ready", async () => {
 // ── Dashboard ──
 const app = express();
 app.use(express.json());
+app.use(require("express-session")({ secret: process.env.SESSION_SECRET || "secret", resave: false, saveUninitialized: false, cookie: { secure: false, sameSite: "lax", maxAge: 1000 * 60 * 60 * 8 } }));
 app.get("/", (req, res) => res.redirect("/login"));
 app.use(express.static(path.join(__dirname, 'dashboard/public')));
 app.use(dashboardRoutes(client, app));

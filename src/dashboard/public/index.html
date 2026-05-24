@@ -4,321 +4,223 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orbis Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #07050f;
-    --bg2: #0e0a1a;
-    --bg3: #131020;
-    --border: rgba(124,58,237,0.15);
-    --border-hover: rgba(124,58,237,0.4);
-    --purple: #7c3aed;
-    --purple-light: #a78bfa;
-    --purple-dim: rgba(124,58,237,0.08);
-    --text: #ede9fe;
-    --text-muted: #7c6fa0;
-    --text-dim: #4a4060;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --radius: 12px;
-    --sidebar-w: 240px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; display:flex; min-height:100vh; overflow-x:hidden; }
+:root {
+  --bg: #07050f; --bg2: #0e0a1a; --bg3: #131020; --bg4: #1a1430;
+  --border: rgba(124,58,237,0.15); --border-h: rgba(124,58,237,0.4);
+  --purple: #7c3aed; --purple-l: #a78bfa; --purple-dim: rgba(124,58,237,0.08);
+  --text: #ede9fe; --muted: #7c6fa0; --dim: #4a4060;
+  --green: #10b981; --red: #ef4444; --yellow: #f59e0b; --blue: #3b82f6;
+  --r: 10px; --sidebar: 230px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;display:flex;min-height:100vh;overflow-x:hidden;}
 
-  /* ── Sidebar ── */
-  .sidebar {
-    width:var(--sidebar-w); min-height:100vh; background:var(--bg2);
-    border-right:1px solid var(--border); display:flex; flex-direction:column;
-    position:fixed; left:0; top:0; bottom:0; z-index:100;
-  }
-  .sidebar-logo {
-    padding:24px 20px; display:flex; align-items:center; gap:10px;
-    border-bottom:1px solid var(--border);
-  }
-  .logo-icon {
-    width:36px; height:36px; background:var(--purple); border-radius:10px;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Syne',sans-serif; font-weight:700; font-size:14px; color:#fff;
-  }
-  .logo-text { font-family:'Syne',sans-serif; font-weight:700; font-size:16px; color:var(--text); }
-  .logo-badge { font-size:10px; color:var(--purple-light); background:var(--purple-dim); padding:2px 6px; border-radius:4px; border:1px solid var(--border); }
+/* ── Sidebar ── */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;}
+.sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.sb-logo{padding:20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.sb-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--purple),var(--purple-l));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;}
+.sb-logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.sb-server{margin:12px 10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:9px;}
+.sb-server-icon{width:26px;height:26px;border-radius:7px;overflow:hidden;flex-shrink:0;background:var(--purple);}
+.sb-server-icon img{width:100%;height:100%;object-fit:cover;}
+.sb-server-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+.sb-section{padding:16px 14px 4px;font-size:10px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:1px 6px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .15s;position:relative;border:1px solid transparent;}
+.sb-item:hover{background:var(--purple-dim);color:var(--text);}
+.sb-item.active{background:var(--purple-dim);color:var(--purple-l);border-color:var(--border);}
+.sb-item.active::before{content:'';position:absolute;left:-6px;top:50%;transform:translateY(-50%);width:3px;height:14px;background:var(--purple);border-radius:2px;}
+.sb-icon{font-size:15px;width:16px;text-align:center;flex-shrink:0;}
+.sb-badge{margin-left:auto;background:var(--purple);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600;}
+.sb-footer{margin-top:auto;padding:12px 10px;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:9px;}
+.sb-user-av{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;}
+.sb-user-av img{width:100%;height:100%;object-fit:cover;}
+.sb-user-info{flex:1;overflow:hidden;}
+.sb-user-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user-role{font-size:10px;color:var(--muted);}
 
-  .server-select {
-    margin:16px 12px; padding:10px 12px; background:var(--bg3);
-    border:1px solid var(--border); border-radius:var(--radius);
-    display:flex; align-items:center; gap:10px; cursor:pointer;
-    transition:border-color .2s;
-  }
-  .server-select:hover { border-color:var(--border-hover); }
-  .server-avatar { width:28px; height:28px; border-radius:8px; background:var(--purple); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
-  .server-name { font-size:13px; font-weight:500; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .server-arrow { color:var(--text-muted); font-size:10px; }
+/* ── Main ── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);position:sticky;top:0;z-index:50;}
+.page-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;}
+.page-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.topbar-actions{display:flex;gap:8px;align-items:center;}
+.content{padding:24px;flex:1;}
+.page{display:none;animation:fadeIn .2s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-  .nav-section { padding:8px 12px 4px; font-size:10px; font-weight:600; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; }
-  .nav-item {
-    display:flex; align-items:center; gap:10px; padding:9px 16px;
-    margin:2px 8px; border-radius:8px; cursor:pointer; color:var(--text-muted);
-    font-size:13px; font-weight:500; transition:all .15s; position:relative;
-  }
-  .nav-item:hover { background:var(--purple-dim); color:var(--text); }
-  .nav-item.active { background:var(--purple-dim); color:var(--purple-light); border:1px solid var(--border); }
-  .nav-item.active::before { content:''; position:absolute; left:-8px; top:50%; transform:translateY(-50%); width:3px; height:16px; background:var(--purple); border-radius:2px; }
-  .nav-icon { font-size:16px; width:18px; text-align:center; }
-  .nav-badge { margin-left:auto; background:var(--purple); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; }
+/* ── Components ── */
+.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--purple);color:#fff;}.btn-primary:hover{background:#6d28d9;}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-ghost:hover{border-color:var(--border-h);color:var(--text);}
+.btn-danger{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2);}.btn-danger:hover{background:rgba(239,68,68,0.2);}
+.btn-success{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);}
+.btn-sm{padding:4px 10px;font-size:11px;border-radius:6px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:border-color .2s;}
+.card:hover{border-color:rgba(124,58,237,0.25);}
+.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title .ct-sub{color:var(--muted);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:400;margin-left:auto;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
+.mb{margin-bottom:14px;}
 
-  .sidebar-footer { margin-top:auto; padding:16px 12px; border-top:1px solid var(--border); }
-  .user-card { display:flex; align-items:center; gap:10px; }
-  .user-avatar { width:32px; height:32px; border-radius:50%; background:var(--purple); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
-  .user-info { flex:1; }
-  .user-name { font-size:13px; font-weight:500; }
-  .user-role { font-size:11px; color:var(--text-muted); }
+/* ── Stat cards ── */
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden;transition:border-color .2s;}
+.stat-card:hover{border-color:var(--border-h);}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:50px;height:50px;background:var(--purple-dim);border-radius:0 var(--r) 0 50px;}
+.stat-icon{font-size:18px;margin-bottom:10px;}
+.stat-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;}
+.stat-label{font-size:11px;color:var(--muted);margin-top:3px;}
+.stat-change{font-size:10px;margin-top:6px;color:var(--dim);}
 
-  /* ── Main ── */
-  .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
-  .topbar {
-    padding:16px 28px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; justify-content:space-between;
-    background:var(--bg2); position:sticky; top:0; z-index:50;
-  }
-  .page-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; }
-  .page-sub { font-size:12px; color:var(--text-muted); margin-top:2px; }
-  .topbar-actions { display:flex; gap:10px; align-items:center; }
-  .btn {
-    padding:8px 16px; border-radius:8px; font-size:13px; font-weight:500;
-    cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:all .15s;
-  }
-  .btn-primary { background:var(--purple); color:#fff; }
-  .btn-primary:hover { background:#6d28d9; }
-  .btn-ghost { background:transparent; color:var(--text-muted); border:1px solid var(--border); }
-  .btn-ghost:hover { border-color:var(--border-hover); color:var(--text); }
-  .btn-danger { background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); }
+/* ── Form ── */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;font-weight:500;letter-spacing:.3px;}
+.input{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%;}
+.input:focus{border-color:var(--purple);}
+.input::placeholder{color:var(--dim);}
+select.input{cursor:pointer;}
+textarea.input{resize:vertical;min-height:72px;line-height:1.5;}
 
-  .content { padding:28px; flex:1; }
+/* ── Toggle ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-of-type{border-bottom:none;}
+.toggle-label{font-size:13px;font-weight:500;}
+.toggle-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.toggle{position:relative;width:38px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--bg3);border:1px solid var(--border);border-radius:20px;transition:.2s;}
+.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:2px;bottom:2px;background:var(--dim);border-radius:50%;transition:.2s;}
+.toggle input:checked+.toggle-slider{background:var(--purple);border-color:var(--purple);}
+.toggle input:checked+.toggle-slider:before{transform:translateX(18px);background:#fff;}
 
-  /* ── Pages ── */
-  .page { display:none; }
-  .page.active { display:block; }
+/* ── Table ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:8px 12px;font-size:10px;color:var(--dim);font-weight:600;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(124,58,237,0.04);}
+.member-cell{display:flex;align-items:center;gap:9px;}
+.member-av{width:26px;height:26px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.member-av img{width:100%;height:100%;object-fit:cover;}
 
-  /* ── Stats ── */
-  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
-  .stat-card {
-    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:20px; position:relative; overflow:hidden; transition:border-color .2s;
-  }
-  .stat-card:hover { border-color:var(--border-hover); }
-  .stat-card::before { content:''; position:absolute; top:0; right:0; width:60px; height:60px; background:var(--purple-dim); border-radius:0 var(--radius) 0 60px; }
-  .stat-icon { font-size:20px; margin-bottom:12px; }
-  .stat-value { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; color:var(--text); }
-  .stat-label { font-size:12px; color:var(--text-muted); margin-top:4px; }
-  .stat-change { font-size:11px; margin-top:8px; }
-  .stat-change.up { color:var(--success); }
-  .stat-change.down { color:var(--danger); }
+/* ── Badges ── */
+.badge{padding:2px 8px;border-radius:8px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:4px;}
+.badge-admin{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.15);}
+.badge-mod{background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.15);}
+.badge-member{background:var(--purple-dim);color:var(--purple-l);border:1px solid var(--border);}
+.badge-green{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.15);}
+.badge-red{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.15);}
+.badge-yellow{background:rgba(245,158,11,0.1);color:var(--yellow);border:1px solid rgba(245,158,11,0.15);}
+.badge-blue{background:rgba(59,130,246,0.1);color:var(--blue);border:1px solid rgba(59,130,246,0.15);}
+.role-pill{padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;display:inline-block;margin:1px;}
 
-  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
-  .grid-3 { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:16px; }
+/* ── Status dot ── */
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0;}
+.dot-online{background:var(--green);}
+.dot-idle{background:var(--yellow);}
+.dot-dnd{background:var(--red);}
+.dot-offline{background:var(--dim);}
 
-  .card {
-    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px;
-  }
-  .card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-  .card-title span { color:var(--text-muted); font-size:12px; font-family:'DM Sans',sans-serif; font-weight:400; margin-left:auto; }
+/* ── Search bar ── */
+.search-bar{display:flex;gap:8px;margin-bottom:14px;}
 
-  /* Activity */
-  .activity-list { display:flex; flex-direction:column; gap:10px; }
-  .activity-item { display:flex; align-items:center; gap:12px; padding:10px; background:var(--bg3); border-radius:8px; }
-  .activity-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .activity-dot.join { background:var(--success); }
-  .activity-dot.leave { background:var(--danger); }
-  .activity-dot.mod { background:var(--warning); }
-  .activity-dot.msg { background:var(--purple-light); }
-  .activity-text { flex:1; font-size:13px; }
-  .activity-text strong { color:var(--text); }
-  .activity-time { font-size:11px; color:var(--text-dim); }
+/* ── Activity list ── */
+.activity-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg3);border-radius:8px;margin-bottom:6px;border:1px solid transparent;transition:border-color .15s;}
+.activity-item:hover{border-color:var(--border);}
+.activity-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.activity-text{flex:1;font-size:13px;line-height:1.4;}
+.activity-time{font-size:10px;color:var(--dim);white-space:nowrap;}
 
-  /* Members table */
-  .table { width:100%; border-collapse:collapse; }
-  .table th { text-align:left; padding:10px 12px; font-size:11px; color:var(--text-dim); font-weight:600; letter-spacing:.5px; text-transform:uppercase; border-bottom:1px solid var(--border); }
-  .table td { padding:12px; border-bottom:1px solid var(--border); font-size:13px; }
-  .table tr:last-child td { border-bottom:none; }
-  .table tr:hover td { background:var(--purple-dim); }
-  .member-cell { display:flex; align-items:center; gap:10px; }
-  .member-avatar { width:28px; height:28px; border-radius:50%; background:var(--purple); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
-  .role-badge { padding:2px 8px; border-radius:10px; font-size:11px; font-weight:500; }
-  .role-admin { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
-  .role-mod { background:rgba(245,158,11,0.1); color:#fbbf24; border:1px solid rgba(245,158,11,0.2); }
-  .role-member { background:var(--purple-dim); color:var(--purple-light); border:1px solid var(--border); }
-  .status-dot { width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:6px; }
-  .status-online { background:var(--success); }
-  .status-offline { background:var(--text-dim); }
-  .action-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:4px 10px; border-radius:6px; cursor:pointer; font-size:12px; transition:all .15s; }
-  .action-btn:hover { border-color:var(--border-hover); color:var(--text); }
-  .action-btn.danger:hover { border-color:rgba(239,68,68,0.4); color:var(--danger); }
+/* ── Toast ── */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;transform:translateY(80px);opacity:0;transition:all .25s;z-index:9999;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:rgba(16,185,129,0.4);}
+.toast.error{border-color:rgba(239,68,68,0.4);}
 
-  /* Search */
-  .search-bar { display:flex; gap:10px; margin-bottom:16px; }
-  .input {
-    background:var(--bg3); border:1px solid var(--border); color:var(--text);
-    padding:9px 14px; border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif;
-    outline:none; transition:border-color .2s; width:100%;
-  }
-  .input:focus { border-color:var(--purple); }
-  .input::placeholder { color:var(--text-dim); }
-  select.input { cursor:pointer; }
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px);}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:440px;max-width:90vw;transform:scale(0.95);transition:transform .2s;}
+.modal-overlay.open .modal{transform:scale(1);}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;}
+.modal-close:hover{color:var(--text);}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
 
-  /* ── Modération ── */
-  .mod-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
-  .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
-  .toggle-row:last-child { border-bottom:none; }
-  .toggle-label { font-size:13px; }
-  .toggle-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
-  .toggle { position:relative; width:40px; height:22px; }
-  .toggle input { opacity:0; width:0; height:0; }
-  .toggle-slider {
-    position:absolute; cursor:pointer; inset:0;
-    background:var(--bg3); border:1px solid var(--border); border-radius:22px; transition:.2s;
-  }
-  .toggle-slider:before {
-    content:''; position:absolute; width:16px; height:16px; left:2px; bottom:2px;
-    background:var(--text-dim); border-radius:50%; transition:.2s;
-  }
-  .toggle input:checked + .toggle-slider { background:var(--purple); border-color:var(--purple); }
-  .toggle input:checked + .toggle-slider:before { transform:translateX(18px); background:#fff; }
+/* ── Loading ── */
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;color:var(--muted);gap:10px;}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  .sanction-list { display:flex; flex-direction:column; gap:8px; }
-  .sanction-item { display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg3); border-radius:8px; border:1px solid var(--border); }
-  .sanction-type { padding:3px 10px; border-radius:6px; font-size:11px; font-weight:600; }
-  .s-ban { background:rgba(239,68,68,0.15); color:#f87171; }
-  .s-kick { background:rgba(245,158,11,0.15); color:#fbbf24; }
-  .s-warn { background:rgba(124,58,237,0.15); color:var(--purple-light); }
-  .s-mute { background:rgba(99,102,241,0.15); color:#818cf8; }
-  .sanction-info { flex:1; }
-  .sanction-user { font-size:13px; font-weight:500; }
-  .sanction-reason { font-size:11px; color:var(--text-muted); }
-  .sanction-date { font-size:11px; color:var(--text-dim); }
+/* ── Empty state ── */
+.empty{text-align:center;padding:48px 24px;color:var(--muted);}
+.empty-icon{font-size:36px;margin-bottom:12px;}
+.empty-text{font-size:13px;}
 
-  /* ── Tickets ── */
-  .ticket-config { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  .form-group { margin-bottom:16px; }
-  .form-label { font-size:12px; color:var(--text-muted); margin-bottom:6px; display:block; font-weight:500; }
-  textarea.input { resize:vertical; min-height:80px; }
-  .category-list { display:flex; flex-direction:column; gap:8px; }
-  .category-item {
-    display:flex; align-items:center; gap:12px; padding:12px 14px;
-    background:var(--bg3); border:1px solid var(--border); border-radius:8px;
-  }
-  .category-icon { font-size:18px; }
-  .category-name { flex:1; font-size:13px; font-weight:500; }
-  .category-count { font-size:11px; color:var(--text-muted); }
-  .add-category {
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    padding:12px; border:1px dashed var(--border); border-radius:8px;
-    color:var(--text-muted); cursor:pointer; font-size:13px; transition:all .2s;
-  }
-  .add-category:hover { border-color:var(--purple); color:var(--purple-light); background:var(--purple-dim); }
+/* ── Bar chart ── */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bar-lbl{width:80px;font-size:11px;color:var(--muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple-l));border-radius:4px;transition:width .5s ease;}
+.bar-val{width:28px;font-size:11px;color:var(--muted);text-align:right;}
 
-  .ticket-preview {
-    background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:16px;
-  }
-  .embed-bar { width:3px; background:var(--purple); border-radius:2px; margin-right:12px; flex-shrink:0; }
-  .embed-content { flex:1; }
-  .embed-title { font-size:14px; font-weight:600; color:var(--purple-light); margin-bottom:6px; }
-  .embed-desc { font-size:12px; color:var(--text-muted); line-height:1.6; }
-  .embed-wrap { display:flex; background:var(--bg2); border-radius:6px; padding:12px; border-left:3px solid var(--purple); }
-  .ticket-buttons { display:flex; gap:8px; margin-top:10px; }
-  .ticket-btn { padding:8px 16px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; border:none; }
-  .ticket-btn-primary { background:var(--purple); color:#fff; }
-  .ticket-btn-secondary { background:var(--bg3); color:var(--text-muted); border:1px solid var(--border); }
-
-  /* ── Charts ── */
-  .chart-bar { display:flex; flex-direction:column; gap:6px; }
-  .bar-row { display:flex; align-items:center; gap:10px; }
-  .bar-label { width:70px; font-size:12px; color:var(--text-muted); text-align:right; }
-  .bar-track { flex:1; height:8px; background:var(--bg3); border-radius:4px; overflow:hidden; }
-  .bar-fill { height:100%; background:var(--purple); border-radius:4px; transition:width .6s ease; }
-  .bar-val { width:30px; font-size:12px; color:var(--text-muted); }
-
-  /* Online chart */
-  .online-chart { display:flex; align-items:flex-end; gap:4px; height:60px; }
-  .online-bar { flex:1; background:var(--purple-dim); border-radius:3px 3px 0 0; border:1px solid var(--border); transition:background .2s; cursor:pointer; }
-  .online-bar:hover { background:rgba(124,58,237,0.3); }
-
-  /* Notifications */
-  .toast {
-    position:fixed; bottom:24px; right:24px; background:var(--bg2);
-    border:1px solid var(--purple); border-radius:10px; padding:14px 18px;
-    display:flex; align-items:center; gap:10px; font-size:13px;
-    transform:translateY(80px); opacity:0; transition:all .3s; z-index:999;
-  }
-  .toast.show { transform:translateY(0); opacity:1; }
-  .toast-icon { font-size:16px; }
-
-  /* Responsive */
-  @media(max-width:1200px) { .stats-grid { grid-template-columns:repeat(2,1fr); } }
-  @media(max-width:900px) { .grid-2,.mod-grid,.ticket-config { grid-template-columns:1fr; } }
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--border-h);}
 </style>
 </head>
 <body>
 
 <!-- Sidebar -->
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-icon">O</div>
-    <div>
-      <div class="logo-text">Orbis</div>
-      <div class="logo-badge">Dashboard</div>
-    </div>
+  <div class="sb-logo">
+    <div class="sb-logo-icon">O</div>
+    <div class="sb-logo-text">Orbis</div>
+  </div>
+  <div class="sb-server">
+    <div class="sb-server-icon"><img id="sbGuildIcon" src="" alt=""></div>
+    <div class="sb-server-name" id="sbGuildName">Chargement...</div>
   </div>
 
-  <div class="server-select" onclick="showServerModal()">
-    <div class="server-avatar">N</div>
-    <div class="server-name">Naoxy Comm</div>
-    <div class="server-arrow">▼</div>
-  </div>
+  <div class="sb-section">Général</div>
+  <div class="sb-item active" data-page="overview"><span class="sb-icon">📊</span>Vue d'ensemble</div>
+  <div class="sb-item" data-page="members"><span class="sb-icon">👥</span>Membres<span class="sb-badge" id="badgeMembers">—</span></div>
+  <div class="sb-item" data-page="bans"><span class="sb-icon">🚫</span>Bannis</div>
 
-  <div class="nav-section">Général</div>
-  <div class="nav-item active" onclick="showPage('overview')">
-    <span class="nav-icon">📊</span> Vue d'ensemble
-  </div>
-  <div class="nav-item" onclick="showPage('members')">
-    <span class="nav-icon">👥</span> Membres
-    <span class="nav-badge">71</span>
-  </div>
+  <div class="sb-section">Configuration</div>
+  <div class="sb-item" data-page="settings"><span class="sb-icon">⚙️</span>Paramètres</div>
+  <div class="sb-item" data-page="moderation"><span class="sb-icon">🛡️</span>Modération</div>
+  <div class="sb-item" data-page="automod"><span class="sb-icon">🤖</span>AutoMod</div>
+  <div class="sb-item" data-page="tickets"><span class="sb-icon">🎫</span>Tickets<span class="sb-badge" id="badgeTickets">—</span></div>
+  <div class="sb-item" data-page="roles"><span class="sb-icon">🎭</span>Rôles</div>
+  <div class="sb-item" data-page="autoroles"><span class="sb-icon">🔄</span>Autoroles</div>
+  <div class="sb-item" data-page="welcome"><span class="sb-icon">👋</span>Bienvenue</div>
+  <div class="sb-item" data-page="logs"><span class="sb-icon">📋</span>Logs</div>
+  <div class="sb-item" data-page="commands"><span class="sb-icon">💬</span>Commandes</div>
 
-  <div class="nav-section">Configuration</div>
-  <div class="nav-item" onclick="showPage('moderation')">
-    <span class="nav-icon">🛡️</span> Modération
-  </div>
-  <div class="nav-item" onclick="showPage('tickets')">
-    <span class="nav-icon">🎫</span> Tickets
-  </div>
-  <div class="nav-item" onclick="showPage('roles')">
-    <span class="nav-icon">🎭</span> Rôles
-  </div>
-  <div class="nav-item" onclick="showPage('welcome')">
-    <span class="nav-icon">👋</span> Bienvenue
-  </div>
-  <div class="nav-item" onclick="showPage('logs')">
-    <span class="nav-icon">📋</span> Logs
-  </div>
+  <div class="sb-section">Modules</div>
+  <div class="sb-item" data-page="economy"><span class="sb-icon">💰</span>Économie</div>
+  <div class="sb-item" data-page="levels"><span class="sb-icon">📈</span>Niveaux</div>
+  <div class="sb-item" data-page="shop"><span class="sb-icon">🛍️</span>Boutique</div>
+  <div class="sb-item" data-page="broadcast"><span class="sb-icon">📢</span>Broadcast</div>
 
-  <div class="nav-section">Modules</div>
-  <div class="nav-item" onclick="showPage('economy')">
-    <span class="nav-icon">💰</span> Économie
-  </div>
-  <div class="nav-item" onclick="showPage('levels')">
-    <span class="nav-icon">📈</span> Niveaux
-  </div>
-
-  <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="user-avatar">N</div>
-      <div class="user-info">
-        <div class="user-name">Naoxy</div>
-        <div class="user-role">Administrateur</div>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-user-av"><img id="sbUserAv" src="" alt=""></div>
+      <div class="sb-user-info">
+        <div class="sb-user-name" id="sbUserName">—</div>
+        <div class="sb-user-role">Administrateur</div>
       </div>
-      <button class="action-btn danger" onclick="logout()" style="padding:4px 8px;">⏻</button>
+      <button class="btn btn-ghost btn-sm" onclick="location.href='/auth/logout'" title="Déconnexion">⏻</button>
     </div>
   </div>
 </aside>
@@ -328,523 +230,1109 @@
   <div class="topbar">
     <div>
       <div class="page-title" id="pageTitle">Vue d'ensemble</div>
-      <div class="page-sub" id="pageSub">Naoxy Comm — Statistiques générales</div>
+      <div class="page-sub" id="pageSub">Chargement...</div>
     </div>
     <div class="topbar-actions">
-      <button class="btn btn-ghost" onclick="refreshData()">↻ Actualiser</button>
-      <button class="btn btn-primary" onclick="saveChanges()">Sauvegarder</button>
+      <button class="btn btn-ghost" onclick="refreshPage()">↻ Actualiser</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ═══ PAGE OVERVIEW ═══ -->
+    <!-- ════ OVERVIEW ════ -->
     <div class="page active" id="page-overview">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">👥</div>
-          <div class="stat-value">71</div>
-          <div class="stat-label">Membres total</div>
-          <div class="stat-change up">▲ +3 cette semaine</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🟢</div>
-          <div class="stat-value">24</div>
-          <div class="stat-label">En ligne maintenant</div>
-          <div class="stat-change up">▲ +5 vs hier</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🎫</div>
-          <div class="stat-value">8</div>
-          <div class="stat-label">Tickets ouverts</div>
-          <div class="stat-change down">▼ 2 en attente</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🛡️</div>
-          <div class="stat-value">12</div>
-          <div class="stat-label">Sanctions ce mois</div>
-          <div class="stat-change up">▲ -4 vs mois dernier</div>
-        </div>
+      <div class="grid-4 mb">
+        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-val" id="st-members">—</div><div class="stat-label">Membres total</div></div>
+        <div class="stat-card"><div class="stat-icon">🟢</div><div class="stat-val" id="st-online">—</div><div class="stat-label">En ligne</div></div>
+        <div class="stat-card"><div class="stat-icon">#</div><div class="stat-val" id="st-channels">—</div><div class="stat-label">Salons</div></div>
+        <div class="stat-card"><div class="stat-icon">🎭</div><div class="stat-val" id="st-roles">—</div><div class="stat-label">Rôles</div></div>
       </div>
-
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-title">📊 Activité des membres <span>7 derniers jours</span></div>
-          <div class="online-chart" id="activityChart"></div>
-          <div style="display:flex;justify-content:space-between;margin-top:6px;">
-            <span style="font-size:10px;color:var(--text-dim)">Lun</span>
-            <span style="font-size:10px;color:var(--text-dim)">Mar</span>
-            <span style="font-size:10px;color:var(--text-dim)">Mer</span>
-            <span style="font-size:10px;color:var(--text-dim)">Jeu</span>
-            <span style="font-size:10px;color:var(--text-dim)">Ven</span>
-            <span style="font-size:10px;color:var(--text-dim)">Sam</span>
-            <span style="font-size:10px;color:var(--text-dim)">Dim</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">🎭 Rôles populaires</div>
-          <div class="chart-bar">
-            <div class="bar-row"><div class="bar-label">Membres</div><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><div class="bar-val">60</div></div>
-            <div class="bar-row"><div class="bar-label">PRESTIGE</div><div class="bar-track"><div class="bar-fill" style="width:15%"></div></div><div class="bar-val">11</div></div>
-            <div class="bar-row"><div class="bar-label">Ami(e)</div><div class="bar-track"><div class="bar-fill" style="width:14%"></div></div><div class="bar-val">10</div></div>
-            <div class="bar-row"><div class="bar-label">Légende</div><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><div class="bar-val">4</div></div>
-            <div class="bar-row"><div class="bar-label">VIP</div><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><div class="bar-val">4</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">⚡ Activité récente <span>En temps réel</span></div>
-        <div class="activity-list">
-          <div class="activity-item"><div class="activity-dot join"></div><div class="activity-text"><strong>Alexis</strong> a rejoint le serveur</div><div class="activity-time">il y a 2 min</div></div>
-          <div class="activity-item"><div class="activity-dot msg"></div><div class="activity-text"><strong>Naoxy</strong> a envoyé un message dans #général</div><div class="activity-time">il y a 5 min</div></div>
-          <div class="activity-item"><div class="activity-dot mod"></div><div class="activity-text"><strong>ModBot</strong> a warn <strong>Thomas</strong> — spam</div><div class="activity-time">il y a 12 min</div></div>
-          <div class="activity-item"><div class="activity-dot leave"></div><div class="activity-text"><strong>User#1234</strong> a quitté le serveur</div><div class="activity-time">il y a 18 min</div></div>
-          <div class="activity-item"><div class="activity-dot join"></div><div class="activity-text"><strong>Clara</strong> a rejoint le serveur</div><div class="activity-time">il y a 24 min</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PAGE MEMBERS ═══ -->
-    <div class="page" id="page-members">
-      <div class="search-bar">
-        <input class="input" type="text" placeholder="🔍 Rechercher un membre..." oninput="filterMembers(this.value)">
-        <select class="input" style="width:180px;">
-          <option>Tous les rôles</option>
-          <option>Administrateur</option>
-          <option>Modérateur</option>
-          <option>Membres</option>
-          <option>VIP</option>
-        </select>
-        <button class="btn btn-primary">Filtrer</button>
-      </div>
-      <div class="card">
-        <table class="table" id="membersTable">
-          <thead>
-            <tr>
-              <th>Membre</th>
-              <th>Rôle principal</th>
-              <th>Statut</th>
-              <th>Rejoint le</th>
-              <th>Messages</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="membersBody">
-            <tr><td><div class="member-cell"><div class="member-avatar">N</div><div><div>Naoxy</div><div style="font-size:11px;color:var(--text-muted)">#0001</div></div></div></td><td><span class="role-badge role-admin">Admin</span></td><td><span class="status-dot status-online"></span>En ligne</td><td>12 Jan 2024</td><td>1,842</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
-            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#6d28d9">A</div><div><div>Alexis</div><div style="font-size:11px;color:var(--text-muted)">#4521</div></div></div></td><td><span class="role-badge role-mod">Modérateur</span></td><td><span class="status-dot status-online"></span>En ligne</td><td>3 Mars 2024</td><td>542</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
-            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#4c1d95">C</div><div><div>Clara</div><div style="font-size:11px;color:var(--text-muted)">#8832</div></div></div></td><td><span class="role-badge role-member">Membres</span></td><td><span class="status-dot status-offline"></span>Hors ligne</td><td>15 Avr 2024</td><td>128</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
-            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#5b21b6">T</div><div><div>Thomas</div><div style="font-size:11px;color:var(--text-muted)">#2210</div></div></div></td><td><span class="role-badge role-member">Membres</span></td><td><span class="status-dot status-offline"></span>Hors ligne</td><td>22 Fév 2024</td><td>87</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
-            <tr><td><div class="member-cell"><div class="member-avatar" style="background:#7c3aed">L</div><div><div>Lucas</div><div style="font-size:11px;color:var(--text-muted)">#5509</div></div></div></td><td><span class="role-badge role-member">VIP</span></td><td><span class="status-dot status-online"></span>En ligne</td><td>8 Jan 2024</td><td>412</td><td><button class="action-btn">Voir</button> <button class="action-btn danger">Ban</button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ═══ PAGE MODERATION ═══ -->
-    <div class="page" id="page-moderation">
-      <div class="mod-grid">
-        <div class="card">
-          <div class="card-title">⚙️ Protection automatique</div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Anti-spam</div><div class="toggle-sub">Limite les messages répétitifs</div></div>
-            <label class="toggle"><input type="checkbox" checked onchange="saveToggle(this,'anti-spam')"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Anti-raid</div><div class="toggle-sub">Protection contre les raids</div></div>
-            <label class="toggle"><input type="checkbox" checked onchange="saveToggle(this,'anti-raid')"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Anti-liens</div><div class="toggle-sub">Supprime les liens non autorisés</div></div>
-            <label class="toggle"><input type="checkbox" onchange="saveToggle(this,'anti-liens')"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Anti-majuscules</div><div class="toggle-sub">Limite les messages en caps</div></div>
-            <label class="toggle"><input type="checkbox" onchange="saveToggle(this,'anti-caps')"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Logs de modération</div><div class="toggle-sub">Enregistre toutes les actions</div></div>
-            <label class="toggle"><input type="checkbox" checked onchange="saveToggle(this,'logs-mod')"><span class="toggle-slider"></span></label>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">📋 Configuration</div>
-          <div class="form-group">
-            <label class="form-label">Salon des logs de modération</label>
-            <select class="input">
-              <option>🔒 mod-logs</option>
-              <option>📋 audit-logs</option>
-              <option>⚠️ warnings</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Seuil anti-spam (messages/10s)</label>
-            <input class="input" type="number" value="5" min="1" max="20">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Rôle muet</label>
-            <select class="input">
-              <option>🔇 Muted</option>
-              <option>⛔ Banned</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Action anti-spam</label>
-            <select class="input">
-              <option>Warn</option>
-              <option>Mute (5 min)</option>
-              <option>Kick</option>
-              <option>Ban temporaire</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">⚖️ Dernières sanctions</div>
-        <div class="sanction-list">
-          <div class="sanction-item"><span class="sanction-type s-warn">WARN</span><div class="sanction-info"><div class="sanction-user">Thomas#2210</div><div class="sanction-reason">Spam dans #général</div></div><div class="sanction-date">Aujourd'hui 14:32</div><button class="action-btn danger">Retirer</button></div>
-          <div class="sanction-item"><span class="sanction-type s-mute">MUTE</span><div class="sanction-info"><div class="sanction-user">User#9981</div><div class="sanction-reason">Liens non autorisés</div></div><div class="sanction-date">Hier 20:15</div><button class="action-btn danger">Retirer</button></div>
-          <div class="sanction-item"><span class="sanction-type s-kick">KICK</span><div class="sanction-info"><div class="sanction-user">Troll#0042</div><div class="sanction-reason">Comportement toxique</div></div><div class="sanction-date">22 Mai 2026</div><button class="action-btn">Voir</button></div>
-          <div class="sanction-item"><span class="sanction-type s-ban">BAN</span><div class="sanction-info"><div class="sanction-user">Raider#6661</div><div class="sanction-reason">Raid / flood</div></div><div class="sanction-date">20 Mai 2026</div><button class="action-btn">Voir</button></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PAGE TICKETS ═══ -->
-    <div class="page" id="page-tickets">
-      <div class="ticket-config">
-        <div>
-          <div class="card" style="margin-bottom:16px">
-            <div class="card-title">🎫 Message d'ouverture</div>
-            <div class="form-group">
-              <label class="form-label">Titre de l'embed</label>
-              <input class="input" type="text" id="ticketTitle" value="🎫 Support — Naoxy Comm" oninput="updatePreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Description</label>
-              <textarea class="input" id="ticketDesc" oninput="updatePreview()">Clique sur le bouton ci-dessous pour ouvrir un ticket. Notre équipe vous répondra dans les plus brefs délais.</textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Texte du bouton</label>
-              <input class="input" type="text" id="ticketBtn" value="📩 Ouvrir un ticket" oninput="updatePreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Salon où envoyer le message</label>
-              <select class="input">
-                <option>🎫 tickets</option>
-                <option>📋 support</option>
-                <option>💬 général</option>
-              </select>
-            </div>
-            <button class="btn btn-primary" onclick="sendTicketPanel()">📤 Envoyer le panneau</button>
-          </div>
-
-          <div class="card">
-            <div class="card-title">⚙️ Paramètres</div>
-            <div class="toggle-row">
-              <div><div class="toggle-label">Transcription auto</div><div class="toggle-sub">Sauvegarde les tickets fermés</div></div>
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div><div class="toggle-label">Ping du staff</div><div class="toggle-sub">Notifie le staff à l'ouverture</div></div>
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div><div class="toggle-label">Message de bienvenue</div><div class="toggle-sub">Message auto dans le ticket</div></div>
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-            <div class="form-group" style="margin-top:14px">
-              <label class="form-label">Catégorie Discord pour les tickets</label>
-              <select class="input">
-                <option>📁 TICKETS</option>
-                <option>📁 SUPPORT</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Rôle staff (accès aux tickets)</label>
-              <select class="input">
-                <option>🔧 Support</option>
-                <option>🛡️ Modérateur</option>
-                <option>⚙️ Administrateur</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="card" style="margin-bottom:16px">
-            <div class="card-title">👁️ Aperçu</div>
-            <div class="ticket-preview">
-              <div class="embed-wrap">
-                <div class="embed-bar"></div>
-                <div class="embed-content">
-                  <div class="embed-title" id="previewTitle">🎫 Support — Naoxy Comm</div>
-                  <div class="embed-desc" id="previewDesc">Clique sur le bouton ci-dessous pour ouvrir un ticket. Notre équipe vous répondra dans les plus brefs délais.</div>
-                </div>
-              </div>
-              <div class="ticket-buttons">
-                <button class="ticket-btn ticket-btn-primary" id="previewBtn">📩 Ouvrir un ticket</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">📂 Catégories de tickets</div>
-            <div class="category-list" id="categoryList">
-              <div class="category-item"><span class="category-icon">🛠️</span><div class="category-name">Support technique</div><div class="category-count">3 ouverts</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
-              <div class="category-item"><span class="category-icon">💰</span><div class="category-name">Commandes / Achats</div><div class="category-count">1 ouvert</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
-              <div class="category-item"><span class="category-icon">⚖️</span><div class="category-name">Signalement</div><div class="category-count">2 ouverts</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
-              <div class="category-item"><span class="category-icon">❓</span><div class="category-name">Question générale</div><div class="category-count">2 ouverts</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button></div>
-            </div>
-            <div class="add-category" style="margin-top:10px" onclick="addCategory()">
-              ＋ Ajouter une catégorie
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PAGE ROLES ═══ -->
-    <div class="page" id="page-roles">
       <div class="grid-2">
         <div class="card">
-          <div class="card-title">🎭 Autorole</div>
-          <div class="form-group">
-            <label class="form-label">Rôle donné à l'arrivée (humains)</label>
-            <select class="input">
-              <option>👤 Membres</option>
-              <option>Aucun</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Rôle donné à l'arrivée (bots)</label>
-            <select class="input">
-              <option>Aucun</option>
-              <option>🤖 Bots</option>
-            </select>
-          </div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Autorole actif</div></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
+          <div class="card-title">🏆 Top membres (XP)</div>
+          <div id="overview-levels"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
         </div>
         <div class="card">
-          <div class="card-title">🔇 Rôle muet</div>
-          <div class="form-group">
-            <label class="form-label">Rôle utilisé pour /mute</label>
-            <select class="input">
-              <option>🔇 Muted</option>
-              <option>Créer automatiquement</option>
-            </select>
-          </div>
-          <button class="btn btn-ghost" style="width:100%">⚙️ Configurer les permissions</button>
+          <div class="card-title">💰 Top économie</div>
+          <div id="overview-economy"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎫 Tickets récents <span class="ct-sub" id="tickets-count-label"></span></div>
+        <div id="overview-tickets"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+      </div>
+    </div>
+
+    <!-- ════ MEMBERS ════ -->
+    <div class="page" id="page-members">
+      <div class="search-bar">
+        <input class="input" type="text" placeholder="🔍 Rechercher..." id="memberSearch" oninput="filterMembers()">
+        <select class="input" style="width:160px" id="memberRoleFilter" onchange="filterMembers()"><option value="">Tous les rôles</option></select>
+        <select class="input" style="width:140px" id="memberStatusFilter" onchange="filterMembers()">
+          <option value="">Tous les statuts</option>
+          <option value="online">En ligne</option>
+          <option value="offline">Hors ligne</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Membre</th><th>Rôles</th><th>Statut</th><th>Rejoint le</th><th>Niv.</th><th>Solde</th><th>Actions</th></tr></thead>
+            <tbody id="members-tbody"><tr><td colspan="7"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PAGE WELCOME ═══ -->
+    <!-- ════ BANS ════ -->
+    <div class="page" id="page-bans">
+      <div class="card">
+        <div class="card-title">🚫 Membres bannis</div>
+        <div id="bans-list"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+      </div>
+    </div>
+
+    <!-- ════ SETTINGS ════ -->
+    <div class="page" id="page-settings">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚙️ Général</div>
+          <div class="form-group"><label class="form-label">Préfixe de commande</label><input class="input" id="s-prefix" type="text" maxlength="5"></div>
+          <div class="form-group"><label class="form-label">Salon des logs</label><select class="input" id="s-log_channel"></select></div>
+          <div class="form-group"><label class="form-label">Salon des suggestions</label><select class="input" id="s-suggestion_channel"></select></div>
+          <div class="form-group"><label class="form-label">Salon des reports</label><select class="input" id="s-report_channel"></select></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎭 Modules</div>
+          <div class="toggle-row"><div><div class="toggle-label">Système de niveaux</div></div><label class="toggle"><input type="checkbox" id="s-levels_enabled"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Économie</div></div><label class="toggle"><input type="checkbox" id="s-economy_enabled"><span class="toggle-slider"></span></label></div>
+          <div class="form-group" style="margin-top:14px"><label class="form-label">Rôle auto (arrivée)</label><select class="input" id="s-auto_role"></select></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Sauvegarder</button>
+    </div>
+
+    <!-- ════ MODERATION ════ -->
+    <div class="page" id="page-moderation">
+      <div class="card mb">
+        <div class="card-title">⚖️ Derniers avertissements</div>
+        <div class="search-bar"><input class="input" type="text" placeholder="🔍 Filtrer..." id="warnSearch" oninput="filterWarnings()"><button class="btn btn-primary" onclick="openWarnModal()">+ Ajouter un warn</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Utilisateur</th><th>Raison</th><th>Modérateur</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="warns-tbody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔨 Dernières sanctions</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Utilisateur</th><th>Raison</th><th>Date</th></tr></thead>
+            <tbody id="sanctions-tbody"><tr><td colspan="4"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ AUTOMOD ════ -->
+    <div class="page" id="page-automod">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🤖 Protection automatique</div>
+          <div class="toggle-row"><div><div class="toggle-label">AutoMod activé</div><div class="toggle-sub">Active toutes les protections</div></div><label class="toggle"><input type="checkbox" id="s-automod_enabled" onchange="autoSave('automod_enabled',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-spam</div><div class="toggle-sub">Limite les messages répétitifs</div></div><label class="toggle"><input type="checkbox" id="s-automod_anti_spam" onchange="autoSave('automod_anti_spam',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-liens</div><div class="toggle-sub">Supprime les liens non autorisés</div></div><label class="toggle"><input type="checkbox" id="s-automod_anti_link" onchange="autoSave('automod_anti_link',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🚫 Mots bannis</div>
+          <div class="form-group"><label class="form-label">Mots interdits (un par ligne)</label><textarea class="input" id="badwords-input" rows="6" placeholder="spam&#10;insulte&#10;..."></textarea></div>
+          <button class="btn btn-primary" onclick="saveBadwords()">💾 Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ TICKETS ════ -->
+    <div class="page" id="page-tickets">
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">⚙️ Configuration tickets</div>
+          <div class="form-group"><label class="form-label">Catégorie Discord</label><select class="input" id="s-ticket_category"></select></div>
+          <div class="form-group"><label class="form-label">Rôle support</label><select class="input" id="s-ticket_support_role"></select></div>
+          <button class="btn btn-primary" onclick="saveSettings()">💾 Sauvegarder</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Statistiques</div>
+          <div id="ticket-stats"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎫 Tickets ouverts <span class="ct-sub" id="open-tickets-count"></span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Utilisateur</th><th>Sujet</th><th>Salon</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="tickets-tbody"><tr><td colspan="6"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ROLES ════ -->
+    <div class="page" id="page-roles">
+      <div class="search-bar">
+        <input class="input" type="text" placeholder="🔍 Filtrer les rôles..." id="roleSearch" oninput="filterRoles()">
+        <button class="btn btn-primary" onclick="openCreateRoleModal()">+ Créer un rôle</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rôle</th><th>Couleur</th><th>Membres</th><th>Position</th><th>Actions</th></tr></thead>
+            <tbody id="roles-tbody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ AUTOROLES ════ -->
+    <div class="page" id="page-autoroles">
+      <div class="card mb">
+        <div class="card-title">🔄 Rôles automatiques</div>
+        <p style="color:var(--muted);font-size:12px;margin-bottom:14px">Ces rôles sont attribués automatiquement à l'arrivée d'un nouveau membre.</p>
+        <div id="autoroles-list"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+        <div style="display:flex;gap:8px;margin-top:14px;align-items:center;">
+          <select class="input" id="autorole-role-select" style="flex:1"></select>
+          <select class="input" style="width:120px" id="autorole-type-select">
+            <option value="all">Tous</option>
+            <option value="human">Humains</option>
+            <option value="bot">Bots</option>
+          </select>
+          <button class="btn btn-primary" onclick="addAutorole()">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ WELCOME ════ -->
     <div class="page" id="page-welcome">
       <div class="grid-2">
         <div class="card">
-          <div class="card-title">👋 Message de bienvenue</div>
-          <div class="form-group">
-            <label class="form-label">Salon</label>
-            <select class="input"><option>👋 bienvenue</option><option>💬 général</option></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Message (utilisez {user}, {server}, {count})</label>
-            <textarea class="input">Bienvenue {user} sur {server} ! Tu es notre {count}ème membre 🎉</textarea>
-          </div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Message de bienvenue actif</div></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
+          <div class="card-title">👋 Bienvenue</div>
+          <div class="form-group"><label class="form-label">Salon</label><select class="input" id="s-welcome_channel"></select></div>
+          <div class="form-group"><label class="form-label">Message <span style="color:var(--dim)">{user} {server} {count}</span></label><textarea class="input" id="s-welcome_message" rows="4"></textarea></div>
+          <button class="btn btn-primary" onclick="saveSettings()">💾 Sauvegarder</button>
         </div>
         <div class="card">
-          <div class="card-title">👋 Message d'au revoir</div>
-          <div class="form-group">
-            <label class="form-label">Salon</label>
-            <select class="input"><option>👋 bienvenue</option><option>💬 général</option></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Message</label>
-            <textarea class="input">{user} a quitté le serveur. On était {count} membres.</textarea>
-          </div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Message d'au revoir actif</div></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
+          <div class="card-title">👋 Au revoir</div>
+          <div class="form-group"><label class="form-label">Salon</label><select class="input" id="s-leave_channel"></select></div>
+          <div class="form-group"><label class="form-label">Message <span style="color:var(--dim)">{user} {count}</span></label><textarea class="input" id="s-leave_message" rows="4"></textarea></div>
+          <button class="btn btn-primary" onclick="saveSettings()">💾 Sauvegarder</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PAGE LOGS ═══ -->
+    <!-- ════ LOGS ════ -->
     <div class="page" id="page-logs">
       <div class="card">
-        <div class="card-title">📋 Configuration des logs</div>
-        <div class="mod-grid">
-          <div>
-            <div class="toggle-row"><div><div class="toggle-label">Logs des messages</div><div class="toggle-sub">Éditions et suppressions</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Logs des membres</div><div class="toggle-sub">Arrivées et départs</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Logs des rôles</div><div class="toggle-sub">Changements de rôles</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Logs vocaux</div><div class="toggle-sub">Connexions salons vocaux</div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
-          </div>
-          <div>
-            <div class="form-group">
-              <label class="form-label">Salon pour les logs messages</label>
-              <select class="input"><option>📋 message-logs</option><option>📋 audit-logs</option></select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Salon pour les logs membres</label>
-              <select class="input"><option>👥 member-logs</option><option>📋 audit-logs</option></select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Salon pour les logs modération</label>
-              <select class="input"><option>🛡️ mod-logs</option><option>📋 audit-logs</option></select>
-            </div>
-          </div>
+        <div class="card-title">📋 Salon de logs</div>
+        <div class="form-group"><label class="form-label">Salon de logs principal</label><select class="input" id="logs-log_channel"></select></div>
+        <button class="btn btn-primary" onclick="saveLogChannel()">💾 Sauvegarder</button>
+      </div>
+    </div>
+
+    <!-- ════ COMMANDS ════ -->
+    <div class="page" id="page-commands">
+      <div class="card mb">
+        <div class="card-title">💬 Commandes personnalisées</div>
+        <div class="search-bar">
+          <input class="input" type="text" placeholder="🔍 Filtrer..." id="cmdSearch" oninput="filterCommands()">
+          <button class="btn btn-primary" onclick="openCreateCmdModal()">+ Créer</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nom</th><th>Réponse</th><th>Créé par</th><th>Actions</th></tr></thead>
+            <tbody id="commands-tbody"><tr><td colspan="4"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PAGE ECONOMY ═══ -->
+    <!-- ════ ECONOMY ════ -->
     <div class="page" id="page-economy">
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">💰 Configuration</div>
-          <div class="form-group"><label class="form-label">Nom de la monnaie</label><input class="input" value="Orbis Coins"></div>
-          <div class="form-group"><label class="form-label">Symbole</label><input class="input" value="🪙"></div>
-          <div class="form-group"><label class="form-label">Récompense /daily</label><input class="input" type="number" value="100"></div>
-          <div class="form-group"><label class="form-label">Récompense par message</label><input class="input" type="number" value="5"></div>
-        </div>
-        <div class="card">
-          <div class="card-title">🏆 Top 5 richesse</div>
-          <div class="activity-list">
-            <div class="activity-item"><div class="activity-dot" style="background:#fbbf24"></div><div class="activity-text"><strong>Naoxy</strong></div><div class="activity-time">12,450 🪙</div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:#9ca3af"></div><div class="activity-text"><strong>Lucas</strong></div><div class="activity-time">8,200 🪙</div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:#b45309"></div><div class="activity-text"><strong>Alexis</strong></div><div class="activity-time">5,100 🪙</div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--purple)"></div><div class="activity-text"><strong>Clara</strong></div><div class="activity-time">3,800 🪙</div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--purple)"></div><div class="activity-text"><strong>Thomas</strong></div><div class="activity-time">2,200 🪙</div></div>
-          </div>
+      <div class="card mb">
+        <div class="card-title">💰 Classement économie <span class="ct-sub">Top 20</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Utilisateur</th><th>Portefeuille</th><th>Banque</th><th>Total</th></tr></thead>
+            <tbody id="economy-tbody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PAGE LEVELS ═══ -->
+    <!-- ════ LEVELS ════ -->
     <div class="page" id="page-levels">
-      <div class="grid-2">
+      <div class="grid-2 mb">
         <div class="card">
-          <div class="card-title">📈 Configuration XP</div>
-          <div class="form-group"><label class="form-label">XP par message</label><input class="input" type="number" value="15"></div>
-          <div class="form-group"><label class="form-label">Cooldown entre XP (secondes)</label><input class="input" type="number" value="60"></div>
-          <div class="form-group"><label class="form-label">Salon d'annonce de niveau</label><select class="input"><option>📈 niveaux</option><option>💬 général</option></select></div>
-          <div class="toggle-row"><div><div class="toggle-label">Annonce de montée de niveau</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="card-title">⚙️ Configuration XP</div>
+          <div class="form-group"><label class="form-label">Salon d'annonce de niveau</label><select class="input" id="s-levels_channel"></select></div>
+          <div class="form-group"><label class="form-label">Message de level up <span style="color:var(--dim)">{user} {level}</span></label><input class="input" id="s-levels_message" type="text"></div>
+          <button class="btn btn-primary" onclick="saveSettings()">💾 Sauvegarder</button>
         </div>
         <div class="card">
-          <div class="card-title">🏆 Top niveaux</div>
-          <div class="activity-list">
-            <div class="activity-item"><div class="activity-dot" style="background:#fbbf24"></div><div class="activity-text"><strong>Naoxy</strong> — Niveau 42</div><div class="activity-time">18,420 XP</div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:#9ca3af"></div><div class="activity-text"><strong>Lucas</strong> — Niveau 28</div><div class="activity-time">11,200 XP</div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:#b45309"></div><div class="activity-text"><strong>Alexis</strong> — Niveau 21</div><div class="activity-time">8,400 XP</div></div>
-          </div>
+          <div class="card-title">📊 Classement XP <span class="ct-sub">Top 20</span></div>
+          <div id="levels-bars"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🏆 Tableau complet</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Utilisateur</th><th>Niveau</th><th>XP total</th><th>Messages</th></tr></thead>
+            <tbody id="levels-tbody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-  </div>
+    <!-- ════ SHOP ════ -->
+    <div class="page" id="page-shop">
+      <div class="search-bar">
+        <input class="input" type="text" placeholder="🔍 Filtrer..." id="shopSearch" oninput="filterShop()">
+        <button class="btn btn-primary" onclick="openAddShopModal()">+ Ajouter un article</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Article</th><th>Description</th><th>Prix</th><th>Rôle</th><th>Actions</th></tr></thead>
+            <tbody id="shop-tbody"><tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ BROADCAST ════ -->
+    <div class="page" id="page-broadcast">
+      <div class="card" style="max-width:600px">
+        <div class="card-title">📢 Envoyer un message</div>
+        <div class="form-group"><label class="form-label">Salon</label><select class="input" id="broadcast-channel"></select></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="input" id="broadcast-type"><option value="text">Message simple</option><option value="embed">Embed</option></select></div>
+        <div id="broadcast-embed-fields" style="display:none"><div class="form-group"><label class="form-label">Titre de l'embed</label><input class="input" id="broadcast-title" type="text"></div></div>
+        <div class="form-group"><label class="form-label">Message</label><textarea class="input" id="broadcast-content" rows="5" placeholder="Tape ton message ici..."></textarea></div>
+        <button class="btn btn-primary" onclick="sendBroadcast()">📤 Envoyer</button>
+      </div>
+    </div>
+
+  </div><!-- /content -->
 </main>
 
 <!-- Toast -->
-<div class="toast" id="toast">
-  <span class="toast-icon">✅</span>
-  <span id="toastMsg">Sauvegardé avec succès</span>
+<div class="toast" id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+<!-- Modal: Action membre -->
+<div class="modal-overlay" id="modal-member">
+  <div class="modal">
+    <div class="modal-title"><span id="modal-member-title">Action</span><button class="modal-close" onclick="closeModal('modal-member')">✕</button></div>
+    <div class="form-group"><label class="form-label">Raison</label><input class="input" id="modal-member-reason" type="text" placeholder="Raison..."></div>
+    <div id="modal-member-extra"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-member')">Annuler</button><button class="btn btn-danger" id="modal-member-confirm">Confirmer</button></div>
+  </div>
+</div>
+
+<!-- Modal: Warn -->
+<div class="modal-overlay" id="modal-warn">
+  <div class="modal">
+    <div class="modal-title">⚠️ Ajouter un avertissement<button class="modal-close" onclick="closeModal('modal-warn')">✕</button></div>
+    <div class="form-group"><label class="form-label">ID ou nom du membre</label><select class="input" id="warn-user-select"></select></div>
+    <div class="form-group"><label class="form-label">Raison</label><input class="input" id="warn-reason" type="text" placeholder="Raison de l'avertissement..."></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-warn')">Annuler</button><button class="btn btn-primary" onclick="submitWarn()">Ajouter</button></div>
+  </div>
+</div>
+
+<!-- Modal: Create role -->
+<div class="modal-overlay" id="modal-role">
+  <div class="modal">
+    <div class="modal-title">🎭 Créer un rôle<button class="modal-close" onclick="closeModal('modal-role')">✕</button></div>
+    <div class="form-group"><label class="form-label">Nom</label><input class="input" id="role-name" type="text" placeholder="Nom du rôle"></div>
+    <div class="form-group"><label class="form-label">Couleur</label><input class="input" id="role-color" type="color" value="#7c3aed" style="height:38px;padding:2px 6px;cursor:pointer;"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-role')">Annuler</button><button class="btn btn-primary" onclick="createRole()">Créer</button></div>
+  </div>
+</div>
+
+<!-- Modal: Create command -->
+<div class="modal-overlay" id="modal-cmd">
+  <div class="modal">
+    <div class="modal-title">💬 Nouvelle commande<button class="modal-close" onclick="closeModal('modal-cmd')">✕</button></div>
+    <div class="form-group"><label class="form-label">Nom (sans préfixe)</label><input class="input" id="cmd-name" type="text" placeholder="ex: règles"></div>
+    <div class="form-group"><label class="form-label">Réponse</label><textarea class="input" id="cmd-response" rows="4" placeholder="Contenu de la réponse..."></textarea></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-cmd')">Annuler</button><button class="btn btn-primary" onclick="createCmd()">Créer</button></div>
+  </div>
+</div>
+
+<!-- Modal: Add shop item -->
+<div class="modal-overlay" id="modal-shop">
+  <div class="modal">
+    <div class="modal-title">🛍️ Ajouter un article<button class="modal-close" onclick="closeModal('modal-shop')">✕</button></div>
+    <div class="form-group"><label class="form-label">Nom</label><input class="input" id="shop-name" type="text"></div>
+    <div class="form-group"><label class="form-label">Description</label><input class="input" id="shop-desc" type="text"></div>
+    <div class="form-group"><label class="form-label">Prix (coins)</label><input class="input" id="shop-price" type="number" min="1"></div>
+    <div class="form-group"><label class="form-label">Emoji</label><input class="input" id="shop-emoji" type="text" value="🛍️" maxlength="4"></div>
+    <div class="form-group"><label class="form-label">Rôle attribué (optionnel)</label><select class="input" id="shop-role"><option value="">Aucun</option></select></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-shop')">Annuler</button><button class="btn btn-primary" onclick="addShopItem()">Ajouter</button></div>
+  </div>
 </div>
 
 <script>
-const pages = {
-  overview: { title: 'Vue d\'ensemble', sub: 'Naoxy Comm — Statistiques générales' },
-  members: { title: 'Gestion des membres', sub: 'Naoxy Comm — 71 membres' },
-  moderation: { title: 'Modération', sub: 'Configuration de la protection automatique' },
-  tickets: { title: 'Système de tickets', sub: 'Configuration du support' },
-  roles: { title: 'Gestion des rôles', sub: 'Autoroles et rôles réaction' },
-  welcome: { title: 'Messages de bienvenue', sub: 'Personnaliser l\'accueil des membres' },
-  logs: { title: 'Logs', sub: 'Configuration des journaux d\'événements' },
-  economy: { title: 'Économie', sub: 'Configuration de la monnaie virtuelle' },
-  levels: { title: 'Système de niveaux', sub: 'Configuration XP et récompenses' },
-};
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+const GUILD_ID = location.pathname.split('/')[2];
+let state = { guild: null, members: [], roles: [], channels: [], settings: {}, warns: [], sanctions: [], tickets: [], levels: [], economy: [], commands: [], shop: [], bans: [], autoroles: [] };
+let currentPage = 'overview';
 
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  const nav = [...document.querySelectorAll('.nav-item')].find(n => n.getAttribute('onclick')?.includes(id));
-  if (nav) nav.classList.add('active');
-  document.getElementById('pageTitle').textContent = pages[id]?.title || id;
-  document.getElementById('pageSub').textContent = pages[id]?.sub || '';
-}
-
-function showToast(msg, icon = '✅') {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  t.querySelector('.toast-icon').textContent = icon;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function saveChanges() { showToast('Configuration sauvegardée !'); }
-function refreshData() { loadRealData(); } const GUILD_ID = "1499908548585459792"; async function loadRealData() { try { const res = await fetch("/api/guild/" + GUILD_ID); const g = await res.json(); if (!g.error) { document.querySelectorAll(".stat-value")[0].textContent = g.memberCount; document.querySelectorAll(".stat-value")[1].textContent = g.onlineCount; document.querySelectorAll(".stat-value")[2].textContent = g.channelCount; document.querySelectorAll(".stat-value")[3].textContent = g.roleCount; } } catch(e) {} } loadRealData();
-function saveToggle(el, name) { showToast((el.checked ? '✅ ' : '❌ ') + name + ' ' + (el.checked ? 'activé' : 'désactivé'), el.checked ? '✅' : '❌'); }
-function logout() { showToast('Déconnexion...', '👋'); }
-function showServerModal() { showToast('Sélection du serveur bientôt disponible', '🔧'); }
-
-function sendTicketPanel() {
-  showToast('Panneau de tickets envoyé !', '📤');
-}
-
-function updatePreview() {
-  document.getElementById('previewTitle').textContent = document.getElementById('ticketTitle').value;
-  document.getElementById('previewDesc').textContent = document.getElementById('ticketDesc').value;
-  document.getElementById('previewBtn').textContent = document.getElementById('ticketBtn').value;
-}
-
-function removeCategory(btn) {
-  btn.closest('.category-item').remove();
-  showToast('Catégorie supprimée', '🗑️');
-}
-
-function addCategory() {
-  const name = prompt('Nom de la catégorie :');
-  if (!name) return;
-  const emoji = prompt('Emoji (ex: 🎮) :') || '📁';
-  const list = document.getElementById('categoryList');
-  const div = document.createElement('div');
-  div.className = 'category-item';
-  div.innerHTML = `<span class="category-icon">${emoji}</span><div class="category-name">${name}</div><div class="category-count">0 ouvert</div><button class="action-btn danger" onclick="removeCategory(this)">✕</button>`;
-  list.appendChild(div);
-  showToast('Catégorie ajoutée !', '✅');
-}
-
-function filterMembers(query) {
-  const rows = document.querySelectorAll('#membersBody tr');
-  rows.forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+async function init() {
+  await Promise.all([loadGuild(), loadChannels(), loadRoles()]);
+  loadPage('overview');
+  setupNav();
+  document.getElementById('broadcast-type').addEventListener('change', e => {
+    document.getElementById('broadcast-embed-fields').style.display = e.target.value === 'embed' ? 'block' : 'none';
   });
 }
 
-// Build activity chart
-const chart = document.getElementById('activityChart');
-const vals = [18, 24, 15, 30, 22, 35, 28];
-const max = Math.max(...vals);
-vals.forEach(v => {
-  const bar = document.createElement('div');
-  bar.className = 'online-bar';
-  bar.style.height = (v / max * 100) + '%';
-  bar.title = v + ' membres actifs';
-  chart.appendChild(bar);
-});
+function setupNav() {
+  document.querySelectorAll('.sb-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = el.dataset.page;
+      if (p) loadPage(p);
+    });
+  });
+}
+
+async function loadPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page)?.classList.add('active');
+  document.querySelector(`.sb-item[data-page="${page}"]`)?.classList.add('active');
+  currentPage = page;
+  const titles = {
+    overview:'Vue d\'ensemble', members:'Membres', bans:'Bannis', settings:'Paramètres',
+    moderation:'Modération', automod:'AutoMod', tickets:'Tickets', roles:'Rôles',
+    autoroles:'Autoroles', welcome:'Bienvenue / Au revoir', logs:'Logs',
+    commands:'Commandes personnalisées', economy:'Économie', levels:'Niveaux',
+    shop:'Boutique', broadcast:'Broadcast'
+  };
+  document.getElementById('pageTitle').textContent = titles[page] || page;
+  if (state.guild) document.getElementById('pageSub').textContent = state.guild.name;
+  const loaders = {
+    overview: loadOverview, members: loadMembers, bans: loadBans,
+    settings: loadSettingsPage, moderation: loadModeration, automod: loadAutomod,
+    tickets: loadTickets, roles: loadRoles2, autoroles: loadAutoroles,
+    welcome: loadWelcome, logs: loadLogsPage, commands: loadCommands,
+    economy: loadEconomy, levels: loadLevels, shop: loadShop,
+    broadcast: loadBroadcastChannels
+  };
+  if (loaders[page]) await loaders[page]();
+}
+
+function refreshPage() { loadPage(currentPage); }
+
+// ══════════════════════════════════════════════
+//  API HELPERS
+// ══════════════════════════════════════════════
+async function api(path, opts = {}) {
+  const res = await fetch(`/api/guild/${GUILD_ID}${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts
+  });
+  return res.json();
+}
+
+async function apiPatch(path, body) { return api(path, { method: 'PATCH', body: JSON.stringify(body) }); }
+async function apiPost(path, body) { return api(path, { method: 'POST', body: JSON.stringify(body) }); }
+async function apiDelete(path) { return api(path, { method: 'DELETE' }); }
+
+// ══════════════════════════════════════════════
+//  GUILD
+// ══════════════════════════════════════════════
+async function loadGuild() {
+  const g = await api('');
+  state.guild = g;
+  document.getElementById('sbGuildName').textContent = g.name;
+  if (g.icon) document.getElementById('sbGuildIcon').src = g.icon;
+  document.getElementById('st-members').textContent = g.memberCount;
+  document.getElementById('st-online').textContent = g.onlineCount;
+  document.getElementById('st-channels').textContent = g.channelCount;
+  document.getElementById('st-roles').textContent = g.roleCount;
+  document.getElementById('badgeMembers').textContent = g.memberCount;
+  document.getElementById('pageSub').textContent = g.name;
+  state.settings = g.settings || {};
+}
+
+async function loadChannels() {
+  state.channels = await api('/channels');
+}
+
+async function loadRoles() {
+  state.roles = await api('/roles');
+}
+
+// ══════════════════════════════════════════════
+//  OVERVIEW
+// ══════════════════════════════════════════════
+async function loadOverview() {
+  const [lvls, eco, tix] = await Promise.all([api('/levels'), api('/economy'), api('/tickets')]);
+  state.levels = lvls; state.economy = eco; state.tickets = tix;
+
+  // Levels top 5
+  const lEl = document.getElementById('overview-levels');
+  if (!lvls.length) { lEl.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Aucune donnée</div></div>'; }
+  else {
+    const max = lvls[0]?.xp || 1;
+    lEl.innerHTML = lvls.slice(0,5).map((r,i) => `
+      <div class="bar-row">
+        <div class="bar-lbl">${['🥇','🥈','🥉','4.','5.'][i]} Lv.${r.level}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(r.xp/max*100)}%"></div></div>
+        <div class="bar-val">${r.xp}</div>
+      </div>`).join('');
+  }
+
+  // Economy top 5
+  const eEl = document.getElementById('overview-economy');
+  if (!eco.length) { eEl.innerHTML = '<div class="empty"><div class="empty-icon">💰</div><div class="empty-text">Aucune donnée</div></div>'; }
+  else {
+    const maxE = (eco[0]?.balance||0)+(eco[0]?.bank||0) || 1;
+    eEl.innerHTML = eco.slice(0,5).map((r,i) => {
+      const total = (r.balance||0)+(r.bank||0);
+      return `<div class="bar-row"><div class="bar-lbl">${['🥇','🥈','🥉','4.','5.'][i]} ${total}🪙</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(total/maxE*100)}%"></div></div><div class="bar-val">${r.balance}</div></div>`;
+    }).join('');
+  }
+
+  // Tickets
+  const tEl = document.getElementById('overview-tickets');
+  const open = tix.filter(t => t.status === 'open');
+  document.getElementById('tickets-count-label').textContent = `${open.length} ouvert(s)`;
+  document.getElementById('badgeTickets').textContent = open.length;
+  if (!open.length) { tEl.innerHTML = '<div class="empty"><div class="empty-icon">🎫</div><div class="empty-text">Aucun ticket ouvert</div></div>'; }
+  else tEl.innerHTML = open.slice(0,5).map(t => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:var(--green)"></div>
+      <div class="activity-text">#${t.id} — ${t.subject || 'Sans sujet'}</div>
+      <div class="activity-time">${fmtDate(t.created_at)}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  MEMBERS
+// ══════════════════════════════════════════════
+async function loadMembers() {
+  document.getElementById('members-tbody').innerHTML = '<tr><td colspan="7"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr>';
+  state.members = await api('/members');
+  // Populate role filter
+  const rf = document.getElementById('memberRoleFilter');
+  rf.innerHTML = '<option value="">Tous les rôles</option>';
+  state.roles.forEach(r => rf.innerHTML += `<option value="${r.id}">${r.name}</option>`);
+  // Populate warn modal
+  const ws = document.getElementById('warn-user-select');
+  ws.innerHTML = state.members.filter(m=>!m.bot).map(m=>`<option value="${m.id}">${m.displayName} (${m.username})</option>`).join('');
+  renderMembers(state.members);
+}
+
+function filterMembers() {
+  const q = document.getElementById('memberSearch').value.toLowerCase();
+  const role = document.getElementById('memberRoleFilter').value;
+  const status = document.getElementById('memberStatusFilter').value;
+  const filtered = state.members.filter(m => {
+    const matchQ = !q || m.username.toLowerCase().includes(q) || m.displayName.toLowerCase().includes(q);
+    const matchR = !role || m.roles.some(r => r.id === role);
+    const matchS = !status || m.status === status || (status === 'offline' && !m.status || m.status === 'offline');
+    return matchQ && matchR && matchS;
+  });
+  renderMembers(filtered);
+}
+
+function renderMembers(members) {
+  const tb = document.getElementById('members-tbody');
+  if (!members.length) { tb.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Aucun membre trouvé</div></div></td></tr>'; return; }
+  tb.innerHTML = members.map(m => {
+    const topRole = m.roles[0];
+    const roleHtml = topRole ? `<span class="role-pill" style="background:${topRole.color}22;color:${topRole.color};border:1px solid ${topRole.color}44">${topRole.name}</span>` : '<span style="color:var(--dim)">—</span>';
+    const statusClass = {'online':'dot-online','idle':'dot-idle','dnd':'dot-dnd'}[m.status] || 'dot-offline';
+    const statusLabel = {'online':'En ligne','idle':'Absent','dnd':'Ne pas déranger'}[m.status] || 'Hors ligne';
+    return `<tr>
+      <td><div class="member-cell">
+        <div class="member-av"><img src="${m.avatar}" onerror="this.parentElement.textContent='${m.username[0]?.toUpperCase()}'"></div>
+        <div><div style="font-weight:500">${m.displayName}</div><div style="font-size:10px;color:var(--muted)">${m.username}${m.bot?' 🤖':''}</div></div>
+      </div></td>
+      <td>${roleHtml}</td>
+      <td><span class="dot ${statusClass}"></span>${statusLabel}</td>
+      <td style="color:var(--muted);font-size:12px">${m.joinedAt ? new Date(m.joinedAt).toLocaleDateString('fr-FR') : '—'}</td>
+      <td><span class="badge badge-blue">Niv. ${m.level?.level||0}</span></td>
+      <td style="color:var(--muted)">${(m.economy?.balance||0)+(m.economy?.bank||0)} 🪙</td>
+      <td>
+        ${m.bot ? '' : `
+        <button class="btn btn-ghost btn-sm" onclick="openMemberRoles('${m.id}','${m.displayName.replace(/'/g,"\\'")}')">🎭</button>
+        <button class="btn btn-ghost btn-sm" onclick="openMemberAction('${m.id}','${m.displayName.replace(/'/g,"\\'")}','timeout')">⏱️</button>
+        <button class="btn btn-ghost btn-sm" onclick="openMemberAction('${m.id}','${m.displayName.replace(/'/g,"\\'")}','kick')">👢</button>
+        <button class="btn btn-danger btn-sm" onclick="openMemberAction('${m.id}','${m.displayName.replace(/'/g,"\\'")}','ban')">🔨</button>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Member actions modal ──
+let _memberActionTarget = null;
+function openMemberAction(userId, name, action) {
+  _memberActionTarget = { userId, action };
+  const labels = { kick:'👢 Kick', ban:'🔨 Bannir', timeout:'⏱️ Timeout' };
+  document.getElementById('modal-member-title').textContent = `${labels[action]} — ${name}`;
+  document.getElementById('modal-member-reason').value = '';
+  const extra = document.getElementById('modal-member-extra');
+  extra.innerHTML = action === 'timeout' ? `<div class="form-group"><label class="form-label">Durée</label><select class="input" id="timeout-duration"><option value="300000">5 minutes</option><option value="600000" selected>10 minutes</option><option value="3600000">1 heure</option><option value="86400000">24 heures</option><option value="604800000">7 jours</option></select></div>` : '';
+  const btn = document.getElementById('modal-member-confirm');
+  btn.className = `btn ${action === 'ban' ? 'btn-danger' : 'btn-primary'}`;
+  btn.textContent = labels[action];
+  btn.onclick = confirmMemberAction;
+  openModal('modal-member');
+}
+
+async function confirmMemberAction() {
+  const { userId, action } = _memberActionTarget;
+  const reason = document.getElementById('modal-member-reason').value || 'Action via le dashboard';
+  let body = { reason };
+  if (action === 'timeout') body.duration = parseInt(document.getElementById('timeout-duration').value);
+  const r = await apiPost(`/members/${userId}/${action}`, body);
+  if (r.success) { toast('Action effectuée ✅', 'success'); closeModal('modal-member'); loadMembers(); }
+  else toast(r.error, 'error');
+}
+
+function openMemberRoles(userId, name) {
+  const member = state.members.find(m => m.id === userId);
+  if (!member) return;
+  const memberRoleIds = new Set(member.roles.map(r => r.id));
+  const html = `<div style="max-height:300px;overflow-y:auto">` + state.roles.map(r => `
+    <div class="toggle-row">
+      <div><div class="toggle-label">${r.name}</div><div class="toggle-sub">${r.memberCount} membres</div></div>
+      <label class="toggle"><input type="checkbox" ${memberRoleIds.has(r.id)?'checked':''} onchange="toggleMemberRole('${userId}','${r.id}',this.checked)"><span class="toggle-slider"></span></label>
+    </div>`).join('') + '</div>';
+  _memberActionTarget = { userId };
+  document.getElementById('modal-member-title').textContent = `🎭 Rôles de ${name}`;
+  document.getElementById('modal-member-reason').closest('.form-group').style.display = 'none';
+  document.getElementById('modal-member-extra').innerHTML = html;
+  document.getElementById('modal-member-confirm').style.display = 'none';
+  openModal('modal-member');
+}
+
+async function toggleMemberRole(userId, roleId, add) {
+  const action = add ? 'add' : 'remove';
+  const r = await apiPost(`/members/${userId}/roles/${action}`, { roleId });
+  if (r.success) toast(add ? 'Rôle ajouté' : 'Rôle retiré', 'success');
+  else toast(r.error, 'error');
+}
+
+// ══════════════════════════════════════════════
+//  BANS
+// ══════════════════════════════════════════════
+async function loadBans() {
+  state.bans = await api('/bans');
+  const el = document.getElementById('bans-list');
+  if (!state.bans.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🚫</div><div class="empty-text">Aucun membre banni</div></div>'; return; }
+  el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Utilisateur</th><th>Raison</th><th>Actions</th></tr></thead><tbody>` +
+    state.bans.map(b => `<tr>
+      <td><div class="member-cell">
+        <div class="member-av"><img src="${b.avatar}" onerror="this.parentElement.textContent='${b.username[0]?.toUpperCase()}'"></div>
+        <div><div>${b.username}</div><div style="font-size:10px;color:var(--muted)">${b.userId}</div></div>
+      </div></td>
+      <td style="color:var(--muted)">${b.reason || 'Aucune raison'}</td>
+      <td><button class="btn btn-success btn-sm" onclick="unban('${b.userId}','${b.username.replace(/'/g,"\\'")}')">Débannir</button></td>
+    </tr>`).join('') + '</tbody></table></div>';
+}
+
+async function unban(userId, name) {
+  if (!confirm(`Débannir ${name} ?`)) return;
+  const r = await apiPost(`/bans/${userId}/unban`, {});
+  if (r.success) { toast(`${name} a été débanni`, 'success'); loadBans(); }
+  else toast(r.error, 'error');
+}
+
+// ══════════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════════
+function populateChannelSelect(id, type, extraOption = true) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const channels = state.channels.filter(c => type === 'text' ? c.type === 0 : type === 'category' ? c.type === 4 : true);
+  el.innerHTML = (extraOption ? '<option value="">Désactivé</option>' : '') + channels.map(c => `<option value="${c.id}">${c.type===4?'📁':c.type===2?'🔊':'#'} ${c.name}</option>`).join('');
+  const curVal = state.settings[id.replace('s-','').replace('logs-','')];
+  if (curVal) el.value = curVal;
+}
+
+function populateRoleSelect(id, extraOption = true) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = (extraOption ? '<option value="">Aucun</option>' : '') + state.roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  const curVal = state.settings[id.replace('s-','')];
+  if (curVal) el.value = curVal;
+}
+
+async function loadSettingsPage() {
+  if (!state.settings.guild_id) state.settings = await api('/settings');
+  const s = state.settings;
+  // Text channels
+  ['s-log_channel','s-suggestion_channel','s-report_channel','s-welcome_channel','s-leave_channel','s-levels_channel'].forEach(id => populateChannelSelect(id, 'text'));
+  ['s-ticket_category'].forEach(id => populateChannelSelect(id, 'category'));
+  // Roles
+  ['s-auto_role','s-ticket_support_role'].forEach(id => populateRoleSelect(id));
+  // Text inputs
+  if (document.getElementById('s-prefix')) document.getElementById('s-prefix').value = s.prefix || '!';
+  if (document.getElementById('s-welcome_message')) document.getElementById('s-welcome_message').value = s.welcome_message || '';
+  if (document.getElementById('s-leave_message')) document.getElementById('s-leave_message').value = s.leave_message || '';
+  if (document.getElementById('s-levels_message')) document.getElementById('s-levels_message').value = s.levels_message || '';
+  // Toggles
+  if (document.getElementById('s-levels_enabled')) document.getElementById('s-levels_enabled').checked = !!s.levels_enabled;
+  if (document.getElementById('s-economy_enabled')) document.getElementById('s-economy_enabled').checked = !!s.economy_enabled;
+}
+
+async function saveSettings() {
+  const fields = ['prefix','log_channel','suggestion_channel','report_channel','welcome_channel','welcome_message',
+    'leave_channel','leave_message','auto_role','levels_enabled','levels_channel','levels_message',
+    'economy_enabled','ticket_category','ticket_support_role'];
+  const body = {};
+  fields.forEach(f => {
+    const el = document.getElementById('s-' + f) || document.getElementById('logs-' + f);
+    if (!el) return;
+    if (el.type === 'checkbox') body[f] = el.checked ? 1 : 0;
+    else body[f] = el.value;
+  });
+  const r = await apiPatch('/settings', body);
+  if (r.success) { state.settings = r.settings; toast('Sauvegardé ✅', 'success'); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function autoSave(key, val) {
+  const r = await apiPatch('/settings', { [key]: val });
+  if (r.success) { state.settings = r.settings; toast('Sauvegardé', 'success'); }
+}
+
+// ══════════════════════════════════════════════
+//  MODERATION
+// ══════════════════════════════════════════════
+async function loadModeration() {
+  const [warns, sanctions] = await Promise.all([api('/warnings'), api('/sanctions')]);
+  state.warns = warns; state.sanctions = sanctions;
+  renderWarns(warns);
+  renderSanctions(sanctions);
+}
+
+function filterWarnings() {
+  const q = document.getElementById('warnSearch').value.toLowerCase();
+  renderWarns(state.warns.filter(w => w.user_id.toLowerCase().includes(q) || (w.reason||'').toLowerCase().includes(q)));
+}
+
+function renderWarns(warns) {
+  const tb = document.getElementById('warns-tbody');
+  if (!warns.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Aucun avertissement</div></div></td></tr>'; return; }
+  tb.innerHTML = warns.map(w => `<tr>
+    <td><code style="color:var(--purple-l);font-size:11px">${w.user_id}</code></td>
+    <td>${w.reason || '—'}</td>
+    <td><code style="font-size:11px;color:var(--muted)">${w.moderator_id}</code></td>
+    <td style="color:var(--muted);font-size:12px">${fmtDate(w.created_at)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="deleteWarn(${w.id})">Retirer</button></td>
+  </tr>`).join('');
+}
+
+function renderSanctions(sanctions) {
+  const tb = document.getElementById('sanctions-tbody');
+  const typeColors = { ban:'badge-red', kick:'badge-yellow', mute:'badge-blue', warn:'badge-member', timeout:'badge-yellow' };
+  if (!sanctions.length) { tb.innerHTML = '<tr><td colspan="4"><div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Aucune sanction</div></div></td></tr>'; return; }
+  tb.innerHTML = sanctions.map(s => `<tr>
+    <td><span class="badge ${typeColors[s.type]||'badge-member'}">${s.type?.toUpperCase()||'—'}</span></td>
+    <td><code style="font-size:11px;color:var(--purple-l)">${s.user_id}</code></td>
+    <td>${s.reason || '—'}</td>
+    <td style="color:var(--muted);font-size:12px">${fmtDate(s.created_at)}</td>
+  </tr>`).join('');
+}
+
+function openWarnModal() {
+  if (!state.members.length) { toast('Charge les membres d\'abord', 'error'); return; }
+  openModal('modal-warn');
+}
+
+async function submitWarn() {
+  const userId = document.getElementById('warn-user-select').value;
+  const reason = document.getElementById('warn-reason').value;
+  if (!userId) { toast('Sélectionne un membre', 'error'); return; }
+  const r = await apiPost('/warnings', { userId, reason });
+  if (r.success) { toast('Warn ajouté ✅', 'success'); closeModal('modal-warn'); loadModeration(); }
+  else toast(r.error, 'error');
+}
+
+async function deleteWarn(id) {
+  if (!confirm('Supprimer cet avertissement ?')) return;
+  const r = await apiDelete(`/warnings/${id}`);
+  if (r.success) { toast('Warn retiré', 'success'); loadModeration(); }
+}
+
+// ══════════════════════════════════════════════
+//  AUTOMOD
+// ══════════════════════════════════════════════
+async function loadAutomod() {
+  if (!state.settings.guild_id) state.settings = await api('/settings');
+  const s = state.settings;
+  document.getElementById('s-automod_enabled').checked = !!s.automod_enabled;
+  document.getElementById('s-automod_anti_spam').checked = !!s.automod_anti_spam;
+  document.getElementById('s-automod_anti_link').checked = !!s.automod_anti_link;
+  try { const bw = JSON.parse(s.automod_badwords || '[]'); document.getElementById('badwords-input').value = bw.join('\n'); } catch (_) {}
+}
+
+async function saveBadwords() {
+  const words = document.getElementById('badwords-input').value.split('\n').map(w => w.trim()).filter(Boolean);
+  const r = await apiPatch('/settings', { automod_badwords: JSON.stringify(words) });
+  if (r.success) toast('Mots bannis sauvegardés ✅', 'success');
+  else toast(r.error, 'error');
+}
+
+// ══════════════════════════════════════════════
+//  TICKETS
+// ══════════════════════════════════════════════
+async function loadTickets() {
+  await loadSettingsPage();
+  state.tickets = await api('/tickets');
+  const open = state.tickets.filter(t => t.status === 'open');
+  const closed = state.tickets.filter(t => t.status !== 'open');
+  document.getElementById('open-tickets-count').textContent = `${open.length} ouvert(s)`;
+  document.getElementById('ticket-stats').innerHTML = `
+    <div class="bar-row"><div class="bar-lbl">Ouverts</div><div class="bar-track"><div class="bar-fill" style="width:${state.tickets.length?Math.round(open.length/state.tickets.length*100):0}%"></div></div><div class="bar-val">${open.length}</div></div>
+    <div class="bar-row"><div class="bar-lbl">Fermés</div><div class="bar-track"><div class="bar-fill" style="width:${state.tickets.length?Math.round(closed.length/state.tickets.length*100):0}%;background:var(--dim)"></div></div><div class="bar-val">${closed.length}</div></div>
+  `;
+  const tb = document.getElementById('tickets-tbody');
+  if (!open.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">🎫</div><div class="empty-text">Aucun ticket ouvert</div></div></td></tr>'; return; }
+  tb.innerHTML = open.map(t => `<tr>
+    <td><span class="badge badge-blue">#${t.id}</span></td>
+    <td><code style="font-size:11px;color:var(--purple-l)">${t.user_id}</code></td>
+    <td>${t.subject || '—'}</td>
+    <td><code style="font-size:11px;color:var(--muted)">${t.channel_id}</code></td>
+    <td style="color:var(--muted);font-size:12px">${fmtDate(t.created_at)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="closeTicket(${t.id})">Fermer</button></td>
+  </tr>`).join('');
+}
+
+async function closeTicket(id) {
+  if (!confirm('Fermer et supprimer ce ticket Discord ?')) return;
+  const r = await apiPatch(`/tickets/${id}/close`, {});
+  if (r.success) { toast('Ticket fermé ✅', 'success'); loadTickets(); }
+  else toast(r.error, 'error');
+}
+
+// ══════════════════════════════════════════════
+//  ROLES
+// ══════════════════════════════════════════════
+async function loadRoles2() {
+  state.roles = await api('/roles');
+  renderRoles(state.roles);
+}
+
+function filterRoles() {
+  const q = document.getElementById('roleSearch').value.toLowerCase();
+  renderRoles(state.roles.filter(r => r.name.toLowerCase().includes(q)));
+}
+
+function renderRoles(roles) {
+  const tb = document.getElementById('roles-tbody');
+  if (!roles.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">🎭</div><div class="empty-text">Aucun rôle</div></div></td></tr>'; return; }
+  tb.innerHTML = roles.map(r => `<tr>
+    <td><span style="display:inline-flex;align-items:center;gap:7px">
+      <span style="width:12px;height:12px;border-radius:50%;background:${r.color||'#99aab5'};display:inline-block"></span>
+      <strong>${r.name}</strong>
+    </span></td>
+    <td><code style="font-size:11px;color:var(--muted)">${r.color}</code></td>
+    <td>${r.memberCount}</td>
+    <td>${r.position}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="deleteRole('${r.id}','${r.name.replace(/'/g,"\\'")}')">Supprimer</button></td>
+  </tr>`).join('');
+}
+
+function openCreateRoleModal() { document.getElementById('role-name').value=''; openModal('modal-role'); }
+async function createRole() {
+  const name = document.getElementById('role-name').value;
+  const color = document.getElementById('role-color').value;
+  if (!name) { toast('Nom requis', 'error'); return; }
+  const r = await apiPost('/roles', { name, color });
+  if (r.success) { toast(`Rôle "${name}" créé ✅`, 'success'); closeModal('modal-role'); loadRoles2(); }
+  else toast(r.error, 'error');
+}
+async function deleteRole(id, name) {
+  if (!confirm(`Supprimer le rôle "${name}" ?`)) return;
+  const r = await apiDelete(`/roles/${id}`);
+  if (r.success) { toast('Rôle supprimé', 'success'); loadRoles2(); }
+  else toast(r.error, 'error');
+}
+
+// ══════════════════════════════════════════════
+//  AUTOROLES
+// ══════════════════════════════════════════════
+async function loadAutoroles() {
+  state.autoroles = await api('/autoroles');
+  const sel = document.getElementById('autorole-role-select');
+  sel.innerHTML = state.roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  renderAutoroles();
+}
+
+function renderAutoroles() {
+  const el = document.getElementById('autoroles-list');
+  if (!state.autoroles.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🔄</div><div class="empty-text">Aucun autorole configuré</div></div>'; return; }
+  el.innerHTML = state.autoroles.map(ar => {
+    const role = state.roles.find(r => r.id === ar.role_id);
+    return `<div class="activity-item">
+      <div class="activity-dot" style="background:${role?.color||'var(--purple)'}"></div>
+      <div class="activity-text"><strong>${role?.name||ar.role_id}</strong> — <span style="color:var(--muted)">${ar.type}</span></div>
+      <button class="btn btn-danger btn-sm" onclick="removeAutorole('${ar.role_id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+async function addAutorole() {
+  const roleId = document.getElementById('autorole-role-select').value;
+  const type = document.getElementById('autorole-type-select').value;
+  if (!roleId) return;
+  const r = await apiPost('/autoroles', { roleId, type });
+  if (r.success) { toast('Autorole ajouté ✅', 'success'); state.autoroles = await api('/autoroles'); renderAutoroles(); }
+  else toast(r.error, 'error');
+}
+
+async function removeAutorole(roleId) {
+  const r = await apiDelete(`/autoroles/${roleId}`);
+  if (r.success) { toast('Autorole retiré', 'success'); state.autoroles = await api('/autoroles'); renderAutoroles(); }
+}
+
+// ══════════════════════════════════════════════
+//  WELCOME
+// ══════════════════════════════════════════════
+async function loadWelcome() { await loadSettingsPage(); }
+
+// ══════════════════════════════════════════════
+//  LOGS
+// ══════════════════════════════════════════════
+async function loadLogsPage() {
+  if (!state.settings.guild_id) state.settings = await api('/settings');
+  populateChannelSelect('logs-log_channel', 'text');
+  document.getElementById('logs-log_channel').value = state.settings.log_channel || '';
+}
+async function saveLogChannel() {
+  const val = document.getElementById('logs-log_channel').value;
+  const r = await apiPatch('/settings', { log_channel: val });
+  if (r.success) toast('Salon de logs sauvegardé ✅', 'success');
+  else toast(r.error, 'error');
+}
+
+// ══════════════════════════════════════════════
+//  COMMANDS
+// ══════════════════════════════════════════════
+async function loadCommands() {
+  state.commands = await api('/commands');
+  renderCommands(state.commands);
+}
+function filterCommands() {
+  const q = document.getElementById('cmdSearch').value.toLowerCase();
+  renderCommands(state.commands.filter(c => c.name.toLowerCase().includes(q) || c.response.toLowerCase().includes(q)));
+}
+function renderCommands(cmds) {
+  const tb = document.getElementById('commands-tbody');
+  if (!cmds.length) { tb.innerHTML = '<tr><td colspan="4"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Aucune commande personnalisée</div></div></td></tr>'; return; }
+  tb.innerHTML = cmds.map(c => `<tr>
+    <td><code style="color:var(--purple-l);font-weight:600">${c.name}</code></td>
+    <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)">${c.response}</td>
+    <td><code style="font-size:11px;color:var(--muted)">${c.created_by}</code></td>
+    <td><button class="btn btn-danger btn-sm" onclick="deleteCmd(${c.id},'${c.name.replace(/'/g,"\\'")}')">Supprimer</button></td>
+  </tr>`).join('');
+}
+function openCreateCmdModal() { document.getElementById('cmd-name').value=''; document.getElementById('cmd-response').value=''; openModal('modal-cmd'); }
+async function createCmd() {
+  const name = document.getElementById('cmd-name').value;
+  const response = document.getElementById('cmd-response').value;
+  if (!name || !response) { toast('Nom et réponse requis', 'error'); return; }
+  const r = await apiPost('/commands', { name, response });
+  if (r.success) { toast('Commande créée ✅', 'success'); closeModal('modal-cmd'); loadCommands(); }
+  else toast(r.error || 'Erreur (commande existante ?)', 'error');
+}
+async function deleteCmd(id, name) {
+  if (!confirm(`Supprimer la commande "${name}" ?`)) return;
+  const r = await apiDelete(`/commands/${id}`);
+  if (r.success) { toast('Commande supprimée', 'success'); loadCommands(); }
+}
+
+// ══════════════════════════════════════════════
+//  ECONOMY
+// ══════════════════════════════════════════════
+async function loadEconomy() {
+  state.economy = await api('/economy');
+  const tb = document.getElementById('economy-tbody');
+  if (!state.economy.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">💰</div><div class="empty-text">Aucune donnée</div></div></td></tr>'; return; }
+  tb.innerHTML = state.economy.map((e,i) => {
+    const total = (e.balance||0)+(e.bank||0);
+    const medals = ['🥇','🥈','🥉'];
+    return `<tr>
+      <td>${medals[i]||`#${i+1}`}</td>
+      <td><code style="font-size:11px;color:var(--purple-l)">${e.user_id}</code></td>
+      <td>${(e.balance||0).toLocaleString()} 🪙</td>
+      <td>${(e.bank||0).toLocaleString()} 🏦</td>
+      <td><strong>${total.toLocaleString()} 🪙</strong></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  LEVELS
+// ══════════════════════════════════════════════
+async function loadLevels() {
+  await loadSettingsPage();
+  state.levels = await api('/levels');
+  const barsEl = document.getElementById('levels-bars');
+  const tb = document.getElementById('levels-tbody');
+  if (!state.levels.length) {
+    barsEl.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Aucune donnée</div></div>';
+    tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">📈</div><div class="empty-text">Aucune donnée</div></div></td></tr>';
+    return;
+  }
+  const max = state.levels[0]?.xp || 1;
+  barsEl.innerHTML = state.levels.slice(0,10).map(r => `
+    <div class="bar-row">
+      <div class="bar-lbl">Niv. ${r.level}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(r.xp/max*100)}%"></div></div>
+      <div class="bar-val">${r.xp}</div>
+    </div>`).join('');
+  const medals = ['🥇','🥈','🥉'];
+  tb.innerHTML = state.levels.map((r,i) => `<tr>
+    <td>${medals[i]||`#${i+1}`}</td>
+    <td><code style="font-size:11px;color:var(--purple-l)">${r.user_id}</code></td>
+    <td><span class="badge badge-blue">Niv. ${r.level}</span></td>
+    <td>${(r.xp||0).toLocaleString()} XP</td>
+    <td>${(r.messages||0).toLocaleString()}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  SHOP
+// ══════════════════════════════════════════════
+async function loadShop() {
+  state.shop = await api('/shop');
+  const sel = document.getElementById('shop-role');
+  sel.innerHTML = '<option value="">Aucun</option>' + state.roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  renderShop(state.shop);
+}
+function filterShop() {
+  const q = document.getElementById('shopSearch').value.toLowerCase();
+  renderShop(state.shop.filter(s => s.name.toLowerCase().includes(q)));
+}
+function renderShop(items) {
+  const tb = document.getElementById('shop-tbody');
+  if (!items.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">🛍️</div><div class="empty-text">Boutique vide</div></div></td></tr>'; return; }
+  tb.innerHTML = items.map(s => {
+    const role = state.roles.find(r => r.id === s.role_id);
+    return `<tr>
+      <td>${s.emoji || '🛍️'} <strong>${s.name}</strong></td>
+      <td style="color:var(--muted)">${s.description || '—'}</td>
+      <td><span class="badge badge-yellow">${(s.price||0).toLocaleString()} 🪙</span></td>
+      <td>${role ? `<span class="role-pill" style="background:${role.color}22;color:${role.color}">${role.name}</span>` : '—'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteShopItem(${s.id})">Supprimer</button></td>
+    </tr>`;
+  }).join('');
+}
+function openAddShopModal() { openModal('modal-shop'); }
+async function addShopItem() {
+  const name = document.getElementById('shop-name').value;
+  const price = parseInt(document.getElementById('shop-price').value);
+  if (!name || !price) { toast('Nom et prix requis', 'error'); return; }
+  const r = await apiPost('/shop', {
+    name, price,
+    description: document.getElementById('shop-desc').value,
+    emoji: document.getElementById('shop-emoji').value,
+    roleId: document.getElementById('shop-role').value || null
+  });
+  if (r.success) { toast('Article ajouté ✅', 'success'); closeModal('modal-shop'); loadShop(); }
+  else toast(r.error, 'error');
+}
+async function deleteShopItem(id) {
+  if (!confirm('Supprimer cet article ?')) return;
+  const r = await apiDelete(`/shop/${id}`);
+  if (r.success) { toast('Article supprimé', 'success'); loadShop(); }
+}
+
+// ══════════════════════════════════════════════
+//  BROADCAST
+// ══════════════════════════════════════════════
+function loadBroadcastChannels() {
+  const sel = document.getElementById('broadcast-channel');
+  const textChannels = state.channels.filter(c => c.type === 0);
+  sel.innerHTML = textChannels.map(c => `<option value="${c.id}">#${c.name}</option>`).join('');
+}
+async function sendBroadcast() {
+  const channelId = document.getElementById('broadcast-channel').value;
+  const type = document.getElementById('broadcast-type').value;
+  const content = document.getElementById('broadcast-content').value;
+  if (!channelId || !content) { toast('Salon et message requis', 'error'); return; }
+  const body = type === 'embed'
+    ? { embed: true, title: document.getElementById('broadcast-title').value, content }
+    : { content };
+  const r = await apiPost(`/channels/${channelId}/send`, body);
+  if (r.success) { toast('Message envoyé ✅', 'success'); document.getElementById('broadcast-content').value = ''; }
+  else toast(r.error, 'error');
+}
+
+// ══════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Reset hidden fields when reopening
+  const rField = el.querySelector('.form-group');
+  if (rField) rField.style.display = '';
+  const btn = el.querySelector('#modal-member-confirm');
+  if (btn) btn.style.display = '';
+  el.classList.add('open');
+}
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); }));
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+let toastTimer;
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  document.getElementById('toast-icon').textContent = icons[type] || '✅';
+  document.getElementById('toast-msg').textContent = msg;
+  el.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function fmtDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts);
+  return isNaN(d) ? '—' : d.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// Load user info from session
+fetch('/api/guild/' + GUILD_ID).then(r=>r.json()).then(g=>{
+  if (g.name) document.getElementById('sbUserName').textContent = 'Admin';
+}).catch(()=>{});
+
+// Get user info displayed in sidebar
+fetch('/auth/me').then(r=>r.json()).then(u=>{
+  if (u?.username) {
+    document.getElementById('sbUserName').textContent = u.username;
+    if (u.avatar) document.getElementById('sbUserAv').src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
+  }
+}).catch(()=>{});
+
+// ── Start ──
+init();
 </script>
 </body>
 </html>
