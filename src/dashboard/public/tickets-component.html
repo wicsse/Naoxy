@@ -1,0 +1,157 @@
+<div class="ticket-container" style="display: flex; font-family: sans-serif; background: #1a1c24; color: #fff; min-height: 80vh; border-radius: 8px; overflow: hidden;">
+  <div class="ticket-sidebar" style="width: 250px; background: #15171c; padding: 20px; border-right: 1px solid #2d3039;">
+    <h4 style="margin-top:0; color: #5865F2;">🎫 Ticket Config</h4>
+    <ul style="list-style: none; padding: 0; margin: 0;">
+      <li onclick="switchTicketTab('general')" class="t-tab active" id="tab-general" style="padding: 12px; cursor: pointer; border-radius: 4px; margin-bottom: 5px; background: #1e2129;">⚙️ Général</li>
+      <li onclick="switchTicketTab('categories')" class="t-tab" id="tab-categories" style="padding: 12px; cursor: pointer; border-radius: 4px; margin-bottom: 5px;">📂 Catégories</li>
+      <li onclick="switchTicketTab('messages')" class="t-tab" id="tab-messages" style="padding: 12px; cursor: pointer; border-radius: 4px; margin-bottom: 5px;">💬 Messages / Embeds</li>
+    </ul>
+  </div>
+
+  <div class="ticket-content" style="flex: 1; padding: 30px; background: #1a1c24;">
+    <div id="ticket-view-general" class="ticket-view">
+      <h2 style="margin-top:0;">Configuration Générale</h2>
+      <hr style="border-color: #2d3039;">
+      <div style="margin-bottom: 20px;">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold;">Rôle Support (ID)</label>
+        <input type="text" id="ticket_support_role" style="width:100%; padding:10px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:4px;">
+      </div>
+      <div style="margin-bottom: 20px; display:flex; align-items:center; justify-content:space-between; background:#202225; padding:15px; border-radius:4px;">
+        <div>
+          <strong style="display:block;">Fermeture en deux étapes (Two-step close)</strong>
+          <span style="font-size:12px; color:#b9bbbe;">Demande une confirmation avant de fermer le ticket.</span>
+        </div>
+        <input type="checkbox" id="two_step_close" style="width:20px; height:20px;">
+      </div>
+      <button onclick="saveTicketSettings()" style="background:#248046; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">Sauvegarder les modifications</button>
+    </div>
+
+    <div id="ticket-view-categories" class="ticket-view" style="display:none;">
+      <h2 style="margin-top:0;">Gestion des Catégories</h2>
+      <hr style="border-color: #2d3039;">
+      
+      <div style="background:#202225; padding:15px; border-radius:4px; margin-bottom:20px;">
+        <h4 style="margin-top:0;">+ Ajouter une nouvelle option</h4>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+          <input type="text" id="cat_label" placeholder="Nom (ex: Assistance)" style="padding:8px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:4px;">
+          <input type="text" id="cat_emoji" placeholder="Emoji (ex: 🎧)" style="padding:8px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:4px;">
+          <input type="text" id="cat_discord_id" placeholder="ID Catégorie Discord" style="padding:8px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:4px;">
+        </div>
+        <button onclick="addTicketCategory()" style="background:#5865F2; color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Ajouter au sélecteur</button>
+      </div>
+
+      <table style="width:100%; border-collapse: collapse; background:#202225; border-radius:4px; overflow:hidden;">
+        <thead>
+          <tr style="background:#15171c; text-align:left;">
+            <th style="padding:12px;">Option</th>
+            <th style="padding:12px;">ID Catégorie Discord</th>
+            <th style="padding:12px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="categories-list-tbody">
+          </tbody>
+      </table>
+    </div>
+
+    <div id="ticket-view-messages" class="ticket-view" style="display:none;">
+      <h2 style="margin-top:0;">Messages des Salons</h2>
+      <hr style="border-color: #2d3039;">
+      <div style="margin-bottom: 20px;">
+        <label style="display:block; margin-bottom: 8px; font-weight: bold;">Message de bienvenue (Dans le ticket créé)</label>
+        <textarea id="ticket_open_message" rows="5" placeholder="Bonjour {user} ! Décrivez votre demande..." style="width:100%; padding:10px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:4px; resize:vertical;"></textarea>
+      </div>
+      <button onclick="saveTicketSettings()" style="background:#248046; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">Sauvegarder les messages</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Gestion des onglets
+  function switchTicketTab(tabName) {
+    document.querySelectorAll('.ticket-view').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.t-tab').forEach(t => {
+      t.style.background = 'transparent';
+      t.classList.remove('active');
+    });
+    
+    document.getElementById('ticket-view-' + tabName).style.display = 'block';
+    const targetTab = document.getElementById('tab-' + tabName);
+    targetTab.style.background = '#1e2129';
+    targetTab.classList.add('active');
+  }
+
+  // Fonctions d'interaction API
+  const getGid = () => window.location.pathname.split('/')[3] || window.location.pathname.split('/')[2];
+
+  async function loadTicketData() {
+    const gid = getGid();
+    // Charger catégories
+    const resCat = await fetch(`/api/guild/${gid}/ticket-categories`);
+    const categories = await resCat.json();
+    const tbody = document.getElementById('categories-list-tbody');
+    tbody.innerHTML = '';
+    
+    if(categories.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" style="padding:15px; text-align:center; color:#b9bbbe;">Aucune catégorie configurée.</td></tr>`;
+    } else {
+      categories.forEach(c => {
+        tbody.innerHTML += `
+          <tr style="border-bottom: 1px solid #2d3039;">
+            <td style="padding:12px;">${c.emoji} ${c.label}</td>
+            <td style="padding:12px; font-family:monospace; color:#b9bbbe;">${c.category_id}</td>
+            <td style="padding:12px;"><button onclick="deleteCategory(${c.id})" style="background:#ed4245; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Supprimer</button></td>
+          </tr>
+        `;
+      });
+    }
+  }
+
+  async function saveTicketSettings() {
+    const gid = getGid();
+    const payload = {
+      two_step_close: document.getElementById('two_step_close').checked ? 1 : 0,
+      ticket_support_role: document.getElementById('ticket_support_role').value,
+      ticket_open_message: document.getElementById('ticket_open_message').value
+    };
+
+    const res = await fetch(`/api/guild/${gid}/ticket-settings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if(res.ok) alert('✅ Paramètres sauvegardés avec succès !');
+  }
+
+  async function addTicketCategory() {
+    const gid = getGid();
+    const payload = {
+      label: document.getElementById('cat_label').value,
+      emoji: document.getElementById('cat_emoji').value,
+      category_id: document.getElementById('cat_discord_id').value
+    };
+
+    if(!payload.label || !payload.category_id) return alert('Erreur : Nom et ID requis !');
+
+    await fetch(`/api/guild/${gid}/ticket-categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    // Reset inputs
+    document.getElementById('cat_label').value = '';
+    document.getElementById('cat_emoji').value = '';
+    document.getElementById('cat_discord_id').value = '';
+    loadTicketData();
+  }
+
+  async function deleteCategory(id) {
+    if(!confirm('Supprimer cette catégorie ?')) return;
+    const gid = getGid();
+    await fetch(`/api/guild/${gid}/ticket-categories/${id}`, { method: 'DELETE' });
+    loadTicketData();
+  }
+
+  // Auto load au démarrage
+  setTimeout(loadTicketData, 500);
+</script>

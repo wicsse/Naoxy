@@ -2,12 +2,6 @@ const { Events, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, Chan
 const { db, getGuildSettings } = require("../database/db.js");
 const { COLORS, successEmbed, errorEmbed } = require("../utils/helpers.js");
 
-const CATEGORIES = {
-  support:  { name: "🎧 Support général",  categoryId: "1507863535600795889" },
-  commande: { name: "🛒 Commande / Achat", categoryId: "1507863533919010873" },
-  autre:    { name: "📩 Autre",            categoryId: "1507863533411373156" },
-};
-
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
@@ -23,17 +17,20 @@ module.exports = {
     const gid = interaction.guildId;
     const settings = getGuildSettings(gid);
 
-    // ── Select Menu ──
+    // ── Select Menu (Tickets) ──
     if (interaction.isStringSelectMenu()) {
       if (interaction.customId === "ticket_open") {
-        const value = interaction.values[0];
-        const cat = CATEGORIES[value];
+        const catId = interaction.values[0]; // C'est l'ID de la ligne dans ticket_categories
+        
+        // On récupère la configuration de la catégorie depuis la DB
+        const cat = db.prepare("SELECT * FROM ticket_categories WHERE id = ? AND guild_id = ?").get(catId, gid);
+        if (!cat) return interaction.reply({ embeds: [errorEmbed("Configuration introuvable", "Cette catégorie n'existe plus ou a été modifiée.")], ephemeral: true });
 
         const existing = db.prepare("SELECT * FROM tickets WHERE guild_id = ? AND user_id = ? AND status = 'open'").get(gid, interaction.user.id);
         if (existing) return interaction.reply({ embeds: [errorEmbed("Ticket déjà ouvert", `Tu as déjà un ticket ouvert : <#${existing.channel_id}>`)], ephemeral: true });
 
-        const category = interaction.guild.channels.cache.get(cat.categoryId);
-        if (!category) return interaction.reply({ embeds: [errorEmbed("Catégorie introuvable.", "Vérifie que le bot a accès à la catégorie.")], ephemeral: true });
+        const category = interaction.guild.channels.cache.get(cat.category_id);
+        if (!category) return interaction.reply({ embeds: [errorEmbed("Catégorie introuvable.", "La catégorie Discord configurée pour ce bouton est introuvable.")], ephemeral: true });
 
         await interaction.deferReply({ ephemeral: true });
 
@@ -45,9 +42,11 @@ module.exports = {
           { id: interaction.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] },
         ];
 
-        if (settings?.ticket_support_role) {
+        // Rôle support spécifique à la catégorie OU rôle support global du serveur
+        const targetSupportRole = cat.support_role_id || settings?.ticket_support_role;
+        if (targetSupportRole) {
           permissionOverwrites.push({
-            id: settings.ticket_support_role,
+            id: targetSupportRole,
             allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageMessages]
           });
         }
@@ -55,7 +54,7 @@ module.exports = {
         const channel = await interaction.guild.channels.create({
           name: channelName,
           type: ChannelType.GuildText,
-          parent: cat.categoryId,
+          parent: cat.category_id,
           permissionOverwrites,
         });
 
@@ -65,14 +64,14 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents(closeBtn);
 
         await channel.send({
-          content: `${interaction.user}${settings?.ticket_support_role ? ` <@&${settings.ticket_support_role}>` : ""}`,
-          embeds: [new EmbedBuilder()
+          content: `${interaction.user}${targetSupportRole ? ` <@&${targetSupportRole}>` : ""}`,
+          embed: [new EmbedBuilder()
             .setColor(COLORS.primary)
-            .setTitle(`🎫 ${cat.name}`)
+            .setTitle(`${cat.emoji} ${cat.label}`)
             .setDescription(`Bonjour ${interaction.user} ! 👋\nDécrivez votre demande et un membre du staff vous répondra dès que possible.`)
             .addFields(
               { name: "Ouvert par", value: `${interaction.user} (\`${interaction.user.id}\`)`, inline: true },
-              { name: "Catégorie", value: cat.name, inline: true }
+              { name: "Catégorie", value: cat.label, inline: true }
             )
             .setTimestamp()],
           components: [row]
@@ -116,7 +115,6 @@ module.exports = {
         await interaction.reply({ embeds: [successEmbed("Fermeture annulée")], ephemeral: true });
       }
 
-
       // ── Reaction Roles ──
       if (interaction.customId.startsWith('rr_btn_')) {
         const roleId = interaction.customId.replace('rr_btn_', '');
@@ -149,6 +147,7 @@ module.exports = {
           return interaction.reply({ embeds: [errorEmbed('Erreur', 'Impossible de modifier votre rôle.')], ephemeral: true });
         }
       }
+
       // ── Giveaway ──
       if (interaction.customId === "giveaway_join") {
         const gaw = db.prepare("SELECT * FROM giveaways WHERE message_id = ? AND ended = 0").get(interaction.message.id);

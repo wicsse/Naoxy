@@ -846,5 +846,13 @@ vals.forEach(v => {
   chart.appendChild(bar);
 });
 </script>
+
+<div id="ticket-tool-mount-point"></div>
+<script>
+  fetch("/public/tickets-component.html")
+    .then(r => r.text())
+    .then(data => { document.getElementById("ticket-tool-mount-point").innerHTML = data; });
+</script>
+
 </body>
 </html>

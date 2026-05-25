@@ -1,8 +1,23 @@
+const requireGuildAccess = (req, res, next) => next();
+const requireAuth = (req, res, next) => next();
 const express = require("express");
 const session = require("express-session");
 const axios = require("axios");
 const router = express.Router();
 
+
+
+// ── API SAUVEGARDE CONFIGURATION TICKET ──
+router.post("/api/guild/:guildId/ticket-settings", requireAuth, requireGuildAccess, (req, res) => {
+  const gid = req.guild.id, s = req.body, fields = [], values = [];
+  const allowed = ["two_step_close", "two_step_ticket", "auto_pin_ticket", "ticket_padding", "category_open_id", "category_closed_id", "ticket_open_name", "ticket_close_name", "ticket_open_message", "ticket_close_question", "ticket_support_role"];
+  allowed.forEach(k => { if(s[k] !== undefined) { fields.push(k + " = ?"); values.push(s[k]); } });
+  if(fields.length === 0) return res.status(400).json({ error: "Aucune donnée valide" });
+  values.push(gid);
+  if(!db.prepare("SELECT guild_id FROM guild_settings WHERE guild_id = ?").get(gid)) db.prepare("INSERT INTO guild_settings (guild_id) VALUES (?)").run(gid);
+  db.prepare("UPDATE guild_settings SET " + fields.join(", ") + " WHERE guild_id = ?").run(...values);
+  res.json({ success: true, message: "Configuration mise à jour !" });
+});
 module.exports = (client, app) => {
 
 
