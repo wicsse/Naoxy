@@ -960,17 +960,13 @@ function populateRoleSelect(id, extraOption = true) {
 async function loadSettingsPage() {
   if (!state.settings.guild_id) state.settings = await api('/settings');
   const s = state.settings;
-  // Text channels
   ['s-log_channel','s-suggestion_channel','s-report_channel','s-welcome_channel','s-leave_channel','s-levels_channel'].forEach(id => populateChannelSelect(id, 'text'));
   ['s-ticket_category'].forEach(id => populateChannelSelect(id, 'category'));
-  // Roles
   ['s-auto_role','s-ticket_support_role'].forEach(id => populateRoleSelect(id));
-  // Text inputs
   if (document.getElementById('s-prefix')) document.getElementById('s-prefix').value = s.prefix || '!';
   if (document.getElementById('s-welcome_message')) document.getElementById('s-welcome_message').value = s.welcome_message || '';
   if (document.getElementById('s-leave_message')) document.getElementById('s-leave_message').value = s.leave_message || '';
   if (document.getElementById('s-levels_message')) document.getElementById('s-levels_message').value = s.levels_message || '';
-  // Toggles
   if (document.getElementById('s-levels_enabled')) document.getElementById('s-levels_enabled').checked = !!s.levels_enabled;
   if (document.getElementById('s-economy_enabled')) document.getElementById('s-economy_enabled').checked = !!s.economy_enabled;
 }
@@ -1368,7 +1364,6 @@ async function sendBroadcast() {
 function openModal(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  // Reset hidden fields when reopening
   const rField = el.querySelector('.form-group');
   if (rField) rField.style.display = '';
   const btn = el.querySelector('#modal-member-confirm');
@@ -1401,12 +1396,10 @@ function fmtDate(ts) {
   return isNaN(d) ? '—' : d.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
 }
 
-// Load user info from session
 fetch('/api/guild/' + GUILD_ID).then(r=>r.json()).then(g=>{
   if (g.name) document.getElementById('sbUserName').textContent = 'Admin';
 }).catch(()=>{});
 
-// Get user info displayed in sidebar
 fetch('/auth/me').then(r=>r.json()).then(u=>{
   if (u?.username) {
     document.getElementById('sbUserName').textContent = u.username;
@@ -1453,7 +1446,6 @@ async function loadPanelDetails() {
   });
   updatePanelPreview();
   loadPanelCategories(id);
-  // Remplir les selects de rôles et catégories
   const roleEl = document.getElementById('p-support_role_id');
   const catEl  = document.getElementById('p-default_category_id');
   if (roleEl) {
@@ -1618,24 +1610,6 @@ window.loadPage = async function(page) {
   if (page === 'tickets') await loadTicketPanels();
 };
 
-// ══ TICKET TOOL STYLE FUNCTIONS ══
-function openSection(name) {
-  const labels = { general:"⚙️ Général", category:"📂 Catégorie", ticket:"🎫 Ticket", moderator:"👮 Modérateur", permissions:"🔒 Permissions", buttons:"🔘 Boutons", messages:"💬 Messages", escalate:"⬆️ Escalade", panel:"📋 Panel", command_style:"⌨️ Command Style", dropdown_style:"📋 Dropdown Style", thread_style:"🧵 Thread Style", forms:"📝 Forms", transcript:"📄 Transcript", logging:"📋 Logging", automation:"🤖 Automation", limits:"⏱️ Limits", claiming:"✋ Claiming", integrations:"🔗 Integrations" };
-  const descs = { general:"Configurez le rôle support et les options générales.", category:"Options pour les catégories ouvertes/fermées.", ticket:"Options générales du ticket.", moderator:"Messages du modérateur.", permissions:"Options de permissions.", buttons:"Liste de tous les boutons.", messages:"Liste de tous les messages.", escalate:"Options d'escalade.", panel:"Options du message du panel.", command_style:"Créer des tickets via commandes.", dropdown_style:"Créer des tickets via menu déroulant.", thread_style:"Tickets en threads au lieu de salons.", forms:"Options des formulaires.", transcript:"Sauvegarder les transcripts.", logging:"Logs du serveur.", automation:"Options d'automatisation.", limits:"Limites et planning.", claiming:"Options de claim.", integrations:"Intégrations de bots externes." };
-  let modal = document.getElementById("modal-section");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.className = "modal-overlay";
-    modal.id = "modal-section";
-    modal.innerHTML = `<div class="modal"><div class="modal-title"><span id="section-title"></span><button class="modal-close" onclick="closeModal('modal-section')">✕</button></div><div id="section-body" style="color:var(--muted);font-size:13px;padding:8px 0"></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('modal-section')">Fermer</button></div></div>`;
-    modal.addEventListener("click", e => { if (e.target === modal) closeModal("modal-section"); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById("section-title").textContent = labels[name] || name;
-  document.getElementById("section-body").textContent = descs[name] || "Section en cours de développement.";
-  openModal("modal-section");
-}
-
 function toggleFrequent() {
   const body = document.getElementById("freq-body");
   const arrow = document.getElementById("freq-arrow");
@@ -1726,126 +1700,6 @@ async function deletePanel() {
     document.getElementById("ticket-action-bar").style.display = "none";
     document.getElementById("ticket-panel-detail").style.display = "none";
     document.getElementById("ticket-no-panel").style.display = "block";
-    await loadTicketPanels();
-  } else toast(r.error || "Erreur", "error");
-}
-
-// ══ TICKET TOOL STYLE FUNCTIONS ══
-function openSection(name) {
-  const labels = { general:"⚙️ Général", category:"📂 Catégorie", ticket:"🎫 Ticket", moderator:"👮 Modérateur", permissions:"🔒 Permissions", buttons:"🔘 Boutons", messages:"💬 Messages", escalate:"⬆️ Escalade", panel:"📋 Panel", command_style:"⌨️ Command Style", dropdown_style:"📋 Dropdown Style", thread_style:"🧵 Thread Style", forms:"📝 Forms", transcript:"📄 Transcript", logging:"📋 Logging", automation:"🤖 Automation", limits:"⏱️ Limits", claiming:"✋ Claiming", integrations:"🔗 Integrations" };
-  const descs = { general:"Configurez le rôle support et les options générales.", category:"Options pour les catégories ouvertes/fermées.", ticket:"Options générales du ticket.", moderator:"Messages du modérateur.", permissions:"Options de permissions.", buttons:"Liste de tous les boutons.", messages:"Liste de tous les messages.", escalate:"Options d'escalade.", panel:"Options du message du panel.", command_style:"Créer des tickets via commandes.", dropdown_style:"Créer des tickets via menu déroulant.", thread_style:"Tickets en threads au lieu de salons.", forms:"Options des formulaires.", transcript:"Sauvegarder les transcripts.", logging:"Logs du serveur.", automation:"Options d'automatisation.", limits:"Limites et planning.", claiming:"Options de claim.", integrations:"Intégrations de bots externes." };
-  let modal = document.getElementById("modal-section");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.className = "modal-overlay";
-    modal.id = "modal-section";
-    modal.innerHTML = '<div class="modal"><div class="modal-title"><span id="section-title"></span><button class="modal-close" onclick="closeModal(\'modal-section\')">✕</button></div><div id="section-body" style="color:var(--muted);font-size:13px;padding:8px 0"></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal(\'modal-section\')">Fermer</button></div></div>';
-    modal.addEventListener("click", e => { if (e.target === modal) closeModal("modal-section"); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById("section-title").textContent = labels[name] || name;
-  document.getElementById("section-body").textContent = descs[name] || "Section en cours de développement.";
-  openModal("modal-section");
-}
-
-function toggleFrequent() {
-  const body = document.getElementById("freq-body");
-  const arrow = document.getElementById("freq-arrow");
-  if (!body) return;
-  const hidden = body.style.display === "none";
-  body.style.display = hidden ? "" : "none";
-  if (arrow) arrow.textContent = hidden ? "▲" : "▼";
-}
-
-async function saveFrequentConfigs() {
-  const id = document.getElementById("ticket-panel-select")?.value;
-  if (!id) { toast("Aucun panel sélectionné", "error"); return; }
-  const body = {};
-  const roleEl = document.getElementById("p-support_role_id");
-  const catEl  = document.getElementById("p-default_category_id");
-  if (roleEl?.value) body.support_role_id = roleEl.value;
-  if (catEl?.value)  body.default_category_id = catEl.value;
-  const r = await apiPatch("/ticket-panels/" + id, body).catch(() => ({ success: false }));
-  r.success ? toast("Sauvegardé ✅", "success") : toast(r.error || "Erreur", "error");
-}
-
-async function clonePanel() {
-  const id   = document.getElementById("ticket-panel-select")?.value;
-  const name = document.getElementById("ticket-panel-select")?.selectedOptions[0]?.text;
-  if (!id) { toast("Aucun panel sélectionné", "error"); return; }
-  const r = await apiPost("/ticket-panels", { name: (name || "Panel") + " (copie)" }).catch(() => ({ success: false }));
-  if (r.success || r.id) { toast("Panel cloné ✅", "success"); await loadTicketPanels(); }
-  else toast(r.error || "Erreur", "error");
-}
-
-function openRenommerPanelModal() {
-  const id   = document.getElementById("ticket-panel-select")?.value;
-  const name = document.getElementById("ticket-panel-select")?.selectedOptions[0]?.text;
-  if (!id) { toast("Aucun panel sélectionné", "error"); return; }
-  let modal = document.getElementById("modal-rename-panel");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.className = "modal-overlay";
-    modal.id = "modal-rename-panel";
-    modal.innerHTML = '<div class="modal"><div class="modal-title">✏️ Renommer<button class="modal-close" onclick="closeModal(\'modal-rename-panel\')">✕</button></div><div class="form-group"><label class="form-label">Nouveau nom</label><input class="input" id="rename-panel-input" type="text"></div><div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal(\'modal-rename-panel\')">Annuler</button><button class="btn btn-primary" onclick="confirmRenommerPanel()">Renommer</button></div></div>';
-    modal.addEventListener("click", e => { if (e.target === modal) closeModal("modal-rename-panel"); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById("rename-panel-input").value = name || "";
-  openModal("modal-rename-panel");
-}
-
-async function confirmRenommerPanel() {
-  const id   = document.getElementById("ticket-panel-select")?.value;
-  const name = document.getElementById("rename-panel-input")?.value?.trim();
-  if (!name) { toast("Nom requis", "error"); return; }
-  const r = await apiPatch("/ticket-panels/" + id, { name }).catch(() => ({ success: false }));
-  if (r.success) {
-    toast("Renommé ✅", "success");
-    closeModal("modal-rename-panel");
-    await loadTicketPanels();
-    const sel = document.getElementById("ticket-panel-select");
-    if (sel) sel.value = id;
-  } else toast(r.error || "Erreur", "error");
-}
-
-async function sendPanel() {
-  const id = document.getElementById("ticket-panel-select")?.value;
-  if (!id) { toast("Aucun panel sélectionné", "error"); return; }
-  const r = await apiPost("/ticket-panels/" + id + "/send", {}).catch(() => ({ success: false }));
-  r.success ? toast("Panel envoyé ✅", "success") : toast(r.error || "Erreur lors de l'envoi", "error");
-}
-
-async function updatePanel() {
-  const id = document.getElementById("ticket-panel-select")?.value;
-  if (!id) { toast("Aucun panel sélectionné", "error"); return; }
-  const r = await apiPost("/ticket-panels/" + id + "/send", { update: true }).catch(() => ({ success: false }));
-  r.success ? toast("Panel mis à jour ✅", "success") : toast(r.error || "Erreur", "error");
-}
-
-async function setCount() {
-  const id = document.getElementById("ticket-panel-select")?.value;
-  if (!id) { toast("Aucun panel sélectionné", "error"); return; }
-  const count = prompt("Définir le compteur de tickets à :");
-  if (count === null || isNaN(parseInt(count))) return;
-  const r = await apiPatch("/ticket-panels/" + id, { ticket_count: parseInt(count) }).catch(() => ({ success: false }));
-  r.success ? toast("Compteur mis à " + count + " ✅", "success") : toast(r.error || "Erreur", "error");
-}
-
-async function deletePanel() {
-  const id   = document.getElementById("ticket-panel-select")?.value;
-  const name = document.getElementById("ticket-panel-select")?.selectedOptions[0]?.text;
-  if (!id) { toast("Aucun panel sélectionné", "error"); return; }
-  if (!confirm("Supprimer le panel \"" + name + "\" ? Cette action est irréversible.")) return;
-  const r = await apiSupprimer("/ticket-panels/" + id).catch(() => ({ success: false }));
-  if (r.success) {
-    toast("Panel supprimé", "success");
-    const bar = document.getElementById("ticket-action-bar");
-    const detail = document.getElementById("ticket-panel-detail");
-    const noPanel = document.getElementById("ticket-no-panel");
-    if (bar) bar.style.display = "none";
-    if (detail) detail.style.display = "none";
-    if (noPanel) noPanel.style.display = "block";
     await loadTicketPanels();
   } else toast(r.error || "Erreur", "error");
 }

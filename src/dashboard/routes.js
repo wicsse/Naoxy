@@ -20,7 +20,7 @@ module.exports = (client, app) => {
     h1{font-size:22px;margin-bottom:8px;}p{color:#7c6fa0;font-size:13px;margin-bottom:28px;}
     a{display:block;background:#5865f2;color:#fff;padding:12px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;}
     a:hover{background:#4752c4;}</style></head>
-    <body><div class="card"><div class="logo">O</div><h1>Orbis Dashboard</h1><p>Connecte-toi avec Discord pour gérer ton serveur</p>
+    <body><div class="card"><div class="logo" style="background:none;padding:0;overflow:hidden;"><img src="https://i.ibb.co/xtkD3j28/image-2026-05-24-201343936.png" style="width:100%;height:100%;object-fit:cover;border-radius:16px;"></div><h1>Orbis Dashboard</h1><p>Connecte-toi avec Discord pour gérer ton serveur</p>
     <a href="/auth/discord">🔐 Se connecter avec Discord</a></div></body></html>`);
   });
 
@@ -107,7 +107,7 @@ app.get("/auth/me", (req, res) => { if (!req.session.user) return res.json({}); 
     </style></head>
     <body>
     <div class="topbar">
-      <div class="logo"><div class="logo-icon">O</div> Orbis Dashboard</div>
+      <div class="logo"><div class="logo-icon" style="background:none;padding:0;overflow:hidden;"><img src="https://i.ibb.co/xtkD3j28/image-2026-05-24-201343936.png" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div> Orbis Dashboard</div>
       <div class="user">
         <img src="https://cdn.discordapp.com/avatars/${req.session.user.id}/${req.session.user.avatar}.png" onerror="this.style.display='none'">
         ${req.session.user.username}
@@ -178,5 +178,370 @@ app.get("/auth/me", (req, res) => { if (!req.session.user) return res.json({}); 
     res.json(guild.channels.cache.map(c => ({ id: c.id, name: c.name, type: c.type, parentId: c.parentId })));
   });
 
+
+  router.get("/api/guild/:id/settings", requireAuth, async (req, res) => {
+    const { db, getGuildSettings } = require("../database/db.js");
+    res.json(getGuildSettings(req.params.id));
+  });
+  router.patch("/api/guild/:id/settings", requireAuth, async (req, res) => {
+    const { db, getGuildSettings } = require("../database/db.js");
+    const allowed = ["prefix","welcome_channel","welcome_message","leave_channel","leave_message","log_channel","auto_role","levels_enabled","levels_channel","levels_message","economy_enabled","suggestion_channel","report_channel","automod_enabled","automod_anti_spam","automod_anti_link","automod_badwords","ticket_category","ticket_support_role"];
+    const updates = Object.keys(req.body).filter(k => allowed.includes(k));
+    if (!updates.length) return res.json({ success: false });
+    const set = updates.map(k => k + " = ?").join(", ");
+    db.prepare("UPDATE guild_settings SET " + set + " WHERE guild_id = ?").run(...updates.map(k => req.body[k]), req.params.id);
+    res.json({ success: true, settings: getGuildSettings(req.params.id) });
+  });
+  router.get("/api/guild/:id/levels", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    res.json(db.prepare("SELECT * FROM member_levels WHERE guild_id=? ORDER BY xp DESC LIMIT 20").all(req.params.id));
+  });
+  router.get("/api/guild/:id/economy", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    res.json(db.prepare("SELECT * FROM member_economy WHERE guild_id=? ORDER BY (balance+bank) DESC LIMIT 20").all(req.params.id));
+  });
+  router.get("/api/guild/:id/tickets", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM tickets WHERE guild_id=? ORDER BY created_at DESC LIMIT 50").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.patch("/api/guild/:id/tickets/:tid/close", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const guild = client.guilds.cache.get(req.params.id);
+    const t = db.prepare("SELECT * FROM tickets WHERE id=? AND guild_id=?").get(req.params.tid, req.params.id);
+    if (!t) return res.status(404).json({ error: "Introuvable" });
+    db.prepare("UPDATE tickets SET status='closed' WHERE id=?").run(t.id);
+    try { const ch = guild.channels.cache.get(t.channel_id); if (ch) await ch.delete(); } catch(_) {}
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/warnings", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM warnings WHERE guild_id=? ORDER BY created_at DESC LIMIT 50").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/warnings", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { userId, reason } = req.body;
+    db.prepare("INSERT INTO warnings (guild_id, user_id, moderator_id, reason) VALUES (?,?,?,?)").run(req.params.id, userId, req.session.user.id, reason||"Dashboard");
+    res.json({ success: true });
+  });
+  router.delete("/api/guild/:id/warnings/:wid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM warnings WHERE id=? AND guild_id=?").run(req.params.wid, req.params.id);
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/sanctions", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM sanctions WHERE guild_id=? ORDER BY created_at DESC LIMIT 50").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.get("/api/guild/:id/bans", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    if (!guild) return res.json([]);
+    try { const bans = await guild.bans.fetch(); res.json(bans.map(b => ({ userId:b.user.id, username:b.user.username, avatar:b.user.displayAvatarURL({size:64}), reason:b.reason }))); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/bans/:uid/unban", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { await guild.members.unban(req.params.uid); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.get("/api/guild/:id/autoroles", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM autoroles WHERE guild_id=?").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/autoroles", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { roleId, type } = req.body;
+    db.prepare("INSERT OR IGNORE INTO autoroles (guild_id, role_id, type) VALUES (?,?,?)").run(req.params.id, roleId, type||"all");
+    res.json({ success: true });
+  });
+  router.delete("/api/guild/:id/autoroles/:rid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM autoroles WHERE guild_id=? AND role_id=?").run(req.params.id, req.params.rid);
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/commands", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM custom_commands WHERE guild_id=?").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/commands", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { name, response } = req.body;
+    try { db.prepare("INSERT INTO custom_commands (guild_id, name, response, created_by) VALUES (?,?,?,?)").run(req.params.id, name.toLowerCase(), response, req.session.user.id); res.json({ success: true }); } catch(e) { res.status(400).json({ error: "Commande existante" }); }
+  });
+  router.delete("/api/guild/:id/commands/:cid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM custom_commands WHERE id=? AND guild_id=?").run(req.params.cid, req.params.id);
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/shop", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM shop_items WHERE guild_id=?").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/shop", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { name, description, price, roleId, emoji } = req.body;
+    const r = db.prepare("INSERT INTO shop_items (guild_id, name, description, price, role_id, emoji) VALUES (?,?,?,?,?,?)").run(req.params.id, name, description||"", price, roleId||null, emoji||"🛍️");
+    res.json({ success: true, id: r.lastInsertRowid });
+  });
+  router.delete("/api/guild/:id/shop/:sid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM shop_items WHERE id=? AND guild_id=?").run(req.params.sid, req.params.id);
+    res.json({ success: true });
+  });
+  router.post("/api/guild/:id/members/:uid/kick", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.kick(req.body.reason||"Dashboard"); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/ban", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { await guild.members.ban(req.params.uid, { reason: req.body.reason||"Dashboard" }); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/timeout", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.timeout(parseInt(req.body.duration)||600000, req.body.reason||"Dashboard"); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/roles/add", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.roles.add(req.body.roleId); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/roles/remove", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.roles.remove(req.body.roleId); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/channels/:cid/send", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const ch = guild.channels.cache.get(req.params.cid); if (!ch||!ch.isTextBased()) return res.status(400).json({ error:"Salon invalide" }); const msg = req.body.embed ? await ch.send({ embeds:[{ title:req.body.title, description:req.body.content, color:0x7c3aed }] }) : await ch.send(req.body.content); res.json({ success: true, messageId: msg.id }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/roles", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const r = await guild.roles.create({ name:req.body.name||"Nouveau rôle", color:req.body.color||"#99aab5" }); res.json({ success: true, role: { id:r.id, name:r.name, color:r.hexColor } }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.delete("/api/guild/:id/roles/:rid", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const r = guild.roles.cache.get(req.params.rid); if (!r) return res.status(404).json({ error:"Rôle introuvable" }); await r.delete(); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  app.use(router);
+
+
+  router.get("/api/guild/:id/settings", requireAuth, async (req, res) => {
+    const { db, getGuildSettings } = require("../database/db.js");
+    res.json(getGuildSettings(req.params.id));
+  });
+  router.patch("/api/guild/:id/settings", requireAuth, async (req, res) => {
+    const { db, getGuildSettings } = require("../database/db.js");
+    const allowed = ["prefix","welcome_channel","welcome_message","leave_channel","leave_message","log_channel","auto_role","levels_enabled","levels_channel","levels_message","economy_enabled","suggestion_channel","report_channel","automod_enabled","automod_anti_spam","automod_anti_link","automod_badwords","ticket_category","ticket_support_role"];
+    const updates = Object.keys(req.body).filter(k => allowed.includes(k));
+    if (!updates.length) return res.json({ success: false });
+    const set = updates.map(k => k + " = ?").join(", ");
+    db.prepare("UPDATE guild_settings SET " + set + " WHERE guild_id = ?").run(...updates.map(k => req.body[k]), req.params.id);
+    res.json({ success: true, settings: getGuildSettings(req.params.id) });
+  });
+  router.get("/api/guild/:id/levels", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    res.json(db.prepare("SELECT * FROM member_levels WHERE guild_id=? ORDER BY xp DESC LIMIT 20").all(req.params.id));
+  });
+  router.get("/api/guild/:id/economy", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    res.json(db.prepare("SELECT * FROM member_economy WHERE guild_id=? ORDER BY (balance+bank) DESC LIMIT 20").all(req.params.id));
+  });
+  router.get("/api/guild/:id/tickets", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM tickets WHERE guild_id=? ORDER BY created_at DESC LIMIT 50").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.patch("/api/guild/:id/tickets/:tid/close", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const guild = client.guilds.cache.get(req.params.id);
+    const t = db.prepare("SELECT * FROM tickets WHERE id=? AND guild_id=?").get(req.params.tid, req.params.id);
+    if (!t) return res.status(404).json({ error: "Introuvable" });
+    db.prepare("UPDATE tickets SET status='closed' WHERE id=?").run(t.id);
+    try { const ch = guild.channels.cache.get(t.channel_id); if (ch) await ch.delete(); } catch(_) {}
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/warnings", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM warnings WHERE guild_id=? ORDER BY created_at DESC LIMIT 50").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/warnings", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { userId, reason } = req.body;
+    db.prepare("INSERT INTO warnings (guild_id, user_id, moderator_id, reason) VALUES (?,?,?,?)").run(req.params.id, userId, req.session.user.id, reason||"Dashboard");
+    res.json({ success: true });
+  });
+  router.delete("/api/guild/:id/warnings/:wid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM warnings WHERE id=? AND guild_id=?").run(req.params.wid, req.params.id);
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/sanctions", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM sanctions WHERE guild_id=? ORDER BY created_at DESC LIMIT 50").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.get("/api/guild/:id/bans", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    if (!guild) return res.json([]);
+    try { const bans = await guild.bans.fetch(); res.json(bans.map(b => ({ userId:b.user.id, username:b.user.username, avatar:b.user.displayAvatarURL({size:64}), reason:b.reason }))); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/bans/:uid/unban", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { await guild.members.unban(req.params.uid); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.get("/api/guild/:id/autoroles", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM autoroles WHERE guild_id=?").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/autoroles", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { roleId, type } = req.body;
+    db.prepare("INSERT OR IGNORE INTO autoroles (guild_id, role_id, type) VALUES (?,?,?)").run(req.params.id, roleId, type||"all");
+    res.json({ success: true });
+  });
+  router.delete("/api/guild/:id/autoroles/:rid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM autoroles WHERE guild_id=? AND role_id=?").run(req.params.id, req.params.rid);
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/commands", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM custom_commands WHERE guild_id=?").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/commands", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { name, response } = req.body;
+    try { db.prepare("INSERT INTO custom_commands (guild_id, name, response, created_by) VALUES (?,?,?,?)").run(req.params.id, name.toLowerCase(), response, req.session.user.id); res.json({ success: true }); } catch(e) { res.status(400).json({ error: "Commande existante" }); }
+  });
+  router.delete("/api/guild/:id/commands/:cid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM custom_commands WHERE id=? AND guild_id=?").run(req.params.cid, req.params.id);
+    res.json({ success: true });
+  });
+  router.get("/api/guild/:id/shop", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try { res.json(db.prepare("SELECT * FROM shop_items WHERE guild_id=?").all(req.params.id)); } catch(e) { res.json([]); }
+  });
+  router.post("/api/guild/:id/shop", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { name, description, price, roleId, emoji } = req.body;
+    const r = db.prepare("INSERT INTO shop_items (guild_id, name, description, price, role_id, emoji) VALUES (?,?,?,?,?,?)").run(req.params.id, name, description||"", price, roleId||null, emoji||"🛍️");
+    res.json({ success: true, id: r.lastInsertRowid });
+  });
+  router.delete("/api/guild/:id/shop/:sid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM shop_items WHERE id=? AND guild_id=?").run(req.params.sid, req.params.id);
+    res.json({ success: true });
+  });
+  router.post("/api/guild/:id/members/:uid/kick", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.kick(req.body.reason||"Dashboard"); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/ban", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { await guild.members.ban(req.params.uid, { reason: req.body.reason||"Dashboard" }); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/timeout", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.timeout(parseInt(req.body.duration)||600000, req.body.reason||"Dashboard"); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/roles/add", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.roles.add(req.body.roleId); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/members/:uid/roles/remove", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const m = await guild.members.fetch(req.params.uid); await m.roles.remove(req.body.roleId); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/channels/:cid/send", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const ch = guild.channels.cache.get(req.params.cid); if (!ch||!ch.isTextBased()) return res.status(400).json({ error:"Salon invalide" }); const msg = req.body.embed ? await ch.send({ embeds:[{ title:req.body.title, description:req.body.content, color:0x7c3aed }] }) : await ch.send(req.body.content); res.json({ success: true, messageId: msg.id }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/roles", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const r = await guild.roles.create({ name:req.body.name||"Nouveau rôle", color:req.body.color||"#99aab5" }); res.json({ success: true, role: { id:r.id, name:r.name, color:r.hexColor } }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.delete("/api/guild/:id/roles/:rid", requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.id);
+    try { const r = guild.roles.cache.get(req.params.rid); if (!r) return res.status(404).json({ error:"Rôle introuvable" }); await r.delete(); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  app.use(router);
+
+
+  // ── Ticket Panels ──
+  router.get("/api/guild/:id/ticket-panels", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try {
+      const panels = db.prepare("SELECT * FROM ticket_panels WHERE guild_id=? ORDER BY created_at DESC").all(req.params.id);
+      res.json(panels.map(p => ({ ...p, categories: db.prepare("SELECT * FROM ticket_categories WHERE panel_id=? ORDER BY position ASC").all(p.id) })));
+    } catch(e) { res.json([]); }
+  });
+  router.get("/api/guild/:id/ticket-panels/:pid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    try {
+      const panel = db.prepare("SELECT * FROM ticket_panels WHERE id=? AND guild_id=?").get(req.params.pid, req.params.id);
+      if (!panel) return res.status(404).json({ error: "Panel introuvable" });
+      panel.categories = db.prepare("SELECT * FROM ticket_categories WHERE panel_id=? ORDER BY position ASC").all(panel.id);
+      res.json(panel);
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/ticket-panels", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { name, embed_title, embed_description, embed_color, button_label, button_style, welcome_message } = req.body;
+    const r = db.prepare("INSERT INTO ticket_panels (guild_id,name,embed_title,embed_description,embed_color,button_label,button_style,welcome_message) VALUES (?,?,?,?,?,?,?,?)").run(req.params.id, name||"Support", embed_title||"\uD83C\uDFAB Ouvrir un ticket", embed_description||"Clique sur le bouton pour ouvrir un ticket.", embed_color||"#7c3aed", button_label||"\uD83D\uDCE9 Ouvrir un ticket", button_style||"PRIMARY", welcome_message||"Bonjour {user} !");
+    res.json({ success: true, id: r.lastInsertRowid });
+  });
+  router.patch("/api/guild/:id/ticket-panels/:pid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const allowed = ["name","embed_title","embed_description","embed_color","button_label","button_style","welcome_message","support_role_id","default_category_id","channel_id"];
+    const updates = Object.keys(req.body).filter(k => allowed.includes(k));
+    if (!updates.length) return res.json({ success: false });
+    const set = updates.map(k => k + " = ?").join(", ");
+    db.prepare("UPDATE ticket_panels SET " + set + " WHERE id=? AND guild_id=?").run(...updates.map(k => req.body[k]), req.params.pid, req.params.id);
+    res.json({ success: true });
+  });
+  router.delete("/api/guild/:id/ticket-panels/:pid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM ticket_categories WHERE panel_id=?").run(req.params.pid);
+    db.prepare("DELETE FROM ticket_panels WHERE id=? AND guild_id=?").run(req.params.pid, req.params.id);
+    res.json({ success: true });
+  });
+  router.post("/api/guild/:id/ticket-panels/:pid/send", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+    const guild = client.guilds.cache.get(req.params.id);
+    const panel = db.prepare("SELECT * FROM ticket_panels WHERE id=? AND guild_id=?").get(req.params.pid, req.params.id);
+    if (!panel) return res.status(404).json({ error: "Panel introuvable" });
+    const channelId = req.body.channel_id || panel.channel_id;
+    if (!channelId) return res.status(400).json({ error: "Salon requis" });
+    const channel = guild.channels.cache.get(channelId);
+    if (!channel) return res.status(400).json({ error: "Salon invalide" });
+    const color = parseInt((panel.embed_color||"#7c3aed").replace("#",""), 16);
+    const embed = new EmbedBuilder().setColor(color).setTitle(panel.embed_title||"Ouvrir un ticket").setDescription(panel.embed_description||"Clique sur le bouton.");
+    const btnStyle = { PRIMARY: ButtonStyle.Primary, SECONDARY: ButtonStyle.Secondary, SUCCESS: ButtonStyle.Success, DANGER: ButtonStyle.Danger }[panel.button_style] || ButtonStyle.Primary;
+    const btn = new ButtonBuilder().setCustomId("ticket_open_panel_" + panel.id).setLabel(panel.button_label||"Ouvrir un ticket").setStyle(btnStyle);
+    const row = new ActionRowBuilder().addComponents(btn);
+    try {
+      const msg = await channel.send({ embeds: [embed], components: [row] });
+      db.prepare("UPDATE ticket_panels SET message_id=?, channel_id=? WHERE id=?").run(msg.id, channelId, panel.id);
+      res.json({ success: true });
+    } catch(e) { res.status(400).json({ error: e.message }); }
+  });
+  router.post("/api/guild/:id/ticket-panels/:pid/categories", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const { name, emoji, discord_category_id, support_role_id } = req.body;
+    if (!name) return res.status(400).json({ error: "name requis" });
+    const r = db.prepare("INSERT INTO ticket_categories (panel_id,guild_id,name,emoji,discord_category_id,support_role_id) VALUES (?,?,?,?,?,?)").run(req.params.pid, req.params.id, name, emoji||"\uD83C\uDFAB", discord_category_id||null, support_role_id||null);
+    res.json({ success: true, id: r.lastInsertRowid });
+  });
+  router.patch("/api/guild/:id/ticket-categories/:cid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    const allowed = ["name","emoji","discord_category_id","support_role_id","position"];
+    const updates = Object.keys(req.body).filter(k => allowed.includes(k));
+    if (!updates.length) return res.json({ success: false });
+    const set = updates.map(k => k + " = ?").join(", ");
+    db.prepare("UPDATE ticket_categories SET " + set + " WHERE id=? AND guild_id=?").run(...updates.map(k => req.body[k]), req.params.cid, req.params.id);
+    res.json({ success: true });
+  });
+  router.delete("/api/guild/:id/ticket-categories/:cid", requireAuth, async (req, res) => {
+    const { db } = require("../database/db.js");
+    db.prepare("DELETE FROM ticket_categories WHERE id=? AND guild_id=?").run(req.params.cid, req.params.id);
+    res.json({ success: true });
+  });
+
+  app.use(router);
   return router;
 };
