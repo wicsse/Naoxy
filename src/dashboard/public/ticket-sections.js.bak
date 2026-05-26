@@ -1,0 +1,43 @@
+function renderSection(n){
+var s={};
+s.general='<div class="ts-card" style="margin-bottom:12px"><div class="ts-card-title">Support Team Roles</div><select class="ts-select" id="ts-support-roles"><option>-- Selectionner --</option></select></div>';
+s.category='<div class="ts-card"><div class="ts-card-title">Categories</div><div class="ts-grid"><div><label>Opened</label><select class="ts-select" id="ts-cat-open"><option>Aucune</option></select></div><div><label>Closed</label><select class="ts-select" id="ts-cat-closed"><option>Aucune</option></select></div></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'category\')">Sauvegarder</button></div>';
+s.ticket='<div class="ts-card"><div class="ts-card-title">Ticket</div><div class="ts-grid"><div><label>Open name</label><input class="ts-input" id="ts-open-name" placeholder="ticket-{username}"></div><div><label>Closed name</label><input class="ts-input" id="ts-close-name" placeholder="closed-{username}"></div></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'ticket\')">Sauvegarder</button></div>';
+s.moderator='<div class="ts-card"><div class="ts-card-title">Moderateur</div><div class="ts-btn-grid"><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Closed</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Opened</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Delete</button></div></div>';
+s.permissions='<div class="ts-card"><div class="ts-card-title">Permissions</div><div class="ts-btn-grid"><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Support Team</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Ticket Owner</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Additional</button></div></div>';
+s.buttons='<div class="ts-card"><div class="ts-card-title">Boutons</div><div class="ts-btn-grid"><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Create</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Close</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Re-open</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Delete</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Claim</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Transcript</button></div></div>';
+s.messages='<div class="ts-card"><div class="ts-card-title">Messages</div><div class="ts-btn-grid"><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Panel</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Opened</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">Closed</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">DM Close</button><button class="ts-edit-btn ts-green" onclick="showToast(\'ok\',\'success\')">DM Open</button></div></div>';
+s.transcript='<div class="ts-card"><div class="ts-card-title">Transcript</div><div style="margin-bottom:10px"><label>Channel</label><select class="ts-select" id="ts-transcript-channel"><option>Select one...</option></select></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'transcript\')">Sauvegarder</button></div>';
+s.logging='<div class="ts-card"><div class="ts-card-title">Logs</div><div style="margin-bottom:10px"><label>Channel</label><select class="ts-select" id="ts-log-channel"><option>Select one...</option></select></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'logging\')">Sauvegarder</button></div>';
+s.limits='<div class="ts-card"><div class="ts-card-title">Limites</div><div class="ts-grid"><div><label>Max Open</label><div style="display:flex;gap:6px;align-items:center"><button class="ts-counter-btn" onclick="adjustCounter(\'ts-open-max\',-1)">-</button><input class="ts-input" id="ts-open-max" type="number" value="1" style="text-align:center"><button class="ts-counter-btn" onclick="adjustCounter(\'ts-open-max\',1)">+</button></div></div></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'limits\')">Sauvegarder</button></div>';
+s.claiming='<div class="ts-card"><div class="ts-card-title">Reclamation</div><div style="margin-bottom:10px"><label>Claim Category</label><select class="ts-select" id="ts-claim-category"><option>-- Aucune --</option></select></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'claiming\')">Sauvegarder</button></div>';
+s.automation='<div class="ts-card"><div class="ts-card-title">Automatisation</div><div class="ts-card ts-toggle-card" style="margin-bottom:8px"><div class="ts-toggle-row"><span class="ts-toggle-label">Missing user check</span><label class="ts-toggle"><input type="checkbox" id="ts-missing-user"><span class="ts-slider"></span></label></div></div><div class="ts-card ts-toggle-card" style="margin-bottom:8px"><div class="ts-toggle-row"><span class="ts-toggle-label">DM on close</span><label class="ts-toggle"><input type="checkbox" id="ts-dm-close"><span class="ts-slider"></span></label></div></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'automation\')">Sauvegarder</button></div>';
+s.escalate='<div class="ts-card"><div class="ts-card-title">Escalader</div><div style="margin-bottom:10px"><label>Role</label><select class="ts-select" id="ts-escalate-role"><option>-- Aucun --</option></select></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'escalate\')">Sauvegarder</button></div>';
+s.panel='<div class="ts-card"><div class="ts-card-title">Panel</div><div style="margin-bottom:10px"><label>Buttons Per Row</label><div style="display:flex;gap:6px;align-items:center"><button class="ts-counter-btn" onclick="adjustCounter(\'ts-btn-per-row\',-1)">-</button><input class="ts-input" id="ts-btn-per-row" type="number" min="1" max="5" value="3" style="text-align:center;width:60px"><button class="ts-counter-btn" onclick="adjustCounter(\'ts-btn-per-row\',1)">+</button></div></div></div><div style="text-align:right;margin-top:8px"><button class="ts-save-btn" onclick="saveSection(\'panel\')">Sauvegarder</button></div>';
+s.integrations='<div class="ts-card"><div class="ts-card-title">Bloxlink</div><p style="font-size:13px;color:var(--muted);margin-bottom:12px">Integre Bloxlink pour Roblox.</p><div style="display:flex;gap:8px"><button class="ts-perm-btn ts-cyan" onclick="showToast(\'ok\',\'success\')">Cle API</button><button class="ts-perm-btn ts-orange" onclick="showToast(\'ok\',\'success\')">Verifier</button></div></div>';
+return s[n]||'<div class="ts-card"><p style="color:var(--muted)">En cours de developpement.</p></div>';
+}
+function openSection(name){
+var panel=document.getElementById("ticket-panel-detail");
+var sv=document.getElementById("ticket-section-view");
+var ab=document.getElementById("ticket-action-bar");
+if(panel)panel.style.display="none";
+if(ab)ab.style.display="none";
+if(sv){sv.style.display="block";
+document.getElementById("ticket-section-title").textContent=name;
+document.getElementById("ticket-section-content").innerHTML=renderSection(name);}}
+function closeSection(){
+var sv=document.getElementById("ticket-section-view");
+if(sv)sv.style.display="none";
+var pid=document.getElementById("ticket-panel-select");
+if(pid&&pid.value){
+var pd=document.getElementById("ticket-panel-detail");
+if(pd)pd.style.display="block";
+var ab=document.getElementById("ticket-action-bar");
+if(ab)ab.style.display="flex";}}
+function adjustCounter(id,d){
+var el=document.getElementById(id);
+if(!el)return;
+var v=parseInt(el.value)+d;
+el.value=Math.min(parseInt(el.max)||99,Math.max(parseInt(el.min)||0,v));}
+function saveSection(name){showToast("Sauvegarde!","success");}

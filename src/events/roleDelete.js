@@ -1,2 +1,11 @@
 const { logRoleDelete } = require("../handlers/logger.js");
-module.exports = { name: "roleDelete", async execute(role) { await logRoleDelete(role); } };
+const { checkRoleDelete } = require("../handlers/antinuke.js");
+module.exports = {
+  name: "roleDelete",
+  async execute(role) {
+    await Promise.all([
+      logRoleDelete(role),
+      checkRoleDelete(role),
+    ]);
+  }
+};

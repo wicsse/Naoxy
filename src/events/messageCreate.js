@@ -2,6 +2,41 @@ const { Events, EmbedBuilder } = require("discord.js");
 const { db, getMemberLevel, levelFromXp, xpForLevel, getGuildSettings } = require("../database/db.js");
 const { COLORS } = require("../utils/helpers.js");
 
+const aiMemoryMap = new Map();
+function getAiHistory(channelId) {
+  if (!aiMemoryMap.has(channelId)) aiMemoryMap.set(channelId, []);
+  return aiMemoryMap.get(channelId);
+}
+function addToHistory(channelId, role, content) {
+  const history = getAiHistory(channelId);
+  history.push({ role, content });
+  if (history.length > 20) history.splice(0, history.length - 20);
+}
+function buildSystemPrompt(settings, guild, botUser) {
+  const persona = settings.ai_persona || "Orbis";
+  const customPrompt = settings.ai_prompt || "";
+  return `Tu es ${persona}, un bot Discord créé par le owner du serveur "${guild.name}".
+Tu t'appelles ${persona}. Tu es unique et tu n'es pas un bot générique.
+Ce serveur s'appelle "${guild.name}" et compte ${guild.memberCount} membres.
+
+Commandes disponibles :
+🛡️ Modération : /ban, /kick, /mute, /warn, /clear, /logs
+🎫 Tickets : /ticket create, /ticket close, /ticket add
+💰 Économie : /balance, /daily, /pay, /shop, /leaderboard
+📈 Niveaux : /rank, /leaderboard, /setxp
+🎉 Giveaways : /giveaway start, /giveaway end, /giveaway reroll
+💾 Backup : /backup create, /backup load, /backup list, /backup delete, /backup info
+🎭 Rôles : /roles autorole add, /roles reactionrole create, /roles give, /roles take, /roles all
+
+RÈGLES ABSOLUES :
+- TOUJOURS répondre en français. Jamais en anglais. Même si le modèle veut écrire en anglais, tu écris en français.
+- Être naturel, amical et conversationnel. Pas robotique.
+- Ne jamais prétendre être un humain.
+- Ne jamais inventer d'informations (météo, actualités, etc.) que tu n'as pas.
+- Pour mentionner l'utilisateur, utilise son mention Discord (fourni dans le message).
+${customPrompt ? `\nInstructions supplémentaires :\n${customPrompt}` : ""}`;
+}
+
 module.exports = {
   name: Events.MessageCreate,
   async execute(message) {
@@ -65,6 +100,45 @@ module.exports = {
       } else {
         await message.react("✅").catch(() => {});
         db.prepare("UPDATE counting SET current_number = ?, last_user_id = ?, record = MAX(record, ?) WHERE guild_id = ?").run(num, uid, num, gid);
+      }
+    }
+
+    if (settings.ai_enabled && message.mentions.has(message.client.user)) {
+      if (settings.ai_channel && settings.ai_channel !== message.channelId) return;
+      const userMsg = message.content.replace(/<@!?\d+>/g, "").trim();
+      if (!userMsg) {
+        await message.reply(`Bonjour ${message.author} ! Comment puis-je t'aider ? 😊`);
+        return;
+      }
+      const key = process.env.GROQ_API_KEY;
+      if (!key) return;
+      try {
+        await message.channel.sendTyping();
+        const axios = require("axios");
+        const systemPrompt = buildSystemPrompt(settings, message.guild, message.client.user);
+        const history = getAiHistory(message.channelId);
+        addToHistory(message.channelId, "user", `${message.author} dit : ${userMsg}`);
+        const r = await axios.post(
+          "https://api.groq.com/openai/v1/chat/completions",
+          {
+            model: settings.ai_model || "llama-3.3-70b-versatile",
+            max_tokens: parseInt(settings.ai_max_tokens) || 500,
+            messages: [{ role: "system", content: systemPrompt }, ...history]
+          },
+          { headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" } }
+        );
+        const reply = r.data.choices[0].message.content;
+        addToHistory(message.channelId, "assistant", reply);
+        if (reply.length > 1990) {
+          const chunks = reply.match(/.{1,1990}/gs);
+          await message.reply(chunks[0]);
+          for (let i = 1; i < chunks.length; i++) await message.channel.send(chunks[i]);
+        } else {
+          await message.reply(reply);
+        }
+      } catch (e) {
+        console.error("[IA]", e.response?.data?.error?.message || e.message);
+        await message.reply("❌ Une erreur s'est produite avec l'IA. Réessaie dans un moment.");
       }
     }
   },

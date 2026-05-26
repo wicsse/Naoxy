@@ -191,3 +191,58 @@ db.prepare(`CREATE TABLE IF NOT EXISTS guild_settings (
   value TEXT,
   PRIMARY KEY (guild_id, key)
 )`).run();
+
+// ══ TICKET MIGRATION ══
+const ticketCols = [
+  "ALTER TABLE ticket_panels ADD COLUMN two_step_close INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN two_step_ticket INTEGER DEFAULT 1",
+  "ALTER TABLE ticket_panels ADD COLUMN auto_pin INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN ticket_padding INTEGER DEFAULT 4",
+  "ALTER TABLE ticket_panels ADD COLUMN category_open_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN category_closed_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN ticket_open_name TEXT DEFAULT 'Ticket-{count}'",
+  "ALTER TABLE ticket_panels ADD COLUMN ticket_close_name TEXT DEFAULT 'Closed-{count}'",
+  "ALTER TABLE ticket_panels ADD COLUMN support_role_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN additional_roles TEXT DEFAULT '[]'",
+  "ALTER TABLE ticket_panels ADD COLUMN transcript_channel_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN log_channel_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN log_ticket_created INTEGER DEFAULT 1",
+  "ALTER TABLE ticket_panels ADD COLUMN log_ticket_closed INTEGER DEFAULT 1",
+  "ALTER TABLE ticket_panels ADD COLUMN log_ticket_opened INTEGER DEFAULT 1",
+  "ALTER TABLE ticket_panels ADD COLUMN log_ticket_renamed INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN log_ticket_deleted INTEGER DEFAULT 1",
+  "ALTER TABLE ticket_panels ADD COLUMN log_transcript_saved INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN claiming_enabled INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN claim_name TEXT DEFAULT 'Claimed-{count}'",
+  "ALTER TABLE ticket_panels ADD COLUMN auto_save_transcript INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN dm_on_close INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN dm_on_create INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN select_style INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN thread_style INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN thread_channel_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN form_enabled INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN form_title TEXT DEFAULT 'Please fill this out'",
+  "ALTER TABLE ticket_panels ADD COLUMN form_questions TEXT DEFAULT '[]'",
+  "ALTER TABLE ticket_panels ADD COLUMN max_open_per_user INTEGER DEFAULT 1",
+  "ALTER TABLE ticket_panels ADD COLUMN max_open_total INTEGER DEFAULT 500",
+  "ALTER TABLE ticket_panels ADD COLUMN schedule_enabled INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN ticket_count INTEGER DEFAULT 0",
+  "ALTER TABLE ticket_panels ADD COLUMN open_roles TEXT DEFAULT '[]'",
+  "ALTER TABLE ticket_panels ADD COLUMN close_roles TEXT DEFAULT '[]'",
+  "ALTER TABLE ticket_panels ADD COLUMN ticket_open_message TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN ticket_close_question TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN panel_message_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN channel_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN dropdown_items TEXT DEFAULT '[]'",
+  "ALTER TABLE ticket_panels ADD COLUMN escalate_panels TEXT DEFAULT '[]'",
+  "ALTER TABLE ticket_panels ADD COLUMN buttons_per_row INTEGER DEFAULT 5",
+];
+for (const sql of ticketCols) { try { db.exec(sql); } catch(_) {} }
+
+db.exec(`CREATE TABLE IF NOT EXISTS ticket_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  panel_id INTEGER, guild_id TEXT, type TEXT,
+  content TEXT, embed_title TEXT, embed_description TEXT,
+  embed_color TEXT, embed_footer TEXT,
+  UNIQUE(panel_id, type)
+);`);

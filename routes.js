@@ -450,6 +450,67 @@ module.exports = (client, app) => {
     res.json(db.prepare("SELECT * FROM suggestions WHERE guild_id = ? ORDER BY created_at DESC LIMIT 30").all(req.guild.id));
   });
 
+  // ── Status ──
+  router.get("/api/guild/:guildId/status", requireAuth, requireGuildAccess, (req, res) => {
+    res.json({ online: true, ping: client.ws.ping });
+  });
+
+  // ── Permissions ──
+  router.get("/api/guild/:guildId/permissions", requireAuth, requireGuildAccess, (req, res) => {
+    const userGuild = req.session.user.guilds.find(g => g.id === req.guild.id);
+    res.json({ permissions: userGuild?.permissions || 0 });
+  });
+
+  // ── Anti-Nuke alerts ──
+  router.get("/api/guild/:guildId/antinuke/alerts", requireAuth, requireGuildAccess, (req, res) => {
+    try {
+      const alerts = db.prepare("SELECT * FROM antinuke_alerts WHERE guild_id = ? ORDER BY created_at DESC LIMIT 50").all(req.guild.id);
+      res.json(alerts);
+    } catch (e) { res.json([]); }
+  });
+
+  // ── Music ──
+  router.get("/api/guild/:guildId/music/player", requireAuth, requireGuildAccess, (req, res) => {
+    res.json({ playing: false, queue: [], current: null });
+  });
+
+  router.get("/api/guild/:guildId/music/stats", requireAuth, requireGuildAccess, (req, res) => {
+    res.json({ totalPlayed: 0 });
+  });
+
+
+  router.get('/api/guild/:guildId/status', requireAuth, requireGuildAccess, (req, res) => {
+    res.json({ online: true, ping: client.ws.ping });
+  });
+  router.get('/api/guild/:guildId/permissions', requireAuth, requireGuildAccess, (req, res) => {
+    const userGuild = req.session.user.guilds.find(g => g.id === req.guild.id);
+    res.json({ permissions: userGuild?.permissions || 0 });
+  });
+  router.get('/api/guild/:guildId/antinuke/alerts', requireAuth, requireGuildAccess, (req, res) => {
+    try { res.json(db.prepare('SELECT * FROM antinuke_alerts WHERE guild_id = ? ORDER BY created_at DESC LIMIT 50').all(req.guild.id)); }
+    catch (e) { res.json([]); }
+  });
+  router.get('/api/guild/:guildId/music/player', requireAuth, requireGuildAccess, (req, res) => {
+    res.json({ playing: false, queue: [], current: null });
+  });
+  router.get('/api/guild/:guildId/music/stats', requireAuth, requireGuildAccess, (req, res) => {
+    res.json({ totalPlayed: 0 });
+  });
+  router.get('/api/guild/:guildId/giveaways', requireAuth, requireGuildAccess, (req, res) => {
+    try { res.json(db.prepare('SELECT * FROM giveaways WHERE guild_id = ?').all(req.guild.id)); }
+    catch (e) { res.json([]); }
+  });
+  router.get('/api/guild/:guildId/audit-log', requireAuth, requireGuildAccess, async (req, res) => {
+    try { const logs = await req.guild.fetchAuditLogs({ limit: 20 }); res.json(logs.entries.map(e => ({ id: e.id, action: e.action, executorId: e.executor?.id, targetId: e.target?.id, reason: e.reason, createdAt: e.createdAt }))); }
+    catch (e) { res.json([]); }
+  });
+  router.get('/api/guild/:guildId/backups', requireAuth, requireGuildAccess, (req, res) => {
+    try { res.json(db.prepare('SELECT * FROM backups WHERE guild_id = ?').all(req.guild.id)); }
+    catch (e) { res.json([]); }
+  });
+  router.get('/api/guild/:guildId/ai/stats', requireAuth, requireGuildAccess, (req, res) => {
+    res.json({ totalMessages: 0, enabled: false });
+  });
   app.use(router);
   return router;
 };

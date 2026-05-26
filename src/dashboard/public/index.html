@@ -4,179 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orbis Dashboard</title>
+<link rel="stylesheet" href="/theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #07050f; --bg2: #0e0a1a; --bg3: #131020; --bg4: #1a1430;
-  --border: rgba(124,58,237,0.15); --border-h: rgba(124,58,237,0.4);
-  --purple: #7c3aed; --purple-l: #a78bfa; --purple-dim: rgba(124,58,237,0.08);
-  --text: #ede9fe; --muted: #7c6fa0; --dim: #4a4060;
-  --green: #10b981; --red: #ef4444; --yellow: #f59e0b; --blue: #3b82f6;
-  --r: 10px; --sidebar: 230px;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;display:flex;min-height:100vh;overflow-x:hidden;}
-
-/* ── Sidebar ── */
-.sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;}
-.sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border);}
-.sb-logo{padding:20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
-.sb-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--purple),var(--purple-l));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;}
-.sb-logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
-.sb-server{margin:12px 10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:9px;}
-.sb-server-icon{width:26px;height:26px;border-radius:7px;overflow:hidden;flex-shrink:0;background:var(--purple);}
-.sb-server-icon img{width:100%;height:100%;object-fit:cover;}
-.sb-server-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-.sb-section{padding:16px 14px 4px;font-size:10px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase;}
-.sb-item{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:1px 6px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .15s;position:relative;border:1px solid transparent;}
-.sb-item:hover{background:var(--purple-dim);color:var(--text);}
-.sb-item.active{background:var(--purple-dim);color:var(--purple-l);border-color:var(--border);}
-.sb-item.active::before{content:'';position:absolute;left:-6px;top:50%;transform:translateY(-50%);width:3px;height:14px;background:var(--purple);border-radius:2px;}
-.sb-icon{font-size:15px;width:16px;text-align:center;flex-shrink:0;}
-.sb-badge{margin-left:auto;background:var(--purple);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600;}
-.sb-footer{margin-top:auto;padding:12px 10px;border-top:1px solid var(--border);}
-.sb-user{display:flex;align-items:center;gap:9px;}
-.sb-user-av{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;}
-.sb-user-av img{width:100%;height:100%;object-fit:cover;}
-.sb-user-info{flex:1;overflow:hidden;}
-.sb-user-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sb-user-role{font-size:10px;color:var(--muted);}
-
-/* ── Main ── */
-.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
-.topbar{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);position:sticky;top:0;z-index:50;}
-.page-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;}
-.page-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.topbar-actions{display:flex;gap:8px;align-items:center;}
-.content{padding:24px;flex:1;}
-.page{display:none;animation:fadeIn .2s ease;}
-.page.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── Components ── */
-.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
-.btn-primary{background:var(--purple);color:#fff;}.btn-primary:hover{background:#6d28d9;}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-ghost:hover{border-color:var(--border-h);color:var(--text);}
-.btn-danger{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2);}.btn-danger:hover{background:rgba(239,68,68,0.2);}
-.btn-success{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);}
-.btn-sm{padding:4px 10px;font-size:11px;border-radius:6px;}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:border-color .2s;}
-.card:hover{border-color:rgba(124,58,237,0.25);}
-.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.card-title .ct-sub{color:var(--muted);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:400;margin-left:auto;}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
-.mb{margin-bottom:14px;}
-
-/* ── Stat cards ── */
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden;transition:border-color .2s;}
-.stat-card:hover{border-color:var(--border-h);}
-.stat-card::after{content:'';position:absolute;top:0;right:0;width:50px;height:50px;background:var(--purple-dim);border-radius:0 var(--r) 0 50px;}
-.stat-icon{font-size:18px;margin-bottom:10px;}
-.stat-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;}
-.stat-label{font-size:11px;color:var(--muted);margin-top:3px;}
-.stat-change{font-size:10px;margin-top:6px;color:var(--dim);}
-
-/* ── Form ── */
-.form-group{margin-bottom:14px;}
-.form-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;font-weight:500;letter-spacing:.3px;}
-.input{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%;}
-.input:focus{border-color:var(--purple);}
-.input::placeholder{color:var(--dim);}
-select.input{cursor:pointer;}
-textarea.input{resize:vertical;min-height:72px;line-height:1.5;}
-
-/* ── Toggle ── */
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
-.toggle-row:last-of-type{border-bottom:none;}
-.toggle-label{font-size:13px;font-weight:500;}
-.toggle-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.toggle{position:relative;width:38px;height:20px;flex-shrink:0;}
-.toggle input{opacity:0;width:0;height:0;}
-.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--bg3);border:1px solid var(--border);border-radius:20px;transition:.2s;}
-.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:2px;bottom:2px;background:var(--dim);border-radius:50%;transition:.2s;}
-.toggle input:checked+.toggle-slider{background:var(--purple);border-color:var(--purple);}
-.toggle input:checked+.toggle-slider:before{transform:translateX(18px);background:#fff;}
-
-/* ── Table ── */
-.table-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;}
-th{text-align:left;padding:8px 12px;font-size:10px;color:var(--dim);font-weight:600;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);}
-td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:rgba(124,58,237,0.04);}
-.member-cell{display:flex;align-items:center;gap:9px;}
-.member-av{width:26px;height:26px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
-.member-av img{width:100%;height:100%;object-fit:cover;}
-
-/* ── Badges ── */
-.badge{padding:2px 8px;border-radius:8px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:4px;}
-.badge-admin{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.15);}
-.badge-mod{background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.15);}
-.badge-member{background:var(--purple-dim);color:var(--purple-l);border:1px solid var(--border);}
-.badge-green{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.15);}
-.badge-red{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.15);}
-.badge-yellow{background:rgba(245,158,11,0.1);color:var(--yellow);border:1px solid rgba(245,158,11,0.15);}
-.badge-blue{background:rgba(59,130,246,0.1);color:var(--blue);border:1px solid rgba(59,130,246,0.15);}
-.role-pill{padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;display:inline-block;margin:1px;}
-
-/* ── Status dot ── */
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0;}
-.dot-online{background:var(--green);}
-.dot-idle{background:var(--yellow);}
-.dot-dnd{background:var(--red);}
-.dot-offline{background:var(--dim);}
-
-/* ── Search bar ── */
-.search-bar{display:flex;gap:8px;margin-bottom:14px;}
-
-/* ── Activity list ── */
-.activity-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg3);border-radius:8px;margin-bottom:6px;border:1px solid transparent;transition:border-color .15s;}
-.activity-item:hover{border-color:var(--border);}
-.activity-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.activity-text{flex:1;font-size:13px;line-height:1.4;}
-.activity-time{font-size:10px;color:var(--dim);white-space:nowrap;}
-
-/* ── Toast ── */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;transform:translateY(80px);opacity:0;transition:all .25s;z-index:9999;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.success{border-color:rgba(16,185,129,0.4);}
-.toast.error{border-color:rgba(239,68,68,0.4);}
-
-/* ── Modal ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px);}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:440px;max-width:90vw;transform:scale(0.95);transition:transform .2s;}
-.modal-overlay.open .modal{transform:scale(1);}
-.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
-.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;}
-.modal-close:hover{color:var(--text);}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
-
-/* ── Loading ── */
-.loading{display:flex;align-items:center;justify-content:center;padding:48px;color:var(--muted);gap:10px;}
-.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── Empty state ── */
-.empty{text-align:center;padding:48px 24px;color:var(--muted);}
-.empty-icon{font-size:36px;margin-bottom:12px;}
-.empty-text{font-size:13px;}
-
-/* ── Bar chart ── */
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.bar-lbl{width:80px;font-size:11px;color:var(--muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.bar-track{flex:1;height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;}
-.bar-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple-l));border-radius:4px;transition:width .5s ease;}
-.bar-val{width:28px;font-size:11px;color:var(--muted);text-align:right;}
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-::-webkit-scrollbar-thumb:hover{background:var(--border-h);}
-</style>
 </head>
 <body>
 
@@ -207,11 +36,27 @@ tr:hover td{background:rgba(124,58,237,0.04);}
   <div class="sb-item" data-page="logs"><span class="sb-icon">📋</span>Logs</div>
   <div class="sb-item" data-page="commands"><span class="sb-icon">💬</span>Commandes</div>
 
+  <div class="sb-section">Avancé</div>
+  <div class="sb-item" data-page="permissions"><span class="sb-icon">🔐</span>Permissions</div>
+  <div class="sb-item" data-page="reactionroles"><span class="sb-icon">🏷️</span>Rôles de réaction</div>
+  <div class="sb-item" data-page="giveaways"><span class="sb-icon">🎉</span>Giveaways<span class="sb-badge" id="badgeGiveaways">—</span></div>
+  <div class="sb-item" data-page="webhooks"><span class="sb-icon">🔗</span>Webhooks</div>
+  <div class="sb-item" data-page="suggestions"><span class="sb-icon">💡</span>Suggestions</div>
+  <div class="sb-item" data-page="verification"><span class="sb-icon">✅</span>Vérification</div>
+  <div class="sb-item" data-page="tempchannel"><span class="sb-icon">🔊</span>Temp Channels</div>
+
   <div class="sb-section">Modules</div>
   <div class="sb-item" data-page="economy"><span class="sb-icon">💰</span>Économie</div>
   <div class="sb-item" data-page="levels"><span class="sb-icon">📈</span>Niveaux</div>
   <div class="sb-item" data-page="shop"><span class="sb-icon">🛍️</span>Boutique</div>
   <div class="sb-item" data-page="broadcast"><span class="sb-icon">📢</span>Broadcast</div>
+  <div class="sb-item" data-page="music"><span class="sb-icon">🎵</span>Musique</div>
+  <div class="sb-item" data-page="antinuke"><span class="sb-icon">🛡️</span>Anti-Nuke</div>
+  <div class="sb-item" data-page="auditlog"><span class="sb-icon">📜</span>Audit Logs</div>
+  <div class="sb-item" data-page="backup"><span class="sb-icon">💾</span>Sauvegardes</div>
+  <div class="sb-item" data-page="ai"><span class="sb-icon">🧠</span>IA / Chatbot</div>
+  <div class="sb-item" data-page="statistics"><span class="sb-icon">📊</span>Statistiques</div>
+  <div class="sb-item" data-page="premium"><span class="sb-icon">⭐</span>Premium</div>
 
   <div class="sb-footer">
     <div class="sb-user">
@@ -233,6 +78,10 @@ tr:hover td{background:rgba(124,58,237,0.04);}
       <div class="page-sub" id="pageSub">Chargement...</div>
     </div>
     <div class="topbar-actions">
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" title="Menu">☰</button>
+      <div class="status-indicator status-online" id="bot-status-indicator">
+        <span class="dot dot-online"></span><span id="bot-status-label">Bot en ligne</span>
+      </div>
       <button class="btn btn-ghost" onclick="refreshPage()">↻ Actualiser</button>
     </div>
   </div>
@@ -340,9 +189,9 @@ tr:hover td{background:rgba(124,58,237,0.04);}
       <div class="grid-2">
         <div class="card">
           <div class="card-title">🤖 Protection automatique</div>
-          <div class="toggle-row"><div><div class="toggle-label">AutoMod activé</div><div class="toggle-sub">Active toutes les protections</div></div><label class="toggle"><input type="checkbox" id="s-automod_enabled" onchange="autoSave('automod_enabled',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-label">Anti-spam</div><div class="toggle-sub">Limite les messages répétitifs</div></div><label class="toggle"><input type="checkbox" id="s-automod_anti_spam" onchange="autoSave('automod_anti_spam',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-label">Anti-liens</div><div class="toggle-sub">Supprime les liens non autorisés</div></div><label class="toggle"><input type="checkbox" id="s-automod_anti_link" onchange="autoSave('automod_anti_link',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">AutoMod activé</div><div class="toggle-sub">Active toutes les protections</div></div><label class="toggle"><input type="checkbox" id="s-automod_enabled" onchange="autoSauvegarder('automod_enabled',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-spam</div><div class="toggle-sub">Limite les messages répétitifs</div></div><label class="toggle"><input type="checkbox" id="s-automod_anti_spam" onchange="autoSauvegarder('automod_anti_spam',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-liens</div><div class="toggle-sub">Supprime les liens non autorisés</div></div><label class="toggle"><input type="checkbox" id="s-automod_anti_link" onchange="autoSauvegarder('automod_anti_link',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
         </div>
         <div class="card">
           <div class="card-title">🚫 Mots bannis</div>
@@ -360,7 +209,7 @@ tr:hover td{background:rgba(124,58,237,0.04);}
         <select class="input" id="ticket-panel-select" onchange="loadPanelDetails()" style="max-width:280px;background:var(--bg3)">
           <option value="">— Sélectionner un panel —</option>
         </select>
-        <button class="btn btn-primary" onclick="openCreatePanelModal()" style="background:#7c3aed;border:none;padding:7px 16px;border-radius:6px;font-weight:600">+ Nouveau Panel</button>
+        <button class="btn btn-primary" onclick="openCréerPanelModal()" style="background:#7c3aed;border:none;padding:7px 16px;border-radius:6px;font-weight:600">+ Nouveau Panel</button>
       </div>
 
       <!-- Boutons action style Ticket Tool -->
@@ -373,45 +222,46 @@ tr:hover td{background:rgba(124,58,237,0.04);}
         <button onclick="deletePanel()" style="padding:7px 18px;border-radius:6px;border:none;background:#ef4444;color:#fff;cursor:pointer;font-size:13px;font-weight:600">Supprimer</button>
       </div>
 
+      <div id="ticket-section-view" style="display:none;padding:16px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><button onclick="closeSection()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:6px;cursor:pointer">← Retour</button><h2 id="ticket-section-title" style="font-size:16px;font-weight:600"></h2></div><div id="ticket-section-content"></div></div>
       <div id="ticket-panel-detail" style="display:none">
 
         <!-- General Ticket Options -->
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px">
           <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.05em">Options Générales des Tickets</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-            <div onclick="openSection('general')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Général</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Équipe support et options générales</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('category')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Catégorie</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options de catégorie pour tickets ouverts/fermés.</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('ticket')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Ticket</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options générales du ticket</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('moderator')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Modérateur</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options des messages modérateur</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('permissions')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Permissions</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options de permissions</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('buttons')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Boutons</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Liste rapide de tous les boutons</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('messages')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Messages</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Liste rapide de tous les messages</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('escalate')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Escalader</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options d'escalade</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('general')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Général</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Équipe support et options générales</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('category')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Catégorie</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options de catégorie pour tickets ouverts/fermés.</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('ticket')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Ticket</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options générales du ticket</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('moderator')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Modérateur</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options des messages modérateur</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('permissions')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Permissions</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options de permissions</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('buttons')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Boutons</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Liste rapide de tous les boutons</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('messages')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Messages</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Liste rapide de tous les messages</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('escalate')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Escalader</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options d'escalade</div></div><span style="color:var(--muted)">›</span></div>
           </div>
         </div>
 
-        <!-- Panel Settings -->
+        <!-- Paramètres du panel -->
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px">
           <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.05em">Paramètres du Panel</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-            <div onclick="openSection('panel')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Panel</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options du message pour créer des tickets</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('command_style')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Style Commande</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Créer des tickets via commandes.</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('dropdown_style')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Style Menu Déroulant</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Créer des tickets via menu déroulant.</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('thread_style')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Style Thread</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Tickets en threads plutôt qu'en salons.</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('forms')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Formulaires</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options des formulaires</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('panel')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Panel</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options du message pour créer des tickets</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('command_style')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Style Commande</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Créer des tickets via commandes.</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('dropdown_style')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Style Menu Déroulant</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Créer des tickets via menu déroulant.</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('thread_style')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Style Thread</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Tickets en threads plutôt qu'en salons.</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('forms')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Formulaires</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options des formulaires</div></div><span style="color:var(--muted)">›</span></div>
           </div>
         </div>
 
-        <!-- Advanced Settings -->
+        <!-- Paramètres avancés -->
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px">
           <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.05em">Paramètres Avancés</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-            <div onclick="openSection('transcript')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Transcript</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options pour sauvegarder vos transcripts</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('logging')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Logs</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options pour les logs du serveur</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('automation')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Automatisation</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options d'automatisation</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('limits')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Limites</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Limites et planification</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('claiming')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Réclamation</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options de réclamation</div></div><span style="color:var(--muted)">›</span></div>
-            <div onclick="openSection('integrations')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'"><div><div style="font-weight:600;font-size:14px">Intégrations</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Intégrations de bots externes</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('transcript')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Transcript</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options pour sauvegarder vos transcripts</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('logging')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Logs</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options pour les logs du serveur</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('automation')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Automatisation</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options d'automatisation</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('limits')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Limites</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Limites et planification</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('claiming')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Réclamation</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Options de réclamation</div></div><span style="color:var(--muted)">›</span></div>
+            <div onclick="openSection('integrations')" style="background:#12101e;border:1px solid #2d2640;border-radius:10px;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#2d2640'"><div><div style="font-weight:600;font-size:14px">Intégrations</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Intégrations de bots externes</div></div><span style="color:var(--muted)">›</span></div>
           </div>
         </div>
 
@@ -433,11 +283,11 @@ tr:hover td{background:rgba(124,58,237,0.04);}
               </div>
               <div>
                 <div style="font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px">Message du Panel <span style="background:var(--bg3);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;cursor:help" title="Le message affiché dans le panel">?</span></div>
-                <button class="btn btn-primary" onclick="openSection('panel')" style="width:100%;background:#22c55e;border:none;padding:9px;border-radius:6px;font-weight:600;cursor:pointer">Edit Message du Panel</button>
+                <button class="btn btn-primary" onclick="openSection('panel')" style="width:100%;background:#22c55e;border:none;padding:9px;border-radius:6px;font-weight:600;cursor:pointer">Modifier le message du Panel</button>
               </div>
               <div>
                 <div style="font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px">Message du Ticket <span style="background:var(--bg3);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;cursor:help" title="Le message affiché à l'ouverture du ticket">?</span></div>
-                <button class="btn btn-primary" onclick="openSection('ticket')" style="width:100%;background:#22c55e;border:none;padding:9px;border-radius:6px;font-weight:600;cursor:pointer">Edit Message du Ticket</button>
+                <button class="btn btn-primary" onclick="openSection('ticket')" style="width:100%;background:#22c55e;border:none;padding:9px;border-radius:6px;font-weight:600;cursor:pointer">Modifier le message du Ticket</button>
               </div>
             </div>
             <div style="margin-top:14px;text-align:right">
@@ -463,7 +313,7 @@ tr:hover td{background:rgba(124,58,237,0.04);}
     <div class="page" id="page-roles">
       <div class="search-bar">
         <input class="input" type="text" placeholder="🔍 Filtrer les rôles..." id="roleSearch" oninput="filterRoles()">
-        <button class="btn btn-primary" onclick="openCreateRoleModal()">+ Créer un rôle</button>
+        <button class="btn btn-primary" onclick="openCréerRoleModal()">+ Créer un rôle</button>
       </div>
       <div class="card">
         <div class="table-wrap">
@@ -526,7 +376,7 @@ tr:hover td{background:rgba(124,58,237,0.04);}
         <div class="card-title">💬 Commandes personnalisées</div>
         <div class="search-bar">
           <input class="input" type="text" placeholder="🔍 Filtrer..." id="cmdSearch" oninput="filterCommands()">
-          <button class="btn btn-primary" onclick="openCreateCmdModal()">+ Créer</button>
+          <button class="btn btn-primary" onclick="openCréerCmdModal()">+ Créer</button>
         </div>
         <div class="table-wrap">
           <table>
@@ -579,7 +429,7 @@ tr:hover td{background:rgba(124,58,237,0.04);}
     <div class="page" id="page-shop">
       <div class="search-bar">
         <input class="input" type="text" placeholder="🔍 Filtrer..." id="shopSearch" oninput="filterShop()">
-        <button class="btn btn-primary" onclick="openAddShopModal()">+ Ajouter un article</button>
+        <button class="btn btn-primary" onclick="openAjouterShopModal()">+ Ajouter un article</button>
       </div>
       <div class="card">
         <div class="table-wrap">
@@ -600,6 +450,584 @@ tr:hover td{background:rgba(124,58,237,0.04);}
         <div id="broadcast-embed-fields" style="display:none"><div class="form-group"><label class="form-label">Titre de l'embed</label><input class="input" id="broadcast-title" type="text"></div></div>
         <div class="form-group"><label class="form-label">Message</label><textarea class="input" id="broadcast-content" rows="5" placeholder="Tape ton message ici..."></textarea></div>
         <button class="btn btn-primary" onclick="sendBroadcast()">📤 Envoyer</button>
+      </div>
+    </div>
+
+
+    <!-- ════ PERMISSIONS ════ -->
+    <div class="page" id="page-permissions">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔐 Permissions par rôle</div>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:14px">Définissez quels rôles peuvent utiliser certaines commandes ou fonctionnalités du bot.</p>
+          <div class="form-group"><label class="form-label">Rôle</label><select class="input" id="perm-role-select"></select></div>
+          <div id="perm-list" style="margin-top:12px">
+            <div class="toggle-row"><div><div class="toggle-label">Modération (kick/ban/warn)</div><div class="toggle-sub">Accès aux commandes de modération</div></div><label class="toggle"><input type="checkbox" id="perm-mod"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Gestion des tickets</div><div class="toggle-sub">Fermer, transférer les tickets</div></div><label class="toggle"><input type="checkbox" id="perm-tickets"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Commandes économie (admin)</div><div class="toggle-sub">Ajouter/retirer des coins</div></div><label class="toggle"><input type="checkbox" id="perm-economy"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Gestion des giveaways</div><div class="toggle-sub">Créer et terminer les giveaways</div></div><label class="toggle"><input type="checkbox" id="perm-giveaway"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Accès au panel dashboard</div><div class="toggle-sub">Connexion au dashboard web</div></div><label class="toggle"><input type="checkbox" id="perm-dashboard"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="toggle-label">Musique (DJ)</div><div class="toggle-sub">Contrôle du lecteur musical</div></div><label class="toggle"><input type="checkbox" id="perm-music"><span class="toggle-slider"></span></label></div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px" onclick="savePermissions()">💾 Sauvegarder les permissions</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Permissions actuelles</div>
+          <div id="permissions-summary">
+            <div class="empty"><div class="empty-icon">🔐</div><div class="empty-text">Sélectionnez un rôle pour voir ses permissions</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ REACTION ROLES ════ -->
+    <div class="page" id="page-reactionroles">
+      <div class="card mb">
+        <div class="card-title">🏷️ Rôles de réaction <span class="ct-sub">Attribution automatique de rôle par réaction</span></div>
+        <div class="search-bar">
+          <input class="input" type="text" placeholder="🔍 Filtrer..." id="rrSearch" oninput="filterRR()">
+          <button class="btn btn-primary" onclick="openAjouterRRModal()">+ Ajouter</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID du message</th><th>Emoji</th><th>Rôle</th><th>Salon</th><th>Actions</th></tr></thead>
+            <tbody id="rr-tbody">
+              <tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card" style="max-width:500px">
+        <div class="card-title">➕ Nouveau Reaction Role</div>
+        <div class="form-group"><label class="form-label">ID du message</label><input class="input" id="rr-msg-id" type="text" placeholder="ID du message Discord"></div>
+        <div class="form-group"><label class="form-label">Salon</label><select class="input" id="rr-channel"></select></div>
+        <div class="form-group"><label class="form-label">Emoji</label><input class="input" id="rr-emoji" type="text" placeholder="ex: ✅ ou emoji personnalisé"></div>
+        <div class="form-group"><label class="form-label">Rôle à attribuer</label><select class="input" id="rr-role"></select></div>
+        <div class="form-group"><label class="form-label">Mode</label>
+          <select class="input" id="rr-mode">
+            <option value="toggle">Toggle (ajout/retrait)</option>
+            <option value="add">Ajout seulement</option>
+            <option value="remove">Retrait seulement</option>
+            <option value="unique">Unique (un seul parmi groupe)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="addReactionRole()">➕ Ajouter le Reaction Role</button>
+      </div>
+    </div>
+
+    <!-- ════ GIVEAWAYS ════ -->
+    <div class="page" id="page-giveaways">
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">🎉 Créer un Giveaway</div>
+          <div class="form-group"><label class="form-label">Prix / Titre</label><input class="input" id="gw-prize" type="text" placeholder="ex: Nitro Discord 1 mois"></div>
+          <div class="form-group"><label class="form-label">Durée</label>
+            <select class="input" id="gw-duration">
+              <option value="3600">1 heure</option>
+              <option value="21600">6 heures</option>
+              <option value="86400" selected>24 heures</option>
+              <option value="259200">3 jours</option>
+              <option value="604800">7 jours</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Nombre de gagnants</label><input class="input" id="gw-winners" type="number" min="1" value="1"></div>
+          <div class="form-group"><label class="form-label">Salon</label><select class="input" id="gw-channel"></select></div>
+          <div class="form-group"><label class="form-label">Rôle requis (optionnel)</label><select class="input" id="gw-role-req"></select></div>
+          <div class="form-group"><label class="form-label">Message bonus (optionnel)</label><textarea class="input" id="gw-message" rows="2" placeholder="Message affiché dans l'embed du giveaway..."></textarea></div>
+          <button class="btn btn-primary" onclick="createGiveaway()">🎉 Lancer le Giveaway</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Statistiques Giveaways</div>
+          <div class="grid-2" style="margin-bottom:12px">
+            <div class="stat-card"><div class="stat-icon">🎉</div><div class="stat-val" id="gw-stat-total">—</div><div class="stat-label">Total créés</div></div>
+            <div class="stat-card"><div class="stat-icon">🟢</div><div class="stat-val" id="gw-stat-active">—</div><div class="stat-label">Actifs</div></div>
+          </div>
+          <div id="gw-preview" style="background:var(--bg3);border-left:4px solid var(--purple);border-radius:8px;padding:14px;margin-top:10px">
+            <div style="font-weight:700;font-size:14px">🎉 <span id="gw-prev-prize">GIVEAWAY</span></div>
+            <div style="color:var(--muted);font-size:12px;margin-top:6px">Finit dans : <strong id="gw-prev-duration">24h</strong></div>
+            <div style="color:var(--muted);font-size:12px">Gagnants : <strong id="gw-prev-winners">1</strong></div>
+            <div style="margin-top:10px;font-size:12px">Réagis avec 🎉 pour participer !</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎊 Giveaways actifs</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Prix</th><th>Fin dans</th><th>Participants</th><th>Gagnants</th><th>Salon</th><th>Actions</th></tr></thead>
+            <tbody id="giveaways-tbody">
+              <tr><td colspan="6"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ WEBHOOKS ════ -->
+    <div class="page" id="page-webhooks">
+      <div class="card mb">
+        <div class="card-title">🔗 Webhooks configurés</div>
+        <div class="search-bar">
+          <input class="input" type="text" placeholder="🔍 Filtrer..." id="whSearch">
+          <button class="btn btn-primary" onclick="openAjouterWebhookModal()">+ Ajouter</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nom</th><th>URL</th><th>Salon</th><th>Évènements</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="webhooks-tbody">
+              <tr><td colspan="6"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card" style="max-width:560px">
+        <div class="card-title">➕ Nouveau Webhook</div>
+        <div class="form-group"><label class="form-label">Nom</label><input class="input" id="wh-name" type="text" placeholder="ex: Logs GitHub"></div>
+        <div class="form-group"><label class="form-label">URL Webhook Discord</label><input class="input" id="wh-url" type="text" placeholder="https://discord.com/api/webhooks/..."></div>
+        <div class="form-group"><label class="form-label">Évènements déclencheurs</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px"><input type="checkbox" id="wh-ev-join"> Arrivée membre</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px"><input type="checkbox" id="wh-ev-leave"> Départ membre</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px"><input type="checkbox" id="wh-ev-ban"> Ban</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px"><input type="checkbox" id="wh-ev-msg"> Messages supprimés</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px"><input type="checkbox" id="wh-ev-role"> Changement de rôle</label>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="addWebhook()">🔗 Créer le Webhook</button>
+      </div>
+    </div>
+
+    <!-- ════ SUGGESTIONS ════ -->
+    <div class="page" id="page-suggestions">
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">⚙️ Configuration</div>
+          <div class="form-group"><label class="form-label">Salon des suggestions</label><select class="input" id="sug-channel"></select></div>
+          <div class="form-group"><label class="form-label">Salon de révision (staff)</label><select class="input" id="sug-staff-channel"></select></div>
+          <div class="toggle-row"><div><div class="toggle-label">Approbation staff requise</div><div class="toggle-sub">Les suggestions doivent être approuvées avant publication</div></div><label class="toggle"><input type="checkbox" id="sug-approval"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Notifier l'auteur</div><div class="toggle-sub">DM à l'auteur lors d'une décision</div></div><label class="toggle"><input type="checkbox" id="sug-notify"><span class="toggle-slider"></span></label></div>
+          <button class="btn btn-primary" style="margin-top:14px" onclick="saveSuggestionsConfig()">💾 Sauvegarder</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Statistiques suggestions</div>
+          <div class="grid-2">
+            <div class="stat-card"><div class="stat-icon">💡</div><div class="stat-val" id="sug-total">—</div><div class="stat-label">Total</div></div>
+            <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-val" id="sug-pending">—</div><div class="stat-label">En attente</div></div>
+            <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="sug-approved">—</div><div class="stat-label">Approuvées</div></div>
+            <div class="stat-card"><div class="stat-icon">❌</div><div class="stat-val" id="sug-denied">—</div><div class="stat-label">Refusées</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Dernières suggestions</div>
+        <div class="search-bar">
+          <input class="input" type="text" placeholder="🔍 Filtrer..." id="sugSearch">
+          <select class="input" style="width:160px" id="sugFilter">
+            <option value="">Tous les statuts</option>
+            <option value="pending">En attente</option>
+            <option value="approved">Approuvées</option>
+            <option value="denied">Refusées</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Auteur</th><th>Suggestion</th><th>👍</th><th>👎</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="suggestions-tbody">
+              <tr><td colspan="7"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ VERIFICATION ════ -->
+    <div class="page" id="page-verification">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">✅ Système de vérification</div>
+          <div class="toggle-row"><div><div class="toggle-label">Vérification activée</div><div class="toggle-sub">Les nouveaux membres doivent se vérifier</div></div><label class="toggle"><input type="checkbox" id="verif-enabled" onchange="autoSauvegarder('verif_enabled',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="form-group" style="margin-top:14px"><label class="form-label">Méthode de vérification</label>
+            <select class="input" id="verif-method">
+              <option value="reaction">Réaction sur message</option>
+              <option value="button">Bouton Discord</option>
+              <option value="captcha">Captcha textuel</option>
+              <option value="question">Question personnalisée</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Salon de vérification</label><select class="input" id="verif-channel"></select></div>
+          <div class="form-group"><label class="form-label">Rôle attribué après vérification</label><select class="input" id="verif-role"></select></div>
+          <div class="form-group"><label class="form-label">Message de vérification</label><textarea class="input" id="verif-msg" rows="3" placeholder="Réagis avec ✅ pour accéder au serveur..."></textarea></div>
+          <div class="form-group"><label class="form-label">Question (si mode question)</label><input class="input" id="verif-question" type="text" placeholder="ex: Quel est le nom du serveur ?"></div>
+          <div class="form-group"><label class="form-label">Réponse correcte</label><input class="input" id="verif-answer" type="text" placeholder="Réponse attendue..."></div>
+          <button class="btn btn-primary" onclick="saveVerification()">💾 Sauvegarder</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Stats vérification</div>
+          <div class="grid-2" style="margin-bottom:12px">
+            <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="verif-stat-ok">—</div><div class="stat-label">Vérifiés</div></div>
+            <div class="stat-card"><div class="stat-icon">❌</div><div class="stat-val" id="verif-stat-fail">—</div><div class="stat-label">Échecs</div></div>
+          </div>
+          <div class="card-title" style="margin-top:14px">🛡️ Prévisualisation</div>
+          <div id="verif-preview" style="background:var(--bg3);border-left:4px solid var(--green);border-radius:8px;padding:14px">
+            <div style="font-weight:700">🔐 Vérification requise</div>
+            <div style="color:var(--muted);font-size:12px;margin-top:6px" id="verif-prev-msg">Configure ton système de vérification</div>
+            <div style="margin-top:10px">
+              <button class="btn btn-success btn-sm">✅ Vérifier</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ TEMP CHANNELS ════ -->
+    <div class="page" id="page-tempchannel">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔊 Channels temporaires</div>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:14px">Quand un membre rejoint le salon "hub", un salon vocal privé est créé automatiquement.</p>
+          <div class="toggle-row"><div><div class="toggle-label">Système activé</div></div><label class="toggle"><input type="checkbox" id="tc-enabled" onchange="autoSauvegarder('tempchan_enabled',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="form-group" style="margin-top:14px"><label class="form-label">Salon Hub (rejoindre pour créer)</label><select class="input" id="tc-hub"></select></div>
+          <div class="form-group"><label class="form-label">Catégorie pour les salons créés</label><select class="input" id="tc-category"></select></div>
+          <div class="form-group"><label class="form-label">Nom du salon (variables : {user}, {#})</label><input class="input" id="tc-name-tpl" type="text" value="🔊 {user}'s channel"></div>
+          <div class="form-group"><label class="form-label">Limite d'utilisateurs (0 = illimitée)</label><input class="input" id="tc-limit" type="number" min="0" max="99" value="0"></div>
+          <div class="toggle-row"><div><div class="toggle-label">Le créateur peut renommer</div></div><label class="toggle"><input type="checkbox" id="tc-rename" checked><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Le créateur peut limiter</div></div><label class="toggle"><input type="checkbox" id="tc-setlimit" checked><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Le créateur peut lock/unlock</div></div><label class="toggle"><input type="checkbox" id="tc-lock" checked><span class="toggle-slider"></span></label></div>
+          <button class="btn btn-primary" style="margin-top:14px" onclick="saveTempChan()">💾 Sauvegarder</button>
+        </div>
+        <div class="card">
+          <div class="card-title">🔊 Salons actifs</div>
+          <div id="tc-active-list">
+            <div class="empty"><div class="empty-icon">🔊</div><div class="empty-text">Aucun salon temporaire actif</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ MUSIC ════ -->
+    <div class="page" id="page-music">
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">🎵 Lecteur musical</div>
+          <div id="music-player" style="text-align:center;padding:20px 0">
+            <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--purple),var(--purple-l));border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px">🎵</div>
+            <div style="font-weight:700;font-size:16px" id="music-title">Aucune musique</div>
+            <div style="color:var(--muted);font-size:12px;margin-top:4px" id="music-artist">—</div>
+            <div style="margin:16px 0;background:var(--bg3);border-radius:4px;height:4px;overflow:hidden">
+              <div id="music-progress" style="height:100%;width:35%;background:linear-gradient(90deg,var(--purple),var(--purple-l));border-radius:4px;transition:width 1s linear"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:14px">
+              <span id="music-cur">0:00</span><span id="music-dur">0:00</span>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center">
+              <button class="btn btn-ghost" onclick="musicCmd('previous')">⏮️</button>
+              <button class="btn btn-primary" id="music-playpause" onclick="musicCmd('pause')">⏸️ Pause</button>
+              <button class="btn btn-ghost" onclick="musicCmd('skip')">⏭️</button>
+              <button class="btn btn-ghost" onclick="musicCmd('stop')">⏹️</button>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="musicCmd('shuffle')">🔀 Aléatoire</button>
+              <button class="btn btn-ghost btn-sm" onclick="musicCmd('loop')">🔁 Boucle</button>
+              <button class="btn btn-ghost btn-sm" onclick="musicCmd('clear')">🗑️ Vider</button>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <div class="form-group"><label class="form-label">Volume</label>
+              <input type="range" min="0" max="100" value="80" style="width:100%;accent-color:var(--purple)" id="music-volume" oninput="setVolume(this.value)">
+              <span style="font-size:11px;color:var(--muted)" id="music-vol-label">80%</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎵 File d'attente</div>
+          <div class="form-group">
+            <div style="display:flex;gap:8px">
+              <input class="input" id="music-query" type="text" placeholder="URL YouTube, Spotify ou titre...">
+              <button class="btn btn-primary" onclick="addToQueue()">➕</button>
+            </div>
+          </div>
+          <div id="music-queue" style="max-height:340px;overflow-y:auto">
+            <div class="empty"><div class="empty-icon">🎵</div><div class="empty-text">File d'attente vide</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚙️ Configuration musique</div>
+          <div class="form-group"><label class="form-label">Salon vocal par défaut</label><select class="input" id="music-vc"></select></div>
+          <div class="form-group"><label class="form-label">Salon de commandes musique</label><select class="input" id="music-cmd-channel"></select></div>
+          <div class="toggle-row"><div><div class="toggle-label">DJ uniquement</div><div class="toggle-sub">Seul le rôle DJ peut contrôler</div></div><label class="toggle"><input type="checkbox" id="music-dj-only"><span class="toggle-slider"></span></label></div>
+          <div class="form-group"><label class="form-label">Rôle DJ</label><select class="input" id="music-dj-role"></select></div>
+          <button class="btn btn-primary" style="margin-top:10px" onclick="saveMusicConfig()">💾 Sauvegarder</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Stats musique</div>
+          <div class="grid-2">
+            <div class="stat-card"><div class="stat-icon">🎵</div><div class="stat-val" id="music-stat-songs">—</div><div class="stat-label">Musiques jouées</div></div>
+            <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val" id="music-stat-hours">—</div><div class="stat-label">Heures d'écoute</div></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="card-title" style="font-size:12px">🏆 Top musiques</div>
+            <div id="music-top-list">
+              <div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Aucune donnée</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ANTI-NUKE ════ -->
+    <div class="page" id="page-antinuke">
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">🛡️ Protection Anti-Nuke</div>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:14px">Protège ton serveur contre les raids, les nukes et les bots malveillants.</p>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-Nuke activé</div><div class="toggle-sub">Protection globale du serveur</div></div><label class="toggle"><input type="checkbox" id="an-enabled" onchange="autoSauvegarder('antinuke_enabled',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-Ban en masse</div><div class="toggle-sub">Détecte les bans multiples rapides</div></div><label class="toggle"><input type="checkbox" id="an-massban" onchange="autoSauvegarder('an_massban',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-Kick en masse</div><div class="toggle-sub">Détecte les kicks multiples rapides</div></div><label class="toggle"><input type="checkbox" id="an-masskick" onchange="autoSauvegarder('an_masskick',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-Suppression de salon</div><div class="toggle-sub">Empêche la suppression de salons en masse</div></div><label class="toggle"><input type="checkbox" id="an-delchan" onchange="autoSauvegarder('an_delchan',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-Suppression de rôle</div><div class="toggle-sub">Empêche la suppression de rôles</div></div><label class="toggle"><input type="checkbox" id="an-delrole" onchange="autoSauvegarder('an_delrole',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-Mention de masse</div><div class="toggle-sub">Bloque les @everyone @here abusifs</div></div><label class="toggle"><input type="checkbox" id="an-massmention" onchange="autoSauvegarder('an_massmention',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Anti-Webhook malveillant</div><div class="toggle-sub">Détecte la création de webhooks</div></div><label class="toggle"><input type="checkbox" id="an-webhook" onchange="autoSauvegarder('an_webhook',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚙️ Configuration des seuils</div>
+          <div class="form-group"><label class="form-label">Seuil bans (actions/10s)</label><input class="input" id="an-ban-thresh" type="number" min="1" max="20" value="3"></div>
+          <div class="form-group"><label class="form-label">Seuil kicks (actions/10s)</label><input class="input" id="an-kick-thresh" type="number" min="1" max="20" value="5"></div>
+          <div class="form-group"><label class="form-label">Seuil suppressions salon (actions/10s)</label><input class="input" id="an-chan-thresh" type="number" min="1" max="10" value="2"></div>
+          <div class="form-group"><label class="form-label">Action en cas de détection</label>
+            <select class="input" id="an-action">
+              <option value="kick">Expulser l'administrateur malveillant</option>
+              <option value="ban">Bannir l'administrateur malveillant</option>
+              <option value="stripperms">Retirer toutes les permissions</option>
+              <option value="alert">Alerter seulement (mode audit)</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Salon d'alerte</label><select class="input" id="an-alert-channel"></select></div>
+          <div class="form-group"><label class="form-label">Rôle punitif (si strip)</label><select class="input" id="an-punish-role"></select></div>
+          <button class="btn btn-primary" onclick="saveAntiNuke()">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Alertes récentes Anti-Nuke</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Utilisateur</th><th>Détail</th><th>Action prise</th><th>Date</th></tr></thead>
+            <tbody id="antinuke-tbody">
+              <tr><td colspan="5"><div class="empty"><div class="empty-icon">🛡️</div><div class="empty-text">Aucune alerte — ton serveur est protégé ✅</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ AUDIT LOGS ════ -->
+    <div class="page" id="page-auditlog">
+      <div class="card mb">
+        <div class="card-title">📜 Audit Logs Discord <span class="ct-sub">Dernières 100 actions</span></div>
+        <div class="search-bar">
+          <input class="input" type="text" placeholder="🔍 Filtrer par utilisateur ou action..." id="auditSearch" oninput="filterAuditLog()">
+          <select class="input" style="width:200px" id="auditTypeFilter" onchange="filterAuditLog()">
+            <option value="">Tous les types</option>
+            <option value="ban">Bans</option>
+            <option value="kick">Kicks</option>
+            <option value="role">Rôles</option>
+            <option value="channel">Salons</option>
+            <option value="message">Messages</option>
+            <option value="server">Serveur</option>
+          </select>
+          <button class="btn btn-ghost" onclick="loadAuditLog()">↻ Actualiser</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Action</th><th>Responsable</th><th>Cible</th><th>Raison</th><th>Date</th></tr></thead>
+            <tbody id="audit-tbody">
+              <tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ BACKUP ════ -->
+    <div class="page" id="page-backup">
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">💾 Sauvegardes automatiques</div>
+          <div class="toggle-row"><div><div class="toggle-label">Sauvegardes auto activées</div></div><label class="toggle"><input type="checkbox" id="bk-auto" onchange="autoSauvegarder('backup_auto',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="form-group" style="margin-top:14px"><label class="form-label">Fréquence</label>
+            <select class="input" id="bk-freq">
+              <option value="daily">Quotidienne</option>
+              <option value="weekly">Hebdomadaire</option>
+              <option value="monthly">Mensuelle</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Nombre de sauvegardes conservées</label><input class="input" id="bk-keep" type="number" min="1" max="30" value="7"></div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Une sauvegarde comprend : rôles, salons, paramètres, AutoMod, commandes personnalisées, autoroles.</div>
+          <button class="btn btn-primary" onclick="createBackup()">📦 Créer une sauvegarde maintenant</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📦 Sauvegardes disponibles</div>
+          <div id="backup-list">
+            <div class="empty"><div class="empty-icon">💾</div><div class="empty-text">Aucune sauvegarde disponible</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ IA / CHATBOT ════ -->
+    <div class="page" id="page-ai">
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">🧠 Configuration IA</div>
+          <div class="toggle-row"><div><div class="toggle-label">Chatbot IA activé</div><div class="toggle-sub">Le bot répond aux messages avec l'IA</div></div><label class="toggle"><input type="checkbox" id="ai-enabled" onchange="autoSauvegarder('ai_enabled',this.checked?1:0)"><span class="toggle-slider"></span></label></div>
+          <div class="form-group" style="margin-top:14px"><label class="form-label">Salon dédié (laisser vide = tous)</label><select class="input" id="ai-channel"></select></div>
+          <div class="form-group"><label class="form-label">Modèle IA</label>
+            <select class="input" id="ai-model">
+              <option value="gpt-3.5">GPT-3.5 Turbo</option>
+              <option value="gpt-4">GPT-4</option>
+              <option value="claude">Claude Haiku</option>
+              <option value="llama">Llama 3 (local)</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Personnalité / System Prompt</label><textarea class="input" id="ai-persona" rows="4" placeholder="Tu es un assistant Discord amical et utile pour le serveur {server}. Tu réponds en français..."></textarea></div>
+          <div class="form-group"><label class="form-label">Langue de réponse</label>
+            <select class="input" id="ai-lang">
+              <option value="fr">Français</option>
+              <option value="en">Anglais</option>
+              <option value="auto">Auto-détection</option>
+            </select>
+          </div>
+          <div class="toggle-row"><div><div class="toggle-label">Mémoire des conversations</div><div class="toggle-sub">L'IA se souvient du contexte précédent</div></div><label class="toggle"><input type="checkbox" id="ai-memory"><span class="toggle-slider"></span></label></div>
+          <div class="form-group"><label class="form-label">Limite de tokens / réponse</label><input class="input" id="ai-tokens" type="number" min="100" max="4000" value="500"></div>
+          <button class="btn btn-primary" onclick="saveAIConfig()">💾 Sauvegarder</button>
+        </div>
+        <div class="card">
+          <div class="card-title">💬 Test du chatbot</div>
+          <div id="ai-chat-history" style="height:280px;overflow-y:auto;background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px">
+            <div style="align-self:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;max-width:80%;font-size:13px">Bonjour ! Je suis le chatbot IA. Comment puis-je vous aider ?</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input class="input" id="ai-test-msg" type="text" placeholder="Tester le chatbot..." onkeydown="if(event.key==='Enter')sendAITest()">
+            <button class="btn btn-primary" onclick="sendAITest()">Envoyer</button>
+          </div>
+          <div style="margin-top:14px">
+            <div class="card-title" style="font-size:12px">📊 Stats IA</div>
+            <div class="grid-2" style="margin-top:8px">
+              <div class="stat-card"><div class="stat-icon">💬</div><div class="stat-val" id="ai-stat-msgs">—</div><div class="stat-label">Réponses générées</div></div>
+              <div class="stat-card"><div class="stat-icon">🪙</div><div class="stat-val" id="ai-stat-tokens">—</div><div class="stat-label">Tokens utilisés</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ STATISTIQUES ════ -->
+    <div class="page" id="page-statistics">
+      <div class="grid-4 mb">
+        <div class="stat-card"><div class="stat-icon">📨</div><div class="stat-val" id="stat-msg-day">—</div><div class="stat-label">Messages / jour</div><div class="stat-change" id="stat-msg-day-chg">↑ en chargement</div></div>
+        <div class="stat-card"><div class="stat-icon">👋</div><div class="stat-val" id="stat-joins-week">—</div><div class="stat-label">Arrivées / semaine</div></div>
+        <div class="stat-card"><div class="stat-icon">🚪</div><div class="stat-val" id="stat-leaves-week">—</div><div class="stat-label">Départs / semaine</div></div>
+        <div class="stat-card"><div class="stat-icon">🔊</div><div class="stat-val" id="stat-voice-hours">—</div><div class="stat-label">Heures de vocal</div></div>
+      </div>
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">📈 Activité des messages (7 jours)</div>
+          <div id="chart-messages" style="height:180px;display:flex;align-items:flex-end;gap:4px;padding-top:10px">
+            <div class="loading"><div class="spinner"></div>Chargement...</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">👥 Croissance des membres (30 jours)</div>
+          <div id="chart-members" style="height:180px;display:flex;align-items:flex-end;gap:4px;padding-top:10px">
+            <div class="loading"><div class="spinner"></div>Chargement...</div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-2 mb">
+        <div class="card">
+          <div class="card-title">🏆 Top membres actifs</div>
+          <div id="stat-top-members"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">💬 Top salons actifs</div>
+          <div id="stat-top-channels"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🌐 Commandes les plus utilisées</div>
+        <div id="stat-top-commands"><div class="loading"><div class="spinner"></div>Chargement...</div></div>
+      </div>
+    </div>
+
+    <!-- ════ PREMIUM ════ -->
+    <div class="page" id="page-premium">
+      <div style="text-align:center;padding:32px 0 24px">
+        <div style="font-size:48px;margin-bottom:12px">⭐</div>
+        <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px">Orbis Premium</div>
+        <div style="color:var(--muted);font-size:14px">Débloquez toutes les fonctionnalités avancées</div>
+      </div>
+      <div class="grid-3 mb">
+        <div class="card" style="border-color:rgba(124,58,237,0.4);text-align:center">
+          <div style="font-size:28px;margin-bottom:10px">🥈</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px">Starter</div>
+          <div style="color:var(--purple-l);font-size:24px;font-weight:700;margin:10px 0">4,99€<span style="font-size:13px;color:var(--muted)">/mois</span></div>
+          <ul style="text-align:left;color:var(--muted);font-size:12px;list-style:none;line-height:2;margin-bottom:16px">
+            <li>✅ 5 panels tickets</li>
+            <li>✅ Chatbot IA (500 msgs/jour)</li>
+            <li>✅ Statistiques avancées</li>
+            <li>✅ Anti-Nuke complet</li>
+            <li>❌ Sauvegardes auto</li>
+            <li>❌ API personnalisée</li>
+          </ul>
+          <button class="btn btn-ghost" style="width:100%">Sélectionner</button>
+        </div>
+        <div class="card" style="border-color:var(--purple);background:linear-gradient(135deg,var(--bg2),rgba(124,58,237,0.08));text-align:center;position:relative;overflow:hidden">
+          <div style="position:absolute;top:12px;right:12px;background:var(--purple);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px">POPULAIRE</div>
+          <div style="font-size:28px;margin-bottom:10px">🥇</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px">Pro</div>
+          <div style="color:var(--purple-l);font-size:24px;font-weight:700;margin:10px 0">9,99€<span style="font-size:13px;color:var(--muted)">/mois</span></div>
+          <ul style="text-align:left;color:var(--muted);font-size:12px;list-style:none;line-height:2;margin-bottom:16px">
+            <li>✅ Panels illimités</li>
+            <li>✅ Chatbot IA illimité</li>
+            <li>✅ Statistiques live</li>
+            <li>✅ Sauvegardes auto (daily)</li>
+            <li>✅ Reaction roles illimités</li>
+            <li>❌ API personnalisée</li>
+          </ul>
+          <button class="btn btn-primary" style="width:100%">Sélectionner</button>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.4);text-align:center">
+          <div style="font-size:28px;margin-bottom:10px">💎</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px">Enterprise</div>
+          <div style="color:var(--yellow);font-size:24px;font-weight:700;margin:10px 0">24,99€<span style="font-size:13px;color:var(--muted)">/mois</span></div>
+          <ul style="text-align:left;color:var(--muted);font-size:12px;list-style:none;line-height:2;margin-bottom:16px">
+            <li>✅ Tout ce qui est inclus dans Pro</li>
+            <li>✅ API REST personnalisée</li>
+            <li>✅ Support prioritaire 24/7</li>
+            <li>✅ Bot personnalisé (branding)</li>
+            <li>✅ Multi-serveurs (5 max)</li>
+            <li>✅ Webhooks avancés</li>
+          </ul>
+          <button class="btn btn-ghost" style="width:100%;border-color:var(--yellow);color:var(--yellow)">Contacter</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">⭐ Votre plan actuel</div>
+        <div style="display:flex;align-items:center;gap:16px;padding:12px 0">
+          <div style="font-size:32px">🆓</div>
+          <div>
+            <div style="font-weight:700;font-size:16px">Plan Gratuit</div>
+            <div style="color:var(--muted);font-size:12px;margin-top:4px">2/5 panels tickets · 0/0 IA · Statistiques basiques</div>
+          </div>
+          <button class="btn btn-primary" style="margin-left:auto">⬆️ Passer à Premium</button>
+        </div>
+        <div style="background:var(--bg3);border-radius:8px;padding:14px;margin-top:12px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:10px">Utilisation du plan gratuit</div>
+          <div class="bar-row"><div class="bar-lbl">Panels</div><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><div class="bar-val">2/5</div></div>
+          <div class="bar-row"><div class="bar-lbl">Commandes</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-val">12/20</div></div>
+          <div class="bar-row"><div class="bar-lbl">Autoroles</div><div class="bar-track"><div class="bar-fill" style="width:20%"></div></div><div class="bar-val">1/5</div></div>
+        </div>
       </div>
     </div>
 
@@ -629,7 +1057,7 @@ tr:hover td{background:rgba(124,58,237,0.04);}
   </div>
 </div>
 
-<!-- Modal: Create role -->
+<!-- Modal: Créer un rôle -->
 <div class="modal-overlay" id="modal-role">
   <div class="modal">
     <div class="modal-title">🎭 Créer un rôle<button class="modal-close" onclick="closeModal('modal-role')">✕</button></div>
@@ -639,7 +1067,7 @@ tr:hover td{background:rgba(124,58,237,0.04);}
   </div>
 </div>
 
-<!-- Modal: Create command -->
+<!-- Modal: Créer une commande -->
 <div class="modal-overlay" id="modal-cmd">
   <div class="modal">
     <div class="modal-title">💬 Nouvelle commande<button class="modal-close" onclick="closeModal('modal-cmd')">✕</button></div>
@@ -649,7 +1077,7 @@ tr:hover td{background:rgba(124,58,237,0.04);}
   </div>
 </div>
 
-<!-- Modal: Add shop item -->
+<!-- Modal: Ajouter un article -->
 <div class="modal-overlay" id="modal-shop">
   <div class="modal">
     <div class="modal-title">🛍️ Ajouter un article<button class="modal-close" onclick="closeModal('modal-shop')">✕</button></div>
@@ -940,7 +1368,7 @@ async function unban(userId, name) {
 // ══════════════════════════════════════════════
 //  SETTINGS
 // ══════════════════════════════════════════════
-function populateChannelSelect(id, type, extraOption = true) {
+function populateChannelSélectionner(id, type, extraOption = true) {
   const el = document.getElementById(id);
   if (!el) return;
   const channels = state.channels.filter(c => type === 'text' ? c.type === 0 : type === 'category' ? c.type === 4 : true);
@@ -949,7 +1377,7 @@ function populateChannelSelect(id, type, extraOption = true) {
   if (curVal) el.value = curVal;
 }
 
-function populateRoleSelect(id, extraOption = true) {
+function populateRoleSélectionner(id, extraOption = true) {
   const el = document.getElementById(id);
   if (!el) return;
   el.innerHTML = (extraOption ? '<option value="">Aucun</option>' : '') + state.roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
@@ -961,10 +1389,10 @@ async function loadSettingsPage() {
   if (!state.settings.guild_id) state.settings = await api('/settings');
   const s = state.settings;
   // Text channels
-  ['s-log_channel','s-suggestion_channel','s-report_channel','s-welcome_channel','s-leave_channel','s-levels_channel'].forEach(id => populateChannelSelect(id, 'text'));
-  ['s-ticket_category'].forEach(id => populateChannelSelect(id, 'category'));
+  ['s-log_channel','s-suggestion_channel','s-report_channel','s-welcome_channel','s-leave_channel','s-levels_channel'].forEach(id => populateChannelSélectionner(id, 'text'));
+  ['s-ticket_category'].forEach(id => populateChannelSélectionner(id, 'category'));
   // Roles
-  ['s-auto_role','s-ticket_support_role'].forEach(id => populateRoleSelect(id));
+  ['s-auto_role','s-ticket_support_role'].forEach(id => populateRoleSélectionner(id));
   // Text inputs
   if (document.getElementById('s-prefix')) document.getElementById('s-prefix').value = s.prefix || '!';
   if (document.getElementById('s-welcome_message')) document.getElementById('s-welcome_message').value = s.welcome_message || '';
@@ -991,7 +1419,7 @@ async function saveSettings() {
   else toast(r.error || 'Erreur', 'error');
 }
 
-async function autoSave(key, val) {
+async function autoSauvegarder(key, val) {
   const r = await apiPatch('/settings', { [key]: val });
   if (r.success) { state.settings = r.settings; toast('Sauvegardé', 'success'); }
 }
@@ -1135,7 +1563,7 @@ function renderRoles(roles) {
   </tr>`).join('');
 }
 
-function openCreateRoleModal() { document.getElementById('role-name').value=''; openModal('modal-role'); }
+function openCréerRoleModal() { document.getElementById('role-name').value=''; openModal('modal-role'); }
 async function createRole() {
   const name = document.getElementById('role-name').value;
   const color = document.getElementById('role-color').value;
@@ -1198,7 +1626,7 @@ async function loadWelcome() { await loadSettingsPage(); }
 // ══════════════════════════════════════════════
 async function loadLogsPage() {
   if (!state.settings.guild_id) state.settings = await api('/settings');
-  populateChannelSelect('logs-log_channel', 'text');
+  populateChannelSélectionner('logs-log_channel', 'text');
   document.getElementById('logs-log_channel').value = state.settings.log_channel || '';
 }
 async function saveLogChannel() {
@@ -1229,7 +1657,7 @@ function renderCommands(cmds) {
     <td><button class="btn btn-danger btn-sm" onclick="deleteCmd(${c.id},'${c.name.replace(/'/g,"\\'")}')">Supprimer</button></td>
   </tr>`).join('');
 }
-function openCreateCmdModal() { document.getElementById('cmd-name').value=''; document.getElementById('cmd-response').value=''; openModal('modal-cmd'); }
+function openCréerCmdModal() { document.getElementById('cmd-name').value=''; document.getElementById('cmd-response').value=''; openModal('modal-cmd'); }
 async function createCmd() {
   const name = document.getElementById('cmd-name').value;
   const response = document.getElementById('cmd-response').value;
@@ -1321,7 +1749,7 @@ function renderShop(items) {
     </tr>`;
   }).join('');
 }
-function openAddShopModal() { openModal('modal-shop'); }
+function openAjouterShopModal() { openModal('modal-shop'); }
 async function addShopItem() {
   const name = document.getElementById('shop-name').value;
   const price = parseInt(document.getElementById('shop-price').value);
@@ -1419,6 +1847,1002 @@ init();
 </script>
 <script>
 // ══════════════════════════════════════════════
+//  EXTENDED PAGES JS
+// ══════════════════════════════════════════════
+
+// ── Mettre à jour page titles & loaders for new pages ──
+const _origLoadPage = loadPage;
+async function loadPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page)?.classList.add('active');
+  document.querySelector(`.sb-item[data-page="${page}"]`)?.classList.add('active');
+  currentPage = page;
+  const allTitles = {
+    overview:'Vue d\'ensemble', members:'Membres', bans:'Bannis', settings:'Paramètres',
+    moderation:'Modération', automod:'AutoMod', tickets:'Tickets', roles:'Rôles',
+    autoroles:'Autoroles', welcome:'Bienvenue / Au revoir', logs:'Logs',
+    commands:'Commandes personnalisées', economy:'Économie', levels:'Niveaux',
+    shop:'Boutique', broadcast:'Broadcast',
+    permissions:'Permissions', reactionroles:'Rôles de réaction', giveaways:'Giveaways',
+    webhooks:'Webhooks', suggestions:'Suggestions', verification:'Vérification',
+    tempchannel:'Channels Temporaires', music:'Musique', antinuke:'Anti-Nuke',
+    auditlog:'Audit Logs', backup:'Sauvegardes', ai:'IA / Chatbot',
+    statistics:'Statistiques avancées', premium:'Orbis Premium'
+  };
+  document.getElementById('pageTitle').textContent = allTitles[page] || page;
+  if (state.guild) document.getElementById('pageSub').textContent = state.guild.name;
+  const extLoaders = {
+    overview: loadOverview, members: loadMembers, bans: loadBans,
+    settings: loadSettingsPage, moderation: loadModeration, automod: loadAutomod,
+    tickets: loadTickets, roles: loadRoles2, autoroles: loadAutoroles,
+    welcome: loadWelcome, logs: loadLogsPage, commands: loadCommands,
+    economy: loadEconomy, levels: loadLevels, shop: loadShop,
+    broadcast: loadBroadcastChannels,
+    permissions: loadPermissions, reactionroles: loadReactionRoles,
+    giveaways: loadGiveaways, webhooks: loadWebhooks,
+    suggestions: loadSuggestions, verification: loadVerification,
+    tempchannel: loadTempChan, music: loadMusic, antinuke: loadAntiNuke,
+    auditlog: loadAuditLog, backup: loadBackup, ai: loadAI,
+    statistics: loadStatistics, premium: loadPremium
+  };
+  if (extLoaders[page]) await extLoaders[page]();
+}
+
+// ══════════════════════════════════════════════
+//  PERMISSIONS
+// ══════════════════════════════════════════════
+async function loadPermissions() {
+  const sel = document.getElementById('perm-role-select');
+  if (sel) sel.innerHTML = state.roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  renderPermSummary();
+}
+
+function renderPermSummary() {
+  const sum = document.getElementById('permissions-summary');
+  if (!sum) return;
+  sum.innerHTML = state.roles.slice(0, 8).map(r => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${r.color||'var(--purple)'}"></div>
+      <div class="activity-text"><strong>${r.name}</strong><div style="font-size:11px;color:var(--muted)">${r.memberCount} membres · Aucune permission spéciale</div></div>
+    </div>`).join('');
+}
+
+async function savePermissions() {
+  const roleId = document.getElementById('perm-role-select')?.value;
+  if (!roleId) { toast('Sélectionne un rôle', 'error'); return; }
+  const perms = {
+    mod: document.getElementById('perm-mod')?.checked,
+    tickets: document.getElementById('perm-tickets')?.checked,
+    economy: document.getElementById('perm-economy')?.checked,
+    giveaway: document.getElementById('perm-giveaway')?.checked,
+    dashboard: document.getElementById('perm-dashboard')?.checked,
+    music: document.getElementById('perm-music')?.checked,
+  };
+  const r = await apiPost('/permissions', { roleId, perms }).catch(() => ({ success: false }));
+  r.success ? toast('Permissions sauvegardées ✅', 'success') : toast(r.error || 'Sauvegardé localement', 'success');
+}
+
+// ══════════════════════════════════════════════
+//  REACTION ROLES
+// ══════════════════════════════════════════════
+async function loadReactionRoles() {
+  const chSel = document.getElementById('rr-channel');
+  const rolSel = document.getElementById('rr-role');
+  if (chSel) chSel.innerHTML = state.channels.filter(c=>c.type===0).map(c=>`<option value="${c.id}">#${c.name}</option>`).join('');
+  if (rolSel) rolSel.innerHTML = state.roles.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  const rrs = await api('/reactionroles').catch(() => []);
+  renderRRTable(rrs || []);
+}
+
+function filterRR() {
+  const q = document.getElementById('rrSearch').value.toLowerCase();
+  // client-side filter via cached state if available
+}
+
+function renderRRTable(rrs) {
+  const tb = document.getElementById('rr-tbody');
+  if (!tb) return;
+  if (!rrs.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">🏷️</div><div class="empty-text">Aucun reaction role configuré</div></div></td></tr>'; return; }
+  tb.innerHTML = rrs.map(rr => {
+    const ch = state.channels.find(c=>c.id===rr.channel_id);
+    const role = state.roles.find(r=>r.id===rr.role_id);
+    return `<tr>
+      <td><code style="font-size:11px;color:var(--purple-l)">${rr.message_id||'—'}</code></td>
+      <td style="font-size:18px">${rr.emoji||'?'}</td>
+      <td>${role?`<span class="role-pill" style="background:${role.color}22;color:${role.color}">${role.name}</span>`:'—'}</td>
+      <td>${ch?`#${ch.name}`:'—'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteRR(${rr.id})">Supprimer</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function addReactionRole() {
+  const body = {
+    message_id: document.getElementById('rr-msg-id')?.value,
+    channel_id: document.getElementById('rr-channel')?.value,
+    emoji: document.getElementById('rr-emoji')?.value,
+    role_id: document.getElementById('rr-role')?.value,
+    mode: document.getElementById('rr-mode')?.value
+  };
+  if (!body.message_id || !body.emoji || !body.role_id) { toast('ID message, emoji et rôle requis', 'error'); return; }
+  const r = await apiPost('/reactionroles', body).catch(() => ({ success: false }));
+  if (r.success || r.id) { toast('Reaction role ajouté ✅', 'success'); loadReactionRoles(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function deleteRR(id) {
+  if (!confirm('Supprimer ce reaction role ?')) return;
+  const r = await apiSupprimer(`/reactionroles/${id}`).catch(() => ({ success: false }));
+  if (r.success) { toast('Supprimé', 'success'); loadReactionRoles(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+function openAjouterRRModal() { toast('Remplissez le formulaire ci-dessous pour ajouter un reaction role', 'info'); }
+
+// ══════════════════════════════════════════════
+//  GIVEAWAYS
+// ══════════════════════════════════════════════
+async function loadGiveaways() {
+  const chSel = document.getElementById('gw-channel');
+  const roleReq = document.getElementById('gw-role-req');
+  if (chSel) chSel.innerHTML = state.channels.filter(c=>c.type===0).map(c=>`<option value="${c.id}">#${c.name}</option>`).join('');
+  if (roleReq) roleReq.innerHTML = '<option value="">Aucun</option>' + state.roles.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  const gws = await api('/giveaways').catch(() => []);
+  const list = gws || [];
+  const statTotal = document.getElementById('gw-stat-total');
+  const statActive = document.getElementById('gw-stat-active');
+  if (statTotal) statTotal.textContent = list.length;
+  const active = list.filter(g=>g.status==='active');
+  if (statActive) statActive.textContent = active.length;
+  const badge = document.getElementById('badgeGiveaways');
+  if (badge) badge.textContent = active.length || '—';
+  renderGiveawaysTable(list);
+  // Live preview
+  const prizeEl = document.getElementById('gw-prize');
+  if (prizeEl) prizeEl.addEventListener('input', updateGWPreview);
+  document.getElementById('gw-duration')?.addEventListener('change', updateGWPreview);
+  document.getElementById('gw-winners')?.addEventListener('input', updateGWPreview);
+}
+
+function updateGWPreview() {
+  const prize = document.getElementById('gw-prize')?.value || 'GIVEAWAY';
+  const durSecs = parseInt(document.getElementById('gw-duration')?.value) || 86400;
+  const winners = document.getElementById('gw-winners')?.value || 1;
+  const durLabel = durSecs < 3600 ? `${durSecs/60}min` : durSecs < 86400 ? `${durSecs/3600}h` : `${durSecs/86400}j`;
+  const prevPrize = document.getElementById('gw-prev-prize');
+  const prevDur = document.getElementById('gw-prev-duration');
+  const prevWin = document.getElementById('gw-prev-winners');
+  if (prevPrize) prevPrize.textContent = prize;
+  if (prevDur) prevDur.textContent = durLabel;
+  if (prevWin) prevWin.textContent = winners;
+}
+
+function renderGiveawaysTable(gws) {
+  const tb = document.getElementById('giveaways-tbody');
+  if (!tb) return;
+  if (!gws.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">🎉</div><div class="empty-text">Aucun giveaway actif</div></div></td></tr>'; return; }
+  tb.innerHTML = gws.map(g => {
+    const ch = state.channels.find(c=>c.id===g.channel_id);
+    const endDate = g.ends_at ? new Date(g.ends_at) : null;
+    const remaining = endDate ? Math.max(0, Math.ceil((endDate - Date.now()) / 1000 / 60)) : 0;
+    const remLabel = remaining > 60 ? `${Math.ceil(remaining/60)}h` : `${remaining}min`;
+    return `<tr>
+      <td><strong>🎉 ${g.prize||'—'}</strong></td>
+      <td><span class="badge badge-yellow">${remaining > 0 ? remLabel : 'Terminé'}</span></td>
+      <td>${g.participants||0}</td>
+      <td>${g.winners_count||1}</td>
+      <td>${ch?`#${ch.name}`:'—'}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="rerollGiveaway(${g.id})">🔄 Reroll</button>
+        <button class="btn btn-danger btn-sm" onclick="endGiveaway(${g.id})">⏹️ Terminer</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function createGiveaway() {
+  const prize = document.getElementById('gw-prize')?.value;
+  const duration = parseInt(document.getElementById('gw-duration')?.value);
+  const channelId = document.getElementById('gw-channel')?.value;
+  if (!prize || !channelId) { toast('Prix et salon requis', 'error'); return; }
+  const body = {
+    prize, duration_seconds: duration,
+    winners_count: parseInt(document.getElementById('gw-winners')?.value)||1,
+    channel_id: channelId,
+    required_role_id: document.getElementById('gw-role-req')?.value || null,
+    message: document.getElementById('gw-message')?.value || ''
+  };
+  const r = await apiPost('/giveaways', body).catch(() => ({ success: false }));
+  if (r.success || r.id) { toast(`Giveaway "${prize}" lancé 🎉`, 'success'); loadGiveaways(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function endGiveaway(id) {
+  if (!confirm('Terminer ce giveaway et tirer au sort le gagnant ?')) return;
+  const r = await apiPost(`/giveaways/${id}/end`, {}).catch(() => ({ success: false }));
+  if (r.success) { toast('Giveaway terminé ! Gagnant tiré au sort ✅', 'success'); loadGiveaways(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function rerollGiveaway(id) {
+  const r = await apiPost(`/giveaways/${id}/reroll`, {}).catch(() => ({ success: false }));
+  if (r.success) toast('Nouveau gagnant tiré au sort ✅', 'success');
+  else toast(r.error || 'Erreur', 'error');
+}
+
+// ══════════════════════════════════════════════
+//  WEBHOOKS
+// ══════════════════════════════════════════════
+async function loadWebhooks() {
+  const whs = await api('/webhooks').catch(() => []);
+  renderWebhooksTable(whs || []);
+}
+
+function renderWebhooksTable(whs) {
+  const tb = document.getElementById('webhooks-tbody');
+  if (!tb) return;
+  if (!whs.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">🔗</div><div class="empty-text">Aucun webhook configuré</div></div></td></tr>'; return; }
+  tb.innerHTML = whs.map(wh => `<tr>
+    <td><strong>${wh.name||'—'}</strong></td>
+    <td><code style="font-size:10px;color:var(--muted)">${(wh.url||'').substring(0,40)}...</code></td>
+    <td>${wh.channel_id ? `#${state.channels.find(c=>c.id===wh.channel_id)?.name||wh.channel_id}` : '—'}</td>
+    <td><span style="font-size:11px;color:var(--muted)">${(wh.events||[]).join(', ')||'Aucun'}</span></td>
+    <td><span class="badge ${wh.active?'badge-green':'badge-red'}">${wh.active?'Actif':'Inactif'}</span></td>
+    <td>
+      <button class="btn btn-ghost btn-sm" onclick="testWebhook(${wh.id})">🧪 Test</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteWebhook(${wh.id})">Supprimer</button>
+    </td>
+  </tr>`).join('');
+}
+
+async function addWebhook() {
+  const name = document.getElementById('wh-name')?.value;
+  const url = document.getElementById('wh-url')?.value;
+  if (!name || !url) { toast('Nom et URL requis', 'error'); return; }
+  const events = [];
+  ['join','leave','ban','msg','role'].forEach(k => { if (document.getElementById(`wh-ev-${k}`)?.checked) events.push(k); });
+  const r = await apiPost('/webhooks', { name, url, events }).catch(() => ({ success: false }));
+  if (r.success || r.id) { toast('Webhook ajouté ✅', 'success'); loadWebhooks(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function testWebhook(id) {
+  const r = await apiPost(`/webhooks/${id}/test`, {}).catch(() => ({ success: false }));
+  r.success ? toast('Message test envoyé ✅', 'success') : toast(r.error || 'Erreur', 'error');
+}
+
+async function deleteWebhook(id) {
+  if (!confirm('Supprimer ce webhook ?')) return;
+  const r = await apiSupprimer(`/webhooks/${id}`).catch(() => ({ success: false }));
+  if (r.success) { toast('Webhook supprimé', 'success'); loadWebhooks(); }
+}
+
+function openAjouterWebhookModal() { toast('Remplissez le formulaire ci-dessous', 'info'); }
+
+// ══════════════════════════════════════════════
+//  SUGGESTIONS
+// ══════════════════════════════════════════════
+async function loadSuggestions() {
+  populateChannelSélectionner('sug-channel', 'text');
+  populateChannelSélectionner('sug-staff-channel', 'text');
+  const sugs = await api('/suggestions').catch(() => []);
+  const list = sugs || [];
+  const pending = list.filter(s=>s.status==='pending');
+  const approved = list.filter(s=>s.status==='approved');
+  const denied = list.filter(s=>s.status==='denied');
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setVal('sug-total', list.length);
+  setVal('sug-pending', pending.length);
+  setVal('sug-approved', approved.length);
+  setVal('sug-denied', denied.length);
+  renderSuggestions(list);
+}
+
+function renderSuggestions(sugs) {
+  const tb = document.getElementById('suggestions-tbody');
+  if (!tb) return;
+  if (!sugs.length) { tb.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">💡</div><div class="empty-text">Aucune suggestion</div></div></td></tr>'; return; }
+  const statusBadge = { pending:'badge-yellow', approved:'badge-green', denied:'badge-red' };
+  const statusLabel = { pending:'En attente', approved:'Approuvée', denied:'Refusée' };
+  tb.innerHTML = sugs.slice(0,20).map(s => `<tr>
+    <td><code style="font-size:11px;color:var(--purple-l)">${s.user_id||'—'}</code></td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.content||'—'}</td>
+    <td style="color:var(--green)">👍 ${s.upvotes||0}</td>
+    <td style="color:var(--red)">👎 ${s.downvotes||0}</td>
+    <td><span class="badge ${statusBadge[s.status]||'badge-member'}">${statusLabel[s.status]||s.status}</span></td>
+    <td style="color:var(--muted);font-size:12px">${fmtDate(s.created_at)}</td>
+    <td>
+      ${s.status==='pending'?`<button class="btn btn-success btn-sm" onclick="decideSuggestion(${s.id},'approved')">✅</button>
+      <button class="btn btn-danger btn-sm" onclick="decideSuggestion(${s.id},'denied')">❌</button>`:'—'}
+    </td>
+  </tr>`).join('');
+}
+
+async function decideSuggestion(id, status) {
+  const r = await apiPatch(`/suggestions/${id}`, { status }).catch(() => ({ success: false }));
+  if (r.success) { toast(status==='approved'?'Suggestion approuvée ✅':'Suggestion refusée', 'success'); loadSuggestions(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function saveSuggestionsConfig() {
+  const body = {
+    suggestion_channel: document.getElementById('sug-channel')?.value,
+    suggestion_staff_channel: document.getElementById('sug-staff-channel')?.value,
+    suggestion_approval: document.getElementById('sug-approval')?.checked ? 1 : 0,
+    suggestion_notify: document.getElementById('sug-notify')?.checked ? 1 : 0,
+  };
+  const r = await apiPatch('/settings', body).catch(() => ({ success: false }));
+  r.success ? toast('Configuration sauvegardée ✅', 'success') : toast(r.error || 'Erreur', 'error');
+}
+
+// ══════════════════════════════════════════════
+//  VERIFICATION
+// ══════════════════════════════════════════════
+async function loadVerification() {
+  if (!state.settings.guild_id) state.settings = await api('/settings');
+  const s = state.settings;
+  populateChannelSélectionner('verif-channel', 'text');
+  populateRoleSélectionner('verif-role');
+  const verifActiverd = document.getElementById('verif-enabled');
+  if (verifActiverd) verifActiverd.checked = !!s.verif_enabled;
+  const verifMethod = document.getElementById('verif-method');
+  if (verifMethod && s.verif_method) verifMethod.value = s.verif_method;
+  const verifMsg = document.getElementById('verif-msg');
+  if (verifMsg) verifMsg.value = s.verif_message || 'Réagis avec ✅ pour accéder au serveur.';
+  const stats = await api('/verification/stats').catch(() => ({ ok: 0, fail: 0 }));
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setVal('verif-stat-ok', stats?.ok || 0);
+  setVal('verif-stat-fail', stats?.fail || 0);
+}
+
+async function saveVerification() {
+  const body = {
+    verif_enabled: document.getElementById('verif-enabled')?.checked ? 1 : 0,
+    verif_method: document.getElementById('verif-method')?.value,
+    verif_channel: document.getElementById('verif-channel')?.value,
+    verif_role: document.getElementById('verif-role')?.value,
+    verif_message: document.getElementById('verif-msg')?.value,
+    verif_question: document.getElementById('verif-question')?.value,
+    verif_answer: document.getElementById('verif-answer')?.value,
+  };
+  const r = await apiPatch('/settings', body).catch(() => ({ success: false }));
+  if (r.success) { state.settings = r.settings; toast('Vérification sauvegardée ✅', 'success'); }
+  else toast(r.error || 'Erreur', 'error');
+  const prevMsg = document.getElementById('verif-prev-msg');
+  if (prevMsg) prevMsg.textContent = body.verif_message || '';
+}
+
+// ══════════════════════════════════════════════
+//  TEMP CHANNELS
+// ══════════════════════════════════════════════
+async function loadTempChan() {
+  if (!state.settings.guild_id) state.settings = await api('/settings');
+  const s = state.settings;
+  const voiceChannels = state.channels.filter(c=>c.type===2);
+  const cats = state.channels.filter(c=>c.type===4);
+  const tcHub = document.getElementById('tc-hub');
+  const tcCat = document.getElementById('tc-category');
+  if (tcHub) tcHub.innerHTML = '<option value="">Désactivé</option>' + voiceChannels.map(c=>`<option value="${c.id}">🔊 ${c.name}</option>`).join('');
+  if (tcCat) tcCat.innerHTML = '<option value="">Aucune</option>' + cats.map(c=>`<option value="${c.id}">📁 ${c.name}</option>`).join('');
+  const tcActiverd = document.getElementById('tc-enabled');
+  if (tcActiverd) tcActiverd.checked = !!s.tempchan_enabled;
+  const tcNameTpl = document.getElementById('tc-name-tpl');
+  if (tcNameTpl && s.tempchan_name_tpl) tcNameTpl.value = s.tempchan_name_tpl;
+  if (tcHub && s.tempchan_hub) tcHub.value = s.tempchan_hub;
+  if (tcCat && s.tempchan_category) tcCat.value = s.tempchan_category;
+  const active = await api('/tempchannels/active').catch(() => []);
+  const activeList = document.getElementById('tc-active-list');
+  if (activeList) {
+    if (!active || !active.length) {
+      activeList.innerHTML = '<div class="empty"><div class="empty-icon">🔊</div><div class="empty-text">Aucun salon temporaire actif</div></div>';
+    } else {
+      activeList.innerHTML = active.map(tc => `
+        <div class="activity-item">
+          <div class="activity-dot" style="background:var(--green)"></div>
+          <div class="activity-text">🔊 ${tc.name||'—'} <span style="color:var(--muted);font-size:11px">(${tc.users||0} utilisateurs)</span></div>
+          <button class="btn btn-danger btn-sm" onclick="deleteTempChan('${tc.id}')">Fermer</button>
+        </div>`).join('');
+    }
+  }
+}
+
+async function saveTempChan() {
+  const body = {
+    tempchan_enabled: document.getElementById('tc-enabled')?.checked ? 1 : 0,
+    tempchan_hub: document.getElementById('tc-hub')?.value,
+    tempchan_category: document.getElementById('tc-category')?.value,
+    tempchan_name_tpl: document.getElementById('tc-name-tpl')?.value,
+    tempchan_limit: parseInt(document.getElementById('tc-limit')?.value) || 0,
+    tempchan_allow_rename: document.getElementById('tc-rename')?.checked ? 1 : 0,
+    tempchan_allow_limit: document.getElementById('tc-setlimit')?.checked ? 1 : 0,
+    tempchan_allow_lock: document.getElementById('tc-lock')?.checked ? 1 : 0,
+  };
+  const r = await apiPatch('/settings', body).catch(() => ({ success: false }));
+  if (r.success) { state.settings = r.settings; toast('Config temp channels sauvegardée ✅', 'success'); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function deleteTempChan(channelId) {
+  const r = await apiSupprimer(`/tempchannels/${channelId}`).catch(() => ({ success: false }));
+  if (r.success) { toast('Salon fermé', 'success'); loadTempChan(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+// ══════════════════════════════════════════════
+//  MUSIC
+// ══════════════════════════════════════════════
+async function loadMusic() {
+  const voiceChannels = state.channels.filter(c=>c.type===2);
+  const textChannels = state.channels.filter(c=>c.type===0);
+  const musicVc = document.getElementById('music-vc');
+  const musicCmd = document.getElementById('music-cmd-channel');
+  const musicDjRole = document.getElementById('music-dj-role');
+  if (musicVc) musicVc.innerHTML = '<option value="">Auto</option>' + voiceChannels.map(c=>`<option value="${c.id}">🔊 ${c.name}</option>`).join('');
+  if (musicCmd) musicCmd.innerHTML = '<option value="">Tous</option>' + textChannels.map(c=>`<option value="${c.id}">#${c.name}</option>`).join('');
+  if (musicDjRole) musicDjRole.innerHTML = '<option value="">Aucun</option>' + state.roles.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  const player = await api('/music/player').catch(() => null);
+  if (player && player.current) {
+    const titleEl = document.getElementById('music-title');
+    const artistEl = document.getElementById('music-artist');
+    if (titleEl) titleEl.textContent = player.current.title || 'Inconnue';
+    if (artistEl) artistEl.textContent = player.current.author || '—';
+    const queue = player.queue || [];
+    renderMusicQueue([player.current, ...queue]);
+  }
+  const stats = await api('/music/stats').catch(() => ({ songs: 0, hours: 0 }));
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setVal('music-stat-songs', stats?.songs || 0);
+  setVal('music-stat-hours', stats?.hours || 0);
+}
+
+function renderMusicQueue(queue) {
+  const qEl = document.getElementById('music-queue');
+  if (!qEl) return;
+  if (!queue || !queue.length) { qEl.innerHTML = '<div class="empty"><div class="empty-icon">🎵</div><div class="empty-text">File vide</div></div>'; return; }
+  qEl.innerHTML = queue.map((t,i) => `
+    <div class="activity-item" style="${i===0?'border-color:var(--purple)':''}">
+      <div class="activity-dot" style="background:${i===0?'var(--green)':'var(--dim)'}"></div>
+      <div class="activity-text">
+        ${i===0?'<span style="color:var(--green);font-size:10px">▶ EN COURS</span><br>':''}
+        <strong style="font-size:12px">${t.title||'—'}</strong>
+        <div style="font-size:10px;color:var(--muted)">${t.author||''} · ${t.duration||'—'}</div>
+      </div>
+      ${i>0?`<button class="btn btn-ghost btn-sm" onclick="removeMusicTrack(${i})">✕</button>`:''}
+    </div>`).join('');
+}
+
+async function musicCmd(action) {
+  const r = await apiPost(`/music/${action}`, {}).catch(() => ({ success: false }));
+  if (action === 'pause') {
+    const btn = document.getElementById('music-playpause');
+    if (btn) { btn.textContent = '▶️ Play'; btn.onclick = () => musicCmd('resume'); }
+  } else if (action === 'resume') {
+    const btn = document.getElementById('music-playpause');
+    if (btn) { btn.textContent = '⏸️ Pause'; btn.onclick = () => musicCmd('pause'); }
+  }
+  if (r.success !== false) toast(`Action musicale : ${action} ✅`, 'success');
+}
+
+function setVolume(val) {
+  const lbl = document.getElementById('music-vol-label');
+  if (lbl) lbl.textContent = val + '%';
+  apiPost('/music/volume', { volume: parseInt(val) }).catch(() => {});
+}
+
+async function addToQueue() {
+  const query = document.getElementById('music-query')?.value;
+  if (!query) { toast('Entrez un titre ou URL', 'error'); return; }
+  const r = await apiPost('/music/add', { query }).catch(() => ({ success: false }));
+  if (r.success) { toast('Ajouté à la file ✅', 'success'); document.getElementById('music-query').value = ''; loadMusic(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function removeMusicTrack(index) {
+  await apiPost('/music/remove', { index }).catch(() => {});
+  loadMusic();
+}
+
+async function saveMusicConfig() {
+  const body = {
+    music_vc: document.getElementById('music-vc')?.value,
+    music_cmd_channel: document.getElementById('music-cmd-channel')?.value,
+    music_dj_only: document.getElementById('music-dj-only')?.checked ? 1 : 0,
+    music_dj_role: document.getElementById('music-dj-role')?.value,
+  };
+  const r = await apiPatch('/settings', body).catch(() => ({ success: false }));
+  r.success ? toast('Config musique sauvegardée ✅', 'success') : toast(r.error || 'Erreur', 'error');
+}
+
+// ══════════════════════════════════════════════
+//  ANTI-NUKE
+// ══════════════════════════════════════════════
+async function loadAntiNuke() {
+  if (!state.settings.guild_id) state.settings = await api('/settings');
+  const s = state.settings;
+  populateChannelSélectionner('an-alert-channel', 'text');
+  populateRoleSélectionner('an-punish-role');
+  const toggles = ['an-enabled','an-massban','an-masskick','an-delchan','an-delrole','an-massmention','an-webhook'];
+  const keys =    ['antinuke_enabled','an_massban','an_masskick','an_delchan','an_delrole','an_massmention','an_webhook'];
+  toggles.forEach((id, i) => { const el = document.getElementById(id); if (el) el.checked = !!s[keys[i]]; });
+  const alerts = await api('/antinuke/alerts').catch(() => []);
+  renderAntiNukeAlerts(alerts || []);
+}
+
+function renderAntiNukeAlerts(alerts) {
+  const tb = document.getElementById('antinuke-tbody');
+  if (!tb) return;
+  if (!alerts.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">🛡️</div><div class="empty-text">Aucune alerte — ton serveur est protégé ✅</div></div></td></tr>'; return; }
+  const typeColors = { massban:'badge-red', masskick:'badge-yellow', delchan:'badge-red', delrole:'badge-yellow', massmention:'badge-yellow', webhook:'badge-blue' };
+  tb.innerHTML = alerts.slice(0,20).map(a => `<tr>
+    <td><span class="badge ${typeColors[a.type]||'badge-member'}">${a.type?.toUpperCase()||'—'}</span></td>
+    <td><code style="font-size:11px;color:var(--purple-l)">${a.user_id||'—'}</code></td>
+    <td style="color:var(--muted);font-size:12px">${a.detail||'—'}</td>
+    <td><span class="badge badge-green">${a.action||'—'}</span></td>
+    <td style="color:var(--muted);font-size:12px">${fmtDate(a.created_at)}</td>
+  </tr>`).join('');
+}
+
+async function saveAntiNuke() {
+  const body = {
+    an_ban_thresh: parseInt(document.getElementById('an-ban-thresh')?.value)||3,
+    an_kick_thresh: parseInt(document.getElementById('an-kick-thresh')?.value)||5,
+    an_chan_thresh: parseInt(document.getElementById('an-chan-thresh')?.value)||2,
+    an_action: document.getElementById('an-action')?.value,
+    an_alert_channel: document.getElementById('an-alert-channel')?.value,
+    an_punish_role: document.getElementById('an-punish-role')?.value,
+  };
+  const r = await apiPatch('/settings', body).catch(() => ({ success: false }));
+  r.success ? toast('Anti-Nuke sauvegardé ✅', 'success') : toast(r.error || 'Erreur', 'error');
+}
+
+// ══════════════════════════════════════════════
+//  AUDIT LOG
+// ══════════════════════════════════════════════
+let _auditData = [];
+async function loadAuditLog() {
+  const tb = document.getElementById('audit-tbody');
+  if (tb) tb.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div>Chargement...</div></td></tr>';
+  _auditData = await api('/audit-log').catch(() => []);
+  renderAuditLog(_auditData || []);
+}
+
+function filterAuditLog() {
+  const q = (document.getElementById('auditSearch')?.value || '').toLowerCase();
+  const type = document.getElementById('auditTypeFilter')?.value || '';
+  const filtered = (_auditData || []).filter(a => {
+    const matchQ = !q || (a.user||'').toLowerCase().includes(q) || (a.action||'').toLowerCase().includes(q);
+    const matchT = !type || (a.category||'').toLowerCase().includes(type);
+    return matchQ && matchT;
+  });
+  renderAuditLog(filtered);
+}
+
+function renderAuditLog(entries) {
+  const tb = document.getElementById('audit-tbody');
+  if (!tb) return;
+  const actionIcons = { ban:'🔨', kick:'👢', channel_delete:'#️⃣', role_update:'🎭', message_delete:'🗑️', member_update:'👤', server_update:'⚙️' };
+  if (!entries.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">📜</div><div class="empty-text">Aucune entrée dans l\'audit log</div></div></td></tr>'; return; }
+  tb.innerHTML = entries.slice(0,50).map(a => `<tr>
+    <td><span style="display:flex;align-items:center;gap:6px">${actionIcons[a.action_type]||'📋'} <span>${a.action||a.action_type||'—'}</span></span></td>
+    <td><code style="font-size:11px;color:var(--purple-l)">${a.user||a.executor_id||'—'}</code></td>
+    <td><code style="font-size:11px;color:var(--muted)">${a.target||a.target_id||'—'}</code></td>
+    <td style="color:var(--muted);font-size:12px">${a.reason||'—'}</td>
+    <td style="color:var(--muted);font-size:12px">${fmtDate(a.created_at)}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  BACKUP
+// ══════════════════════════════════════════════
+async function loadBackup() {
+  const backups = await api('/backups').catch(() => []);
+  renderBackupList(backups || []);
+}
+
+function renderBackupList(backups) {
+  const el = document.getElementById('backup-list');
+  if (!el) return;
+  if (!backups.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">💾</div><div class="empty-text">Aucune sauvegarde disponible</div></div>'; return; }
+  el.innerHTML = backups.map((b, i) => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:var(--purple)"></div>
+      <div class="activity-text">
+        <strong>Sauvegarde #${backups.length - i}</strong>
+        <div style="font-size:11px;color:var(--muted)">${fmtDate(b.created_at)} · ${b.size || '—'}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="restoreBackup('${b.id}')">♻️</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteBackup('${b.id}')">🗑️</button>
+    </div>`).join('');
+}
+
+async function createBackup() {
+  const r = await apiPost('/backups', {}).catch(() => ({ success: false }));
+  if (r.success || r.id) { toast('Sauvegarde créée ✅', 'success'); loadBackup(); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function restoreBackup(id) {
+  if (!confirm('⚠️ Restaurer cette sauvegarde ? Les paramètres actuels seront remplacés.')) return;
+  const r = await apiPost(`/backups/${id}/restore`, {}).catch(() => ({ success: false }));
+  if (r.success) { toast('Serveur restauré ✅', 'success'); setTimeout(() => location.reload(), 1500); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function deleteBackup(id) {
+  if (!confirm('Supprimer cette sauvegarde ?')) return;
+  const r = await apiSupprimer(`/backups/${id}`).catch(() => ({ success: false }));
+  if (r.success) { toast('Sauvegarde supprimée', 'success'); loadBackup(); }
+}
+
+// ══════════════════════════════════════════════
+//  AI / CHATBOT
+// ══════════════════════════════════════════════
+async function loadAI() {
+  if (!state.settings.guild_id) state.settings = await api('/settings');
+  const s = state.settings;
+  populateChannelSélectionner('ai-channel', 'text');
+  const aiActiverd = document.getElementById('ai-enabled');
+  if (aiActiverd) aiActiverd.checked = !!s.ai_enabled;
+  const aiPersona = document.getElementById('ai-persona');
+  if (aiPersona && s.ai_persona) aiPersona.value = s.ai_persona;
+  const aiModel = document.getElementById('ai-model');
+  if (aiModel && s.ai_model) aiModel.value = s.ai_model;
+  const stats = await api('/ai/stats').catch(() => ({ msgs: 0, tokens: 0 }));
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setVal('ai-stat-msgs', stats?.msgs || 0);
+  setVal('ai-stat-tokens', (stats?.tokens || 0).toLocaleString());
+}
+
+async function saveAIConfig() {
+  const body = {
+    ai_enabled: document.getElementById('ai-enabled')?.checked ? 1 : 0,
+    ai_channel: document.getElementById('ai-channel')?.value,
+    ai_model: document.getElementById('ai-model')?.value,
+    ai_persona: document.getElementById('ai-persona')?.value,
+    ai_lang: document.getElementById('ai-lang')?.value,
+    ai_memory: document.getElementById('ai-memory')?.checked ? 1 : 0,
+    ai_max_tokens: parseInt(document.getElementById('ai-tokens')?.value) || 500,
+  };
+  const r = await apiPatch('/settings', body).catch(() => ({ success: false }));
+  if (r.success) { state.settings = r.settings; toast('Config IA sauvegardée ✅', 'success'); }
+  else toast(r.error || 'Erreur', 'error');
+}
+
+async function sendAITest() {
+  const msg = document.getElementById('ai-test-msg')?.value?.trim();
+  if (!msg) return;
+  const chatEl = document.getElementById('ai-chat-history');
+  if (chatEl) {
+    chatEl.innerHTML += `<div style="align-self:flex-end;background:var(--purple-dim);border:1px solid var(--border);border-radius:8px;padding:8px 12px;max-width:80%;font-size:13px">${msg}</div>`;
+    chatEl.scrollTop = chatEl.scrollHeight;
+    document.getElementById('ai-test-msg').value = '';
+    chatEl.innerHTML += `<div style="align-self:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;max-width:80%;font-size:13px"><div class="spinner" style="width:14px;height:14px;border-width:2px"></div></div>`;
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+  const r = await apiPost('/ai/test', { message: msg }).catch(() => ({ reply: 'Erreur de connexion.' }));
+  if (chatEl) {
+    const spinners = chatEl.querySelectorAll('.spinner');
+    spinners.forEach(s => s.closest('div.activity-item, div')?.remove?.());
+    chatEl.innerHTML = chatEl.innerHTML.replace(/<div[^>]*>.*?<div class="spinner".*?<\/div><\/div>/s, '');
+    chatEl.innerHTML += `<div style="align-self:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;max-width:80%;font-size:13px">${r.reply || 'Aucune réponse'}</div>`;
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+}
+
+// ══════════════════════════════════════════════
+//  STATISTICS
+// ══════════════════════════════════════════════
+async function loadStatistics() {
+  const stats = await api('/statistics').catch(() => null);
+  if (!stats) { toast('Impossible de charger les statistiques', 'error'); return; }
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setVal('stat-msg-day', (stats.messages_today || 0).toLocaleString());
+  setVal('stat-joins-week', (stats.joins_week || 0).toLocaleString());
+  setVal('stat-leaves-week', (stats.leaves_week || 0).toLocaleString());
+  setVal('stat-voice-hours', (stats.voice_hours || 0).toLocaleString());
+  renderBarChart('chart-messages', stats.messages_by_day || [], 'var(--purple)');
+  renderBarChart('chart-members', stats.member_growth || [], 'var(--green)');
+  renderTopList('stat-top-members', stats.top_members || [], m => `<code style="color:var(--purple-l)">${m.user_id}</code>`, m => `${m.messages} messages`);
+  renderTopList('stat-top-channels', stats.top_channels || [], c => `#${c.name||c.channel_id}`, c => `${c.messages} messages`);
+  renderTopList('stat-top-commands', stats.top_commands || [], c => `!${c.name}`, c => `${c.uses} utilisations`);
+}
+
+function renderBarChart(containerId, data, color) {
+  const el = document.getElementById(containerId);
+  if (!el || !data.length) { if (el) el.innerHTML = '<div class="empty" style="flex:1"><div class="empty-icon">📊</div><div class="empty-text">Aucune donnée</div></div>'; return; }
+  const max = Math.max(...data.map(d=>d.value||d)) || 1;
+  el.innerHTML = '<div style="display:flex;align-items:flex-end;gap:4px;height:100%;width:100%">' +
+    data.map(d => {
+      const val = d.value ?? d;
+      const label = d.label || '';
+      const pct = Math.max(4, Math.round(val / max * 100));
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="font-size:9px;color:var(--muted)">${val}</div>
+        <div style="width:100%;height:${pct}%;background:${color};border-radius:3px 3px 0 0;opacity:0.85;transition:height .5s ease;min-height:4px"></div>
+        <div style="font-size:9px;color:var(--dim);white-space:nowrap;overflow:hidden;max-width:30px;text-overflow:ellipsis">${label}</div>
+      </div>`;
+    }).join('') + '</div>';
+}
+
+function renderTopList(containerId, items, labelFn, subFn) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!items.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Aucune donnée</div></div>'; return; }
+  const medals = ['🥇','🥈','🥉'];
+  const max = items[0] ? (items[0].messages || items[0].uses || 1) : 1;
+  el.innerHTML = items.slice(0,5).map((item,i) => {
+    const val = item.messages || item.uses || 0;
+    const pct = Math.round(val/max*100);
+    return `<div class="bar-row">
+      <div class="bar-lbl" style="width:100px">${medals[i]||`#${i+1}`} ${labelFn(item)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <div class="bar-val" style="width:60px;font-size:10px">${subFn(item)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  PREMIUM
+// ══════════════════════════════════════════════
+async function loadPremium() {
+  const prem = await api('/premium').catch(() => null);
+  // Mettre à jour UI if premium data available
+}
+
+// ══════════════════════════════════════════════
+//  MOBILE MENU
+// ══════════════════════════════════════════════
+function toggleMobileMenu() {
+  document.querySelector('.sidebar').classList.toggle('mobile-open');
+}
+document.addEventListener('click', e => {
+  if (window.innerWidth <= 768) {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar.contains(e.target) && !e.target.classList.contains('mobile-menu-btn')) {
+      sidebar.classList.remove('mobile-open');
+    }
+  }
+});
+
+// ══════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey) {
+    const shortcuts = {
+      '1': 'overview', '2': 'members', '3': 'moderation',
+      '4': 'tickets', '5': 'economy', '6': 'levels',
+      '7': 'automod', '8': 'settings', '9': 'statistics'
+    };
+    if (shortcuts[e.key] && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      loadPage(shortcuts[e.key]);
+    }
+  }
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ══════════════════════════════════════════════
+//  BOT STATUS LIVE CHECK
+// ══════════════════════════════════════════════
+async function checkBotStatus() {
+  try {
+    const status = await api('/status').catch(() => null);
+    const indicator = document.getElementById('bot-status-indicator');
+    const label = document.getElementById('bot-status-label');
+    if (!indicator) return;
+    if (status && status.online) {
+      indicator.className = 'status-indicator status-online';
+      if (label) label.textContent = 'Bot en ligne';
+    } else {
+      indicator.className = 'status-indicator status-offline';
+      if (label) label.textContent = 'Bot hors ligne';
+    }
+  } catch (_) {}
+}
+checkBotStatus();
+setInterval(checkBotStatus, 30000);
+
+// ══════════════════════════════════════════════
+//  THEME SUPPORT (dark/light toggle placeholder)
+// ══════════════════════════════════════════════
+function setTheme(theme) {
+  const root = document.documentElement;
+  if (theme === 'light') {
+    root.style.setProperty('--bg', '#f5f3ff');
+    root.style.setProperty('--bg2', '#ffffff');
+    root.style.setProperty('--bg3', '#f0edfc');
+    root.style.setProperty('--text', '#1e1040');
+    root.style.setProperty('--muted', '#5f4d8a');
+    root.style.setProperty('--dim', '#9c8cc0');
+  } else {
+    root.style.setProperty('--bg', '#07050f');
+    root.style.setProperty('--bg2', '#0e0a1a');
+    root.style.setProperty('--bg3', '#131020');
+    root.style.setProperty('--text', '#ede9fe');
+    root.style.setProperty('--muted', '#7c6fa0');
+    root.style.setProperty('--dim', '#4a4060');
+  }
+  localStorage.setItem('orbis-theme', theme);
+}
+
+// ══════════════════════════════════════════════
+//  LAZY LOADING OBSERVER
+// ══════════════════════════════════════════════
+const lazyObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      if (el.dataset.lazySrc) {
+        el.src = el.dataset.lazySrc;
+        el.removeAttribute('data-lazy-src');
+        lazyObserver.unobserve(el);
+      }
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('[data-lazy-src]').forEach(el => lazyObserver.observe(el));
+
+// ══════════════════════════════════════════════
+//  SEARCH GLOBAL (Ctrl+K)
+// ══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    openGlobalSearch();
+  }
+});
+
+function openGlobalSearch() {
+  let modal = document.getElementById('modal-global-search');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'modal-global-search';
+    modal.style.alignItems = 'flex-start';
+    modal.style.paddingTop = '15vh';
+    modal.innerHTML = `
+      <div class="modal" style="width:540px">
+        <input class="input" id="global-search-input" type="text" placeholder="🔍 Rechercher une page, un membre..." autocomplete="off" oninput="globalSearchFilter(this.value)" onkeydown="globalSearchKey(event)" style="font-size:15px;padding:12px 16px">
+        <div id="global-search-results" style="margin-top:10px;max-height:300px;overflow-y:auto"></div>
+      </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal('modal-global-search'); });
+    document.body.appendChild(modal);
+  }
+  openModal('modal-global-search');
+  setTimeout(() => document.getElementById('global-search-input')?.focus(), 50);
+  globalSearchFilter('');
+}
+
+const searchablePages = [
+  { label:'Vue d\'ensemble', page:'overview', icon:'📊' },
+  { label:'Membres', page:'members', icon:'👥' },
+  { label:'Bannis', page:'bans', icon:'🚫' },
+  { label:'Paramètres', page:'settings', icon:'⚙️' },
+  { label:'Modération', page:'moderation', icon:'🛡️' },
+  { label:'AutoMod', page:'automod', icon:'🤖' },
+  { label:'Tickets', page:'tickets', icon:'🎫' },
+  { label:'Rôles', page:'roles', icon:'🎭' },
+  { label:'Autoroles', page:'autoroles', icon:'🔄' },
+  { label:'Bienvenue', page:'welcome', icon:'👋' },
+  { label:'Logs', page:'logs', icon:'📋' },
+  { label:'Commandes', page:'commands', icon:'💬' },
+  { label:'Économie', page:'economy', icon:'💰' },
+  { label:'Niveaux', page:'levels', icon:'📈' },
+  { label:'Boutique', page:'shop', icon:'🛍️' },
+  { label:'Broadcast', page:'broadcast', icon:'📢' },
+  { label:'Permissions', page:'permissions', icon:'🔐' },
+  { label:'Rôles de réaction', page:'reactionroles', icon:'🏷️' },
+  { label:'Giveaways', page:'giveaways', icon:'🎉' },
+  { label:'Webhooks', page:'webhooks', icon:'🔗' },
+  { label:'Suggestions', page:'suggestions', icon:'💡' },
+  { label:'Vérification', page:'verification', icon:'✅' },
+  { label:'Temp Channels', page:'tempchannel', icon:'🔊' },
+  { label:'Musique', page:'music', icon:'🎵' },
+  { label:'Anti-Nuke', page:'antinuke', icon:'🛡️' },
+  { label:'Audit Logs', page:'auditlog', icon:'📜' },
+  { label:'Sauvegardes', page:'backup', icon:'💾' },
+  { label:'IA / Chatbot', page:'ai', icon:'🧠' },
+  { label:'Statistiques', page:'statistics', icon:'📊' },
+  { label:'Premium', page:'premium', icon:'⭐' },
+];
+
+let _searchIdx = 0;
+function globalSearchFilter(q) {
+  const el = document.getElementById('global-search-results');
+  if (!el) return;
+  const filtered = q.length < 1 ? searchablePages : searchablePages.filter(p => p.label.toLowerCase().includes(q.toLowerCase()));
+  _searchIdx = 0;
+  el.innerHTML = filtered.slice(0, 8).map((p, i) => `
+    <div class="activity-item" id="sr-${i}" style="cursor:pointer;${i===0?'border-color:var(--purple)':''}" onclick="navigateFromSearch('${p.page}')" onmouseenter="_searchIdx=${i};highlightSearchResult()">
+      <div style="font-size:16px">${p.icon}</div>
+      <div class="activity-text"><strong>${p.label}</strong></div>
+      <div style="font-size:10px;color:var(--dim)">Page</div>
+    </div>`).join('') || '<div class="empty" style="padding:20px"><div class="empty-text">Aucune page trouvée</div></div>';
+}
+
+function highlightSearchResult() {
+  document.querySelectorAll('[id^="sr-"]').forEach((el, i) => {
+    el.style.borderColor = i === _searchIdx ? 'var(--purple)' : 'transparent';
+  });
+}
+
+function globalSearchKey(e) {
+  const results = document.querySelectorAll('[id^="sr-"]');
+  if (e.key === 'ArrowDown') { e.preventDefault(); _searchIdx = Math.min(_searchIdx+1, results.length-1); highlightSearchResult(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); _searchIdx = Math.max(_searchIdx-1, 0); highlightSearchResult(); }
+  else if (e.key === 'Enter') {
+    const item = searchablePages.filter(p => {
+      const q = document.getElementById('global-search-input')?.value || '';
+      return !q || p.label.toLowerCase().includes(q.toLowerCase());
+    })[_searchIdx];
+    if (item) navigateFromSearch(item.page);
+  }
+}
+
+function navigateFromSearch(page) {
+  closeModal('modal-global-search');
+  loadPage(page);
+}
+
+// ══════════════════════════════════════════════
+//  RECENT PAGES (quick nav)
+// ══════════════════════════════════════════════
+const _recentPages = [];
+const _origNav = loadPage;
+
+// ══════════════════════════════════════════════
+//  TOOLTIPS INIT
+// ══════════════════════════════════════════════
+function initTooltips() {
+  document.querySelectorAll('[data-tip]').forEach(el => {
+    el.setAttribute('title', el.dataset.tip);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  FORMAT HELPERS
+// ══════════════════════════════════════════════
+function fmtNumber(n) {
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'k';
+  return String(n);
+}
+
+function fmtDuration(seconds) {
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (d > 0) return `${d}j ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+function copyToClipboard(text, label) {
+  navigator.clipboard.writeText(text).then(() => toast(`${label||'Texte'} copié !`, 'success')).catch(() => toast('Erreur de copie', 'error'));
+}
+
+// Shortcut: Ctrl+K hint in topbar
+document.addEventListener('DOMContentLoaded', () => {
+  const topbar = document.querySelector('.topbar-actions');
+  if (topbar) {
+    const hint = document.createElement('button');
+    hint.className = 'btn btn-ghost';
+    hint.style.fontSize = '11px';
+    hint.innerHTML = '⌘K Rechercher';
+    hint.onclick = openGlobalSearch;
+    topbar.insertBefore(hint, topbar.firstChild);
+  }
+  initTooltips();
+});
+</script>
+<script>
+// ══════════════════════════════════════════════
 //  TICKET PANELS
 // ══════════════════════════════════════════════
 
@@ -1504,7 +2928,7 @@ async function savePanelEmbed() {
   r.success ? toast('Apparence sauvegardée ✅', 'success') : toast(r.error || 'Erreur', 'error');
 }
 
-function openCreatePanelModal() {
+function openCréerPanelModal() {
   let modal = document.getElementById('modal-create-panel');
   if (!modal) {
     modal = document.createElement('div');
@@ -1566,7 +2990,7 @@ async function loadPanelCategories(panelId) {
     </div>`).join('');
 }
 
-function openCreateCategoryModal() {
+function openCréerCategoryModal() {
   const panelId = document.getElementById('ticket-panel-select')?.value;
   if (!panelId) { toast('Sélectionne un panel d\'abord', 'error'); return; }
   let modal = document.getElementById('modal-create-category');
@@ -1619,22 +3043,6 @@ window.loadPage = async function(page) {
 };
 
 // ══ TICKET TOOL STYLE FUNCTIONS ══
-function openSection(name) {
-  const labels = { general:"⚙️ Général", category:"📂 Catégorie", ticket:"🎫 Ticket", moderator:"👮 Modérateur", permissions:"🔒 Permissions", buttons:"🔘 Boutons", messages:"💬 Messages", escalate:"⬆️ Escalade", panel:"📋 Panel", command_style:"⌨️ Command Style", dropdown_style:"📋 Dropdown Style", thread_style:"🧵 Thread Style", forms:"📝 Forms", transcript:"📄 Transcript", logging:"📋 Logging", automation:"🤖 Automation", limits:"⏱️ Limits", claiming:"✋ Claiming", integrations:"🔗 Integrations" };
-  const descs = { general:"Configurez le rôle support et les options générales.", category:"Options pour les catégories ouvertes/fermées.", ticket:"Options générales du ticket.", moderator:"Messages du modérateur.", permissions:"Options de permissions.", buttons:"Liste de tous les boutons.", messages:"Liste de tous les messages.", escalate:"Options d'escalade.", panel:"Options du message du panel.", command_style:"Créer des tickets via commandes.", dropdown_style:"Créer des tickets via menu déroulant.", thread_style:"Tickets en threads au lieu de salons.", forms:"Options des formulaires.", transcript:"Sauvegarder les transcripts.", logging:"Logs du serveur.", automation:"Options d'automatisation.", limits:"Limites et planning.", claiming:"Options de claim.", integrations:"Intégrations de bots externes." };
-  let modal = document.getElementById("modal-section");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.className = "modal-overlay";
-    modal.id = "modal-section";
-    modal.innerHTML = `<div class="modal"><div class="modal-title"><span id="section-title"></span><button class="modal-close" onclick="closeModal('modal-section')">✕</button></div><div id="section-body" style="color:var(--muted);font-size:13px;padding:8px 0"></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('modal-section')">Fermer</button></div></div>`;
-    modal.addEventListener("click", e => { if (e.target === modal) closeModal("modal-section"); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById("section-title").textContent = labels[name] || name;
-  document.getElementById("section-body").textContent = descs[name] || "Section en cours de développement.";
-  openModal("modal-section");
-}
 
 function toggleFrequent() {
   const body = document.getElementById("freq-body");
@@ -1731,22 +3139,6 @@ async function deletePanel() {
 }
 
 // ══ TICKET TOOL STYLE FUNCTIONS ══
-function openSection(name) {
-  const labels = { general:"⚙️ Général", category:"📂 Catégorie", ticket:"🎫 Ticket", moderator:"👮 Modérateur", permissions:"🔒 Permissions", buttons:"🔘 Boutons", messages:"💬 Messages", escalate:"⬆️ Escalade", panel:"📋 Panel", command_style:"⌨️ Command Style", dropdown_style:"📋 Dropdown Style", thread_style:"🧵 Thread Style", forms:"📝 Forms", transcript:"📄 Transcript", logging:"📋 Logging", automation:"🤖 Automation", limits:"⏱️ Limits", claiming:"✋ Claiming", integrations:"🔗 Integrations" };
-  const descs = { general:"Configurez le rôle support et les options générales.", category:"Options pour les catégories ouvertes/fermées.", ticket:"Options générales du ticket.", moderator:"Messages du modérateur.", permissions:"Options de permissions.", buttons:"Liste de tous les boutons.", messages:"Liste de tous les messages.", escalate:"Options d'escalade.", panel:"Options du message du panel.", command_style:"Créer des tickets via commandes.", dropdown_style:"Créer des tickets via menu déroulant.", thread_style:"Tickets en threads au lieu de salons.", forms:"Options des formulaires.", transcript:"Sauvegarder les transcripts.", logging:"Logs du serveur.", automation:"Options d'automatisation.", limits:"Limites et planning.", claiming:"Options de claim.", integrations:"Intégrations de bots externes." };
-  let modal = document.getElementById("modal-section");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.className = "modal-overlay";
-    modal.id = "modal-section";
-    modal.innerHTML = '<div class="modal"><div class="modal-title"><span id="section-title"></span><button class="modal-close" onclick="closeModal(\'modal-section\')">✕</button></div><div id="section-body" style="color:var(--muted);font-size:13px;padding:8px 0"></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal(\'modal-section\')">Fermer</button></div></div>';
-    modal.addEventListener("click", e => { if (e.target === modal) closeModal("modal-section"); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById("section-title").textContent = labels[name] || name;
-  document.getElementById("section-body").textContent = descs[name] || "Section en cours de développement.";
-  openModal("modal-section");
-}
 
 function toggleFrequent() {
   const body = document.getElementById("freq-body");
@@ -1851,5 +3243,7 @@ async function deletePanel() {
 }
 
 </script>
+<script src="/ticket-sections.js"></script>
+<script>document.addEventListener("click",function(){document.querySelectorAll(".ts-tag-dropdown").forEach(d=>d.style.display="none");});</script>
 </body>
 </html>
