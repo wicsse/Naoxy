@@ -33,7 +33,18 @@ db.exec(`
     automod_anti_link INTEGER DEFAULT 0,
     automod_badwords TEXT DEFAULT '[]',
     starboard_channel TEXT,
-    starboard_threshold INTEGER DEFAULT 3
+    starboard_threshold INTEGER DEFAULT 3,
+    spam_threshold INTEGER DEFAULT 5,
+    spam_interval INTEGER DEFAULT 3,
+    mention_threshold INTEGER DEFAULT 5,
+    raid_threshold INTEGER DEFAULT 10,
+    raid_interval INTEGER DEFAULT 10,
+    nuke_threshold INTEGER DEFAULT 3,
+    mute_duration INTEGER DEFAULT 10,
+    log_messages_channel TEXT,
+    log_membres_channel TEXT,
+    log_moderation_channel TEXT,
+    log_serveur_channel TEXT
   );
   CREATE TABLE IF NOT EXISTS member_levels (
     guild_id TEXT NOT NULL, user_id TEXT NOT NULL,
