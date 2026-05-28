@@ -1,157 +1,315 @@
-<div class="ticket-container" style="display: flex; font-family: sans-serif; background: #1a1c24; color: #fff; min-height: 80vh; border-radius: 8px; overflow: hidden;">
-  <div class="ticket-sidebar" style="width: 250px; background: #15171c; padding: 20px; border-right: 1px solid #2d3039;">
-    <h4 style="margin-top:0; color: #5865F2;">🎫 Ticket Config</h4>
-    <ul style="list-style: none; padding: 0; margin: 0;">
-      <li onclick="switchTicketTab('general')" class="t-tab active" id="tab-general" style="padding: 12px; cursor: pointer; border-radius: 4px; margin-bottom: 5px; background: #1e2129;">⚙️ Général</li>
-      <li onclick="switchTicketTab('categories')" class="t-tab" id="tab-categories" style="padding: 12px; cursor: pointer; border-radius: 4px; margin-bottom: 5px;">📂 Catégories</li>
-      <li onclick="switchTicketTab('messages')" class="t-tab" id="tab-messages" style="padding: 12px; cursor: pointer; border-radius: 4px; margin-bottom: 5px;">💬 Messages / Embeds</li>
-    </ul>
+<div style="font-family: sans-serif; background: #1a1c24; color: #fff; min-height: 80vh; border-radius: 8px; padding: 24px;">
+
+  <!-- Header + Panel Selector -->
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
+    <h2 style="margin:0; color:#fff;">🎫 Ticket Panels</h2>
+    <select id="panel-select" onchange="onPanelChange()" style="padding:8px 12px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:6px; min-width:180px;">
+      <option value="">— Sélectionner un panel —</option>
+    </select>
+    <button onclick="showCreatePanel()" style="background:#5865F2; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">+ Nouveau Panel</button>
+    <button onclick="deletePanel()" id="btn-delete-panel" style="display:none; background:#ed4245; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">🗑 Supprimer</button>
   </div>
 
-  <div class="ticket-content" style="flex: 1; padding: 30px; background: #1a1c24;">
-    <div id="ticket-view-general" class="ticket-view">
-      <h2 style="margin-top:0;">Configuration Générale</h2>
-      <hr style="border-color: #2d3039;">
-      <div style="margin-bottom: 20px;">
-        <label style="display:block; margin-bottom: 8px; font-weight: bold;">Rôle Support (ID)</label>
-        <input type="text" id="ticket_support_role" style="width:100%; padding:10px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:4px;">
+  <!-- Create Panel Form -->
+  <div id="create-panel-form" style="display:none; background:#202225; border-radius:8px; padding:20px; margin-bottom:24px; border:1px solid #5865F2;">
+    <h3 style="margin-top:0; color:#5865F2;">Créer un nouveau panel</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+      <div>
+        <label style="display:block; margin-bottom:4px; font-size:13px; color:#b9bbbe;">Nom du panel</label>
+        <input type="text" id="new_panel_name" placeholder="ex: Support" style="width:100%; padding:9px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
       </div>
-      <div style="margin-bottom: 20px; display:flex; align-items:center; justify-content:space-between; background:#202225; padding:15px; border-radius:4px;">
+      <div>
+        <label style="display:block; margin-bottom:4px; font-size:13px; color:#b9bbbe;">Label du bouton</label>
+        <input type="text" id="new_panel_btn" placeholder="Créer un ticket" style="width:100%; padding:9px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
+      </div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button onclick="createPanel()" style="background:#248046; color:#fff; border:none; padding:9px 18px; border-radius:6px; cursor:pointer; font-weight:bold;">✅ Créer</button>
+      <button onclick="document.getElementById('create-panel-form').style.display='none'" style="background:#4f545c; color:#fff; border:none; padding:9px 18px; border-radius:6px; cursor:pointer;">Annuler</button>
+    </div>
+  </div>
+
+  <!-- Panel Editor (shown when a panel is selected) -->
+  <div id="panel-editor" style="display:none;">
+
+    <!-- Tabs -->
+    <div style="display:flex; gap:4px; margin-bottom:20px; border-bottom:1px solid #2d3039; padding-bottom:0;">
+      <button onclick="switchTab('config')" id="tab-config" class="ptab active-tab" style="padding:10px 18px; border:none; border-radius:6px 6px 0 0; cursor:pointer; font-weight:bold; background:#5865F2; color:#fff;">⚙️ Configuration</button>
+      <button onclick="switchTab('categories')" id="tab-categories" class="ptab" style="padding:10px 18px; border:none; border-radius:6px 6px 0 0; cursor:pointer; font-weight:bold; background:#2d3039; color:#b9bbbe;">📂 Catégories</button>
+      <button onclick="switchTab('send')" id="tab-send" class="ptab" style="padding:10px 18px; border:none; border-radius:6px 6px 0 0; cursor:pointer; font-weight:bold; background:#2d3039; color:#b9bbbe;">📤 Envoyer</button>
+    </div>
+
+    <!-- TAB: Configuration -->
+    <div id="view-config" class="pview" style="background:#202225; border-radius:0 8px 8px 8px; padding:24px;">
+      <h3 style="margin-top:0;">Paramètres du panel</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
         <div>
-          <strong style="display:block;">Fermeture en deux étapes (Two-step close)</strong>
-          <span style="font-size:12px; color:#b9bbbe;">Demande une confirmation avant de fermer le ticket.</span>
+          <label style="display:block; margin-bottom:5px; font-size:13px; color:#b9bbbe;">Titre de l'embed</label>
+          <input type="text" id="p_embed_title" placeholder="🎫 Support" style="width:100%; padding:9px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
         </div>
-        <input type="checkbox" id="two_step_close" style="width:20px; height:20px;">
-      </div>
-      <button onclick="saveTicketSettings()" style="background:#248046; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">Sauvegarder les modifications</button>
-    </div>
-
-    <div id="ticket-view-categories" class="ticket-view" style="display:none;">
-      <h2 style="margin-top:0;">Gestion des Catégories</h2>
-      <hr style="border-color: #2d3039;">
-      
-      <div style="background:#202225; padding:15px; border-radius:4px; margin-bottom:20px;">
-        <h4 style="margin-top:0;">+ Ajouter une nouvelle option</h4>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
-          <input type="text" id="cat_label" placeholder="Nom (ex: Assistance)" style="padding:8px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:4px;">
-          <input type="text" id="cat_emoji" placeholder="Emoji (ex: 🎧)" style="padding:8px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:4px;">
-          <input type="text" id="cat_discord_id" placeholder="ID Catégorie Discord" style="padding:8px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:4px;">
+        <div>
+          <label style="display:block; margin-bottom:5px; font-size:13px; color:#b9bbbe;">Label du bouton</label>
+          <input type="text" id="p_button_label" placeholder="Créer un ticket" style="width:100%; padding:9px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
         </div>
-        <button onclick="addTicketCategory()" style="background:#5865F2; color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Ajouter au sélecteur</button>
+        <div>
+          <label style="display:block; margin-bottom:5px; font-size:13px; color:#b9bbbe;">Couleur de l'embed</label>
+          <input type="color" id="p_embed_color" value="#7c3aed" style="width:100%; padding:4px; background:#15171c; border:1px solid #2d3039; border-radius:6px; height:38px; cursor:pointer;">
+        </div>
+        <div>
+          <label style="display:block; margin-bottom:5px; font-size:13px; color:#b9bbbe;">Rôle Support (ID)</label>
+          <input type="text" id="p_support_role" placeholder="ID du rôle" style="width:100%; padding:9px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
+        </div>
       </div>
-
-      <table style="width:100%; border-collapse: collapse; background:#202225; border-radius:4px; overflow:hidden;">
-        <thead>
-          <tr style="background:#15171c; text-align:left;">
-            <th style="padding:12px;">Option</th>
-            <th style="padding:12px;">ID Catégorie Discord</th>
-            <th style="padding:12px;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="categories-list-tbody">
-          </tbody>
-      </table>
+      <div style="margin-bottom:16px;">
+        <label style="display:block; margin-bottom:5px; font-size:13px; color:#b9bbbe;">Description de l'embed</label>
+        <textarea id="p_embed_description" rows="3" placeholder="Pour créer un ticket, cliquez sur le bouton ci-dessous." style="width:100%; padding:9px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:6px; resize:vertical; box-sizing:border-box;"></textarea>
+      </div>
+      <button onclick="savePanel()" style="background:#248046; color:#fff; border:none; padding:10px 22px; border-radius:6px; cursor:pointer; font-weight:bold;">💾 Sauvegarder</button>
     </div>
 
-    <div id="ticket-view-messages" class="ticket-view" style="display:none;">
-      <h2 style="margin-top:0;">Messages des Salons</h2>
-      <hr style="border-color: #2d3039;">
-      <div style="margin-bottom: 20px;">
-        <label style="display:block; margin-bottom: 8px; font-weight: bold;">Message de bienvenue (Dans le ticket créé)</label>
-        <textarea id="ticket_open_message" rows="5" placeholder="Bonjour {user} ! Décrivez votre demande..." style="width:100%; padding:10px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:4px; resize:vertical;"></textarea>
+    <!-- TAB: Catégories -->
+    <div id="view-categories" class="pview" style="display:none; background:#202225; border-radius:0 8px 8px 8px; padding:24px;">
+      <h3 style="margin-top:0;">Options du menu déroulant</h3>
+      <p style="color:#b9bbbe; font-size:13px; margin-top:-10px;">Chaque catégorie = une option dans le menu Discord quand l'utilisateur clique "Créer un ticket".</p>
+
+      <!-- Add category form -->
+      <div style="background:#15171c; border-radius:8px; padding:16px; margin-bottom:20px; border:1px dashed #5865F2;">
+        <h4 style="margin-top:0; color:#5865F2;">+ Nouvelle option</h4>
+        <div style="display:grid; grid-template-columns:2fr 1fr 2fr 2fr; gap:10px; margin-bottom:12px;">
+          <div>
+            <label style="display:block; margin-bottom:4px; font-size:12px; color:#b9bbbe;">Nom affiché *</label>
+            <input type="text" id="cat_label" placeholder="ex: Assistance" style="width:100%; padding:8px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block; margin-bottom:4px; font-size:12px; color:#b9bbbe;">Emoji</label>
+            <input type="text" id="cat_emoji" placeholder="🎧" style="width:100%; padding:8px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block; margin-bottom:4px; font-size:12px; color:#b9bbbe;">ID Catégorie Discord</label>
+            <input type="text" id="cat_discord_id" placeholder="ID où créer les tickets" style="width:100%; padding:8px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block; margin-bottom:4px; font-size:12px; color:#b9bbbe;">ID Rôle Support</label>
+            <input type="text" id="cat_role_id" placeholder="(optionnel)" style="width:100%; padding:8px; background:#202225; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box;">
+          </div>
+        </div>
+        <button onclick="addCategory()" style="background:#5865F2; color:#fff; border:none; padding:9px 18px; border-radius:6px; cursor:pointer; font-weight:bold;">Ajouter au menu</button>
       </div>
-      <button onclick="saveTicketSettings()" style="background:#248046; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">Sauvegarder les messages</button>
+
+      <!-- Categories list -->
+      <div id="categories-list" style="display:flex; flex-direction:column; gap:8px;">
+        <div style="color:#b9bbbe; text-align:center; padding:20px;">Aucune catégorie pour ce panel.</div>
+      </div>
     </div>
+
+    <!-- TAB: Envoyer -->
+    <div id="view-send" class="pview" style="display:none; background:#202225; border-radius:0 8px 8px 8px; padding:24px;">
+      <h3 style="margin-top:0;">Envoyer le panel dans un salon</h3>
+      <p style="color:#b9bbbe; font-size:13px;">Le bot va envoyer l'embed avec le bouton "Créer un ticket" dans le salon choisi.</p>
+      <div style="margin-bottom:16px;">
+        <label style="display:block; margin-bottom:5px; font-size:13px; color:#b9bbbe;">ID du salon Discord</label>
+        <input type="text" id="send_channel_id" placeholder="ID du salon où envoyer le panel" style="width:100%; padding:9px; background:#15171c; border:1px solid #2d3039; color:#fff; border-radius:6px; box-sizing:border-box; max-width:400px;">
+      </div>
+      <button onclick="sendPanel()" style="background:#248046; color:#fff; border:none; padding:10px 22px; border-radius:6px; cursor:pointer; font-weight:bold;">📤 Envoyer le panel</button>
+      <div id="send-status" style="margin-top:12px;"></div>
+    </div>
+
   </div>
 </div>
 
+<style>
+  .ptab { transition: background 0.15s, color 0.15s; }
+  .active-tab { background: #5865F2 !important; color: #fff !important; }
+</style>
+
 <script>
-  // Gestion des onglets
-  function switchTicketTab(tabName) {
-    document.querySelectorAll('.ticket-view').forEach(v => v.style.display = 'none');
-    document.querySelectorAll('.t-tab').forEach(t => {
-      t.style.background = 'transparent';
-      t.classList.remove('active');
-    });
-    
-    document.getElementById('ticket-view-' + tabName).style.display = 'block';
-    const targetTab = document.getElementById('tab-' + tabName);
-    targetTab.style.background = '#1e2129';
-    targetTab.classList.add('active');
-  }
-
-  // Fonctions d'interaction API
   const getGid = () => window.location.pathname.split('/')[3] || window.location.pathname.split('/')[2];
+  let currentPanelId = null;
 
-  async function loadTicketData() {
+  // ── Init ──
+  async function loadPanels() {
     const gid = getGid();
-    // Charger catégories
-    const resCat = await fetch(`/api/guild/${gid}/ticket-categories`);
-    const categories = await resCat.json();
-    const tbody = document.getElementById('categories-list-tbody');
-    tbody.innerHTML = '';
-    
-    if(categories.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" style="padding:15px; text-align:center; color:#b9bbbe;">Aucune catégorie configurée.</td></tr>`;
-    } else {
-      categories.forEach(c => {
-        tbody.innerHTML += `
-          <tr style="border-bottom: 1px solid #2d3039;">
-            <td style="padding:12px;">${c.emoji} ${c.label}</td>
-            <td style="padding:12px; font-family:monospace; color:#b9bbbe;">${c.category_id}</td>
-            <td style="padding:12px;"><button onclick="deleteCategory(${c.id})" style="background:#ed4245; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Supprimer</button></td>
-          </tr>
-        `;
-      });
+    const res = await fetch(`/api/guild/${gid}/ticket-panels`);
+    const panels = await res.json();
+    const sel = document.getElementById('panel-select');
+    sel.innerHTML = '<option value="">— Sélectionner un panel —</option>';
+    panels.forEach(p => {
+      sel.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+    });
+  }
+
+  async function onPanelChange() {
+    const pid = document.getElementById('panel-select').value;
+    if (!pid) {
+      document.getElementById('panel-editor').style.display = 'none';
+      document.getElementById('btn-delete-panel').style.display = 'none';
+      currentPanelId = null;
+      return;
     }
+    currentPanelId = pid;
+    document.getElementById('panel-editor').style.display = 'block';
+    document.getElementById('btn-delete-panel').style.display = 'inline-block';
+    await loadPanelData(pid);
+    await loadCategories(pid);
   }
 
-  async function saveTicketSettings() {
+  async function loadPanelData(pid) {
     const gid = getGid();
-    const payload = {
-      two_step_close: document.getElementById('two_step_close').checked ? 1 : 0,
-      ticket_support_role: document.getElementById('ticket_support_role').value,
-      ticket_open_message: document.getElementById('ticket_open_message').value
-    };
-
-    const res = await fetch(`/api/guild/${gid}/ticket-settings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if(res.ok) alert('✅ Paramètres sauvegardés avec succès !');
+    const res = await fetch(`/api/guild/${gid}/ticket-panels/${pid}`);
+    const p = await res.json();
+    document.getElementById('p_embed_title').value = p.embed_title || '';
+    document.getElementById('p_embed_description').value = p.embed_description || '';
+    document.getElementById('p_embed_color').value = p.embed_color || '#7c3aed';
+    document.getElementById('p_button_label').value = p.button_label || '';
+    document.getElementById('p_support_role').value = p.support_role_id || '';
+    document.getElementById('send_channel_id').value = p.channel_id || '';
   }
 
-  async function addTicketCategory() {
+  // ── Tabs ──
+  function switchTab(name) {
+    document.querySelectorAll('.pview').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.ptab').forEach(t => {
+      t.style.background = '#2d3039';
+      t.style.color = '#b9bbbe';
+      t.classList.remove('active-tab');
+    });
+    document.getElementById('view-' + name).style.display = 'block';
+    const btn = document.getElementById('tab-' + name);
+    btn.style.background = '#5865F2';
+    btn.style.color = '#fff';
+    btn.classList.add('active-tab');
+  }
+
+  // ── Panel CRUD ──
+  function showCreatePanel() {
+    document.getElementById('create-panel-form').style.display = 'block';
+  }
+
+  async function createPanel() {
     const gid = getGid();
-    const payload = {
-      label: document.getElementById('cat_label').value,
-      emoji: document.getElementById('cat_emoji').value,
-      category_id: document.getElementById('cat_discord_id').value
-    };
-
-    if(!payload.label || !payload.category_id) return alert('Erreur : Nom et ID requis !');
-
-    await fetch(`/api/guild/${gid}/ticket-categories`, {
+    const name = document.getElementById('new_panel_name').value.trim();
+    const button_label = document.getElementById('new_panel_btn').value.trim();
+    if (!name) return alert('Nom requis !');
+    await fetch(`/api/guild/${gid}/ticket-panels`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ name, button_label: button_label || 'Créer un ticket' })
     });
-    
-    // Reset inputs
+    document.getElementById('create-panel-form').style.display = 'none';
+    document.getElementById('new_panel_name').value = '';
+    document.getElementById('new_panel_btn').value = '';
+    await loadPanels();
+    // Auto-select le nouveau panel
+    const sel = document.getElementById('panel-select');
+    sel.selectedIndex = sel.options.length - 1;
+    onPanelChange();
+  }
+
+  async function savePanel() {
+    if (!currentPanelId) return;
+    const gid = getGid();
+    await fetch(`/api/guild/${gid}/ticket-panels/${currentPanelId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embed_title: document.getElementById('p_embed_title').value,
+        embed_description: document.getElementById('p_embed_description').value,
+        embed_color: document.getElementById('p_embed_color').value,
+        button_label: document.getElementById('p_button_label').value,
+        support_role_id: document.getElementById('p_support_role').value,
+      })
+    });
+    alert('✅ Panel sauvegardé !');
+  }
+
+  async function deletePanel() {
+    if (!currentPanelId) return;
+    if (!confirm('Supprimer ce panel et toutes ses catégories ?')) return;
+    const gid = getGid();
+    await fetch(`/api/guild/${gid}/ticket-panels/${currentPanelId}`, { method: 'DELETE' });
+    currentPanelId = null;
+    document.getElementById('panel-editor').style.display = 'none';
+    document.getElementById('btn-delete-panel').style.display = 'none';
+    await loadPanels();
+  }
+
+  // ── Categories ──
+  async function loadCategories(pid) {
+    const gid = getGid();
+    const res = await fetch(`/api/guild/${gid}/ticket-panels/${pid}/categories`);
+    const cats = await res.json();
+    const container = document.getElementById('categories-list');
+
+    if (!cats.length) {
+      container.innerHTML = '<div style="color:#b9bbbe; text-align:center; padding:20px; background:#15171c; border-radius:6px;">Aucune catégorie — ajoutez-en une ci-dessus.</div>';
+      return;
+    }
+
+    container.innerHTML = cats.map(c => `
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#15171c; padding:12px 16px; border-radius:8px; border-left:3px solid #5865F2;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:22px;">${c.emoji || '🎫'}</span>
+          <div>
+            <div style="font-weight:bold;">${c.label || c.name}</div>
+            <div style="font-size:12px; color:#b9bbbe; margin-top:2px;">
+              ${c.category_id ? `📁 Catégorie Discord: <code style="background:#202225; padding:1px 5px; border-radius:3px;">${c.category_id}</code>` : '<span style="color:#faa61a;">⚠️ Pas de catégorie Discord définie</span>'}
+              ${c.support_role_id ? ` &nbsp;|&nbsp; 🛡 Rôle: <code style="background:#202225; padding:1px 5px; border-radius:3px;">${c.support_role_id}</code>` : ''}
+            </div>
+          </div>
+        </div>
+        <button onclick="deleteCategory(${c.id})" style="background:#ed4245; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px;">🗑 Supprimer</button>
+      </div>
+    `).join('');
+  }
+
+  async function addCategory() {
+    if (!currentPanelId) return;
+    const gid = getGid();
+    const label = document.getElementById('cat_label').value.trim();
+    const emoji = document.getElementById('cat_emoji').value.trim();
+    const category_id = document.getElementById('cat_discord_id').value.trim();
+    const support_role_id = document.getElementById('cat_role_id').value.trim();
+    if (!label) return alert('Le nom est requis !');
+    await fetch(`/api/guild/${gid}/ticket-panels/${currentPanelId}/categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label, emoji, category_id, support_role_id })
+    });
     document.getElementById('cat_label').value = '';
     document.getElementById('cat_emoji').value = '';
     document.getElementById('cat_discord_id').value = '';
-    loadTicketData();
+    document.getElementById('cat_role_id').value = '';
+    await loadCategories(currentPanelId);
   }
 
-  async function deleteCategory(id) {
-    if(!confirm('Supprimer cette catégorie ?')) return;
+  async function deleteCategory(cid) {
+    if (!confirm('Supprimer cette catégorie ?')) return;
     const gid = getGid();
-    await fetch(`/api/guild/${gid}/ticket-categories/${id}`, { method: 'DELETE' });
-    loadTicketData();
+    await fetch(`/api/guild/${gid}/ticket-panels/${currentPanelId}/categories/${cid}`, { method: 'DELETE' });
+    await loadCategories(currentPanelId);
   }
 
-  // Auto load au démarrage
-  setTimeout(loadTicketData, 500);
+  // ── Send Panel ──
+  async function sendPanel() {
+    if (!currentPanelId) return;
+    const gid = getGid();
+    const channelId = document.getElementById('send_channel_id').value.trim();
+    if (!channelId) return alert('ID du salon requis !');
+    const status = document.getElementById('send-status');
+    status.innerHTML = '<span style="color:#b9bbbe;">Envoi en cours...</span>';
+    const res = await fetch(`/api/guild/${gid}/ticket-panels/${currentPanelId}/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ channelId })
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.innerHTML = '<span style="color:#248046; font-weight:bold;">✅ Panel envoyé avec succès !</span>';
+    } else {
+      status.innerHTML = `<span style="color:#ed4245;">❌ Erreur : ${data.error}</span>`;
+    }
+  }
+
+  // ── Auto load ──
+  setTimeout(loadPanels, 300);
 </script>
