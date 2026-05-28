@@ -154,7 +154,7 @@ function openMessageEditor(type){
     if(btn) btn.onclick=function(){saveMessageEditor(type);};
   },100);
   var templates={
-    ticket_message:{embed_title:'🎫 panel_{name}',embed_description:'Bonjour {user} 👋\n\nMerci d\'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.',embed_color:'#7c3aed',embed_footer:'Ouvert par {user}',embed_author:''},
+    ticket_message:{embed_title:'🎫 Ticket_{name}',embed_description:'Bonjour {user} 👋\n\nMerci d\'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.',embed_color:'#7c3aed',embed_footer:'Ouvert par {user}',embed_author:''},
     closed_message:{embed_title:'🔒 Ticket Fermé',embed_description:'Votre ticket a été fermé.\n\nSi vous avez d\'autres questions, n\'hésitez pas à ouvrir un nouveau ticket.',embed_color:'#ef4444',embed_footer:'Fermé par {closer}',embed_author:''},
     opened_message:{embed_title:'✅ Ticket Ouvert',embed_description:'Bonjour {user} 👋\n\nUn membre du staff va vous répondre rapidement.',embed_color:'#22c55e',embed_footer:'',embed_author:''},
     panel_message:{embed_title:'🎫 Ouvrir un ticket',embed_description:'Cliquez sur le bouton ci-dessous pour ouvrir un ticket.\nNotre équipe vous répondra dès que possible.',embed_color:'#7c3aed',embed_footer:'',embed_author:''},
