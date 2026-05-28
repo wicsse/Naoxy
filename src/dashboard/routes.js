@@ -481,7 +481,8 @@ module.exports = (client, app) => {
   router.post('/api/guild/:id/ticket-panels', requireAuth, requireGuildAccess, (req, res) => {
     try {
       const { name, embed_title, embed_description, embed_color, button_label, welcome_message } = req.body;
-      const r = db.prepare('INSERT INTO ticket_panels (guild_id,name,embed_title,embed_description,embed_color,button_label,welcome_message) VALUES (?,?,?,?,?,?,?)').run(req.guild.id, name||'Support', embed_title||'Ouvrir un ticket', embed_description||'Clique pour ouvrir un ticket', embed_color||'#7c3aed', button_label||'Ouvrir un ticket', welcome_message||'Bonjour {user} !');
+      const { channel_id, category_id, support_role_id } = req.body;
+      const r = db.prepare('INSERT INTO ticket_panels (guild_id,name,embed_title,embed_description,embed_color,button_label,welcome_message,channel_id,category_open_id,support_role_id) VALUES (?,?,?,?,?,?,?,?,?,?)').run(req.guild.id, name||'Support', embed_title||'Ouvrir un ticket', embed_description||'Clique pour ouvrir un ticket', embed_color||'#7c3aed', button_label||'Ouvrir un ticket', welcome_message||'Bonjour {user} !', channel_id||null, category_id||null, support_role_id||null);
       res.json({ success: true, id: r.lastInsertRowid });
     } catch(e) { res.status(400).json({ error: e.message }); }
   });
