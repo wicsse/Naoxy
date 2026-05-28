@@ -131,7 +131,7 @@ module.exports = (client, app) => {
   router.get("/api/guild/:id", requireAuth, requireGuildAccess, async (req, res) => {
     const { guild } = req;
     await guild.fetch();
-    res.json({ id: guild.id, name: guild.name, icon: guild.iconURL({ size: 256 }), memberCount: guild.memberCount, onlineCount: guild.members.cache.filter(m => ["online","idle","dnd"].includes(m.presence?.status)).size, channelCount: guild.channels.cache.size, roleCount: guild.roles.cache.size, settings: getGuildSettings(guild.id) });
+    res.json({ id: guild.id, name: guild.name, icon: guild.iconURL({ size: 256, extension: "png" }), memberCount: guild.memberCount, onlineCount: guild.members.cache.filter(m => ["online","idle","dnd"].includes(m.presence?.status)).size, channelCount: guild.channels.cache.size, roleCount: guild.roles.cache.size, settings: getGuildSettings(guild.id) });
   });
 
   router.get("/api/guilds", requireAuth, (req, res) => {
