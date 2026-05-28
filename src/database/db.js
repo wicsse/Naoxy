@@ -203,6 +203,18 @@ db.prepare(`CREATE TABLE IF NOT EXISTS guild_settings (
   PRIMARY KEY (guild_id, key)
 )`).run();
 
+db.prepare(`CREATE TABLE IF NOT EXISTS ticket_panels (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  guild_id TEXT NOT NULL,
+  name TEXT DEFAULT 'Support',
+  embed_title TEXT DEFAULT 'Ouvrir un ticket',
+  embed_description TEXT DEFAULT 'Clique pour ouvrir un ticket',
+  embed_color TEXT DEFAULT '#7c3aed',
+  button_label TEXT DEFAULT 'Ouvrir un ticket',
+  welcome_message TEXT DEFAULT 'Bonjour {user} !',
+  channel_id TEXT,
+  created_at INTEGER DEFAULT (unixepoch())
+)`).run();
 // ══ TICKET MIGRATION ══
 const ticketCols = [
   "ALTER TABLE ticket_panels ADD COLUMN two_step_close INTEGER DEFAULT 0",
