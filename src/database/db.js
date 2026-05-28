@@ -231,6 +231,7 @@ const ticketCols = [
   "ALTER TABLE ticket_panels ADD COLUMN auto_pin INTEGER DEFAULT 0",
   "ALTER TABLE ticket_panels ADD COLUMN ticket_padding INTEGER DEFAULT 4",
   "ALTER TABLE ticket_panels ADD COLUMN category_open_id TEXT",
+  "ALTER TABLE ticket_panels ADD COLUMN closed_category_id TEXT",
   "ALTER TABLE ticket_panels ADD COLUMN category_closed_id TEXT",
   "ALTER TABLE ticket_panels ADD COLUMN ticket_open_name TEXT DEFAULT 'Ticket-{count}'",
   "ALTER TABLE ticket_panels ADD COLUMN ticket_close_name TEXT DEFAULT 'Closed-{count}'",
