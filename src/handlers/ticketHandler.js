@@ -1,21 +1,27 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, PermissionFlagsBits } = require("discord.js");
 const { db } = require("../database/db.js");
 
-const CATEGORY_NAMES = {
-  support: "🎧 Support général",
-  commande: "🛒 Commande / Achat",
-  autre: "📩 Autre",
-};
-
 async function openTicket(interaction) {
   const value = interaction.values[0];
   const guild = interaction.guild;
   const gid = guild.id;
 
+  // Cherche la catégorie custom dans ticket_categories
+  const cat = db.prepare("SELECT * FROM ticket_categories WHERE id = ?").get(value);
+  // Cherche le panel lié
+  const panel = cat
+    ? db.prepare("SELECT * FROM ticket_panels WHERE id = ?").get(cat.panel_id)
+    : null;
+
+  // Fallback sur guild_settings si pas de panel configuré
   const settings = db.prepare("SELECT * FROM guild_settings WHERE guild_id = ?").get(gid);
 
-  if (!settings?.ticket_category || !settings?.ticket_support_role)
-    return interaction.reply({ content: "❌ Les tickets ne sont pas configurés. Utilisez `/ticket panel`.", ephemeral: true });
+  const discordCategoryId = cat?.category_id || panel?.category_open_id || settings?.ticket_category;
+  const supportRoleId = cat?.support_role_id || panel?.support_role_id || settings?.ticket_support_role;
+  const labelName = cat?.label || value;
+
+  if (!discordCategoryId && !supportRoleId)
+    return interaction.reply({ content: "❌ Les tickets ne sont pas configurés.", ephemeral: true });
 
   const existing = db.prepare("SELECT * FROM tickets WHERE guild_id = ? AND user_id = ? AND status = 'open'").get(gid, interaction.user.id);
   if (existing)
@@ -26,8 +32,8 @@ async function openTicket(interaction) {
   const count = (db.prepare("SELECT COUNT(*) as c FROM tickets WHERE guild_id = ?").get(gid)?.c ?? 0) + 1;
   const channelName = `ticket-${String(count).padStart(4, "0")}-${interaction.user.username.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
 
-  const staffRole = guild.roles.cache.get(settings.ticket_support_role);
-  const category = guild.channels.cache.get(settings.ticket_category);
+  const staffRole = guild.roles.cache.get(supportRoleId);
+  const category = guild.channels.cache.get(discordCategoryId);
 
   const channel = await guild.channels.create({
     name: channelName,
@@ -41,19 +47,20 @@ async function openTicket(interaction) {
     reason: `Ticket ouvert par ${interaction.user.tag}`,
   });
 
-  db.prepare("INSERT INTO tickets (guild_id, channel_id, user_id, subject, status) VALUES (?, ?, ?, ?, 'open')").run(gid, channel.id, interaction.user.id, value);
+  db.prepare("INSERT INTO tickets (guild_id, channel_id, user_id, subject, status) VALUES (?, ?, ?, ?, 'open')").run(gid, channel.id, interaction.user.id, labelName);
 
   const closeBtn = new ActionRowBuilder().addComponents(
     new ButtonBuilder().setCustomId("ticket_close_btn").setLabel("🔒 Fermer le ticket").setStyle(ButtonStyle.Danger)
   );
 
+  const emoji = cat?.emoji || '🎫';
   const embed = new EmbedBuilder()
     .setColor(0x5865F2)
-    .setTitle(CATEGORY_NAMES[value] ?? value)
+    .setTitle(`${emoji} ${labelName}`)
     .setDescription(`Bonjour <@${interaction.user.id}> ! 👋\n\nMerci d'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.`)
     .addFields(
       { name: "Ouvert par", value: `<@${interaction.user.id}>`, inline: true },
-      { name: "Catégorie", value: CATEGORY_NAMES[value] ?? value, inline: true }
+      { name: "Catégorie", value: `${emoji} ${labelName}`, inline: true }
     )
     .setTimestamp();
 

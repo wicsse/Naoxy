@@ -203,6 +203,15 @@ db.prepare(`CREATE TABLE IF NOT EXISTS guild_settings (
   PRIMARY KEY (guild_id, key)
 )`).run();
 
+db.prepare(`CREATE TABLE IF NOT EXISTS ticket_categories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  panel_id INTEGER NOT NULL,
+  label TEXT NOT NULL,
+  emoji TEXT DEFAULT '🎫',
+  category_id TEXT,
+  support_role_id TEXT
+)`).run();
+
 db.prepare(`CREATE TABLE IF NOT EXISTS ticket_panels (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   guild_id TEXT NOT NULL,

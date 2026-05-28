@@ -498,6 +498,24 @@ module.exports = (client, app) => {
   router.delete('/api/guild/:id/ticket-panels/:pid', requireAuth, requireGuildAccess, (req, res) => {
     try { db.prepare('DELETE FROM ticket_panels WHERE id=? AND guild_id=?').run(req.params.pid, req.guild.id); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
   });
+  // ── Ticket Categories ──
+  router.get('/api/guild/:id/ticket-panels/:pid/categories', requireAuth, requireGuildAccess, (req, res) => {
+    const cats = db.prepare('SELECT * FROM ticket_categories WHERE panel_id = ?').all(req.params.pid);
+    res.json(cats);
+  });
+
+  router.post('/api/guild/:id/ticket-panels/:pid/categories', requireAuth, requireGuildAccess, (req, res) => {
+    const { label, emoji, category_id, support_role_id } = req.body;
+    if (!label) return res.status(400).json({ error: 'Label requis' });
+    const r = db.prepare('INSERT INTO ticket_categories (panel_id, label, emoji, category_id, support_role_id) VALUES (?,?,?,?,?)').run(req.params.pid, label, emoji||'🎫', category_id||null, support_role_id||null);
+    res.json({ success: true, id: r.lastInsertRowid });
+  });
+
+  router.delete('/api/guild/:id/ticket-panels/:pid/categories/:cid', requireAuth, requireGuildAccess, (req, res) => {
+    db.prepare('DELETE FROM ticket_categories WHERE id = ? AND panel_id = ?').run(req.params.cid, req.params.pid);
+    res.json({ success: true });
+  });
+
   router.post('/api/guild/:id/ticket-panels/:pid/send', requireAuth, requireGuildAccess, async (req, res) => {
     try {
       const panel = db.prepare('SELECT * FROM ticket_panels WHERE id=? AND guild_id=?').get(req.params.pid, req.guild.id);
