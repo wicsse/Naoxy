@@ -57,10 +57,14 @@ async function openTicket(interaction) {
   );
 
   const emoji = cat?.emoji || '🎫';
+  const ticketMsg = panel ? db.prepare("SELECT * FROM ticket_panel_messages WHERE panel_id = ? AND type = 'ticket_message'").get(panel.id) : null;
+  const msgTitle = ticketMsg?.embed_title || `${emoji} ${labelName}`;
+  const msgDesc = (ticketMsg?.embed_description || `Bonjour <@${interaction.user.id}> ! 👋\n\nMerci d'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.`).replace('{user}', `<@${interaction.user.id}>`);
+  const msgColor = ticketMsg?.embed_color ? parseInt(ticketMsg.embed_color.replace('#',''), 16) : 0x5865F2;
   const embed = new EmbedBuilder()
-    .setColor(0x5865F2)
-    .setTitle(`${emoji} ${labelName}`)
-    .setDescription(`Bonjour <@${interaction.user.id}> ! 👋\n\nMerci d'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.`)
+    .setColor(msgColor)
+    .setTitle(msgTitle)
+    .setDescription(msgDesc)
     .addFields(
       { name: "Ouvert par", value: `<@${interaction.user.id}>`, inline: true },
       { name: "Catégorie", value: `${emoji} ${labelName}`, inline: true }
