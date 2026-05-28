@@ -8,9 +8,12 @@ async function openTicket(interaction) {
 
   // Cherche la catégorie custom dans ticket_categories
   const cat = db.prepare("SELECT * FROM ticket_categories WHERE id = ?").get(value);
+  const panelDirectId = String(value).startsWith("panel_") ? String(value).replace("panel_","") : null;
   // Cherche le panel lié
   const panel = cat
     ? db.prepare("SELECT * FROM ticket_panels WHERE id = ?").get(cat.panel_id)
+    : panelDirectId
+    ? db.prepare("SELECT * FROM ticket_panels WHERE id = ?").get(panelDirectId)
     : null;
 
   // Fallback sur guild_settings si pas de panel configuré
