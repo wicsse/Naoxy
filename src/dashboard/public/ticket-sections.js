@@ -87,7 +87,7 @@ function closeSection(){
 async function patchPanel(data){
   var id=getPanelId();
   if(!id) return;
-  try{await apiPatch('/ticket-panels/'+id,data);toast('Sauvegarde !','success');}catch(e){toast('Erreur','error');}
+  try{const r=await apiPatch('/ticket-panels/'+id,data);if(r&&r.error){toast('Erreur: '+r.error,'error');}else{toast('Sauvegarde !','success');}}catch(e){console.error('patchPanel error',e);toast('Erreur: '+e.message,'error');}
 }
 
 async function saveSectionGeneral(){await patchPanel({support_role_id:getVal('ts-support-roles')});}
