@@ -153,8 +153,23 @@ function openMessageEditor(type){
     if(col&&emb) col.addEventListener('input',function(){if(/^#[0-9A-Fa-f]{6}$/.test(col.value)) emb.style.borderLeftColor=col.value;});
     if(btn) btn.onclick=function(){saveMessageEditor(type);};
   },100);
+  var templates={
+    ticket_message:{embed_title:'🎫 panel_{name}',embed_description:'Bonjour {user} 👋\n\nMerci d\'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.',embed_color:'#7c3aed',embed_footer:'Ouvert par {user}',embed_author:''},
+    closed_message:{embed_title:'🔒 Ticket Fermé',embed_description:'Votre ticket a été fermé.\n\nSi vous avez d\'autres questions, n\'hésitez pas à ouvrir un nouveau ticket.',embed_color:'#ef4444',embed_footer:'Fermé par {closer}',embed_author:''},
+    opened_message:{embed_title:'✅ Ticket Ouvert',embed_description:'Bonjour {user} 👋\n\nUn membre du staff va vous répondre rapidement.',embed_color:'#22c55e',embed_footer:'',embed_author:''},
+    panel_message:{embed_title:'🎫 Ouvrir un ticket',embed_description:'Cliquez sur le bouton ci-dessous pour ouvrir un ticket.\nNotre équipe vous répondra dès que possible.',embed_color:'#7c3aed',embed_footer:'',embed_author:''},
+    close_question:{embed_title:'❓ Fermer le ticket ?',embed_description:'Êtes-vous sûr de vouloir fermer ce ticket ?',embed_color:'#f59e0b',embed_footer:'',embed_author:''},
+    moderator_message:{embed_title:'🛡️ Message Modérateur',embed_description:'Un modérateur a rejoint votre ticket.',embed_color:'#3b82f6',embed_footer:'',embed_author:''},
+    claimed_message:{embed_title:'✋ Ticket Réclamé',embed_description:'Ce ticket a été pris en charge par {staff}.',embed_color:'#8b5cf6',embed_footer:'',embed_author:''},
+    unclaimed_message:{embed_title:'🔓 Ticket Libéré',embed_description:'Ce ticket a été libéré par {staff}.',embed_color:'#6b7280',embed_footer:'',embed_author:''},
+    transcript_message:{embed_title:'📄 Transcript Sauvegardé',embed_description:'Le transcript de votre ticket a été sauvegardé.',embed_color:'#0ea5e9',embed_footer:'',embed_author:''},
+    closed_dm:{embed_title:'🔒 Ticket Fermé',embed_description:'Votre ticket a été fermé.\n\nMerci d\'avoir contacté le support.',embed_color:'#ef4444',embed_footer:'',embed_author:''},
+    created_dm:{embed_title:'🎫 Ticket Créé',embed_description:'Votre ticket a bien été créé ! Un membre du staff va vous répondre rapidement.',embed_color:'#22c55e',embed_footer:'',embed_author:''},
+    escalate_message:{embed_title:'⬆️ Ticket Escaladé',embed_description:'Ce ticket a été escaladé à un niveau supérieur.',embed_color:'#f97316',embed_footer:'',embed_author:''},
+    delete_message:{embed_title:'🗑️ Ticket Supprimé',embed_description:'Ce ticket a été supprimé.',embed_color:'#ef4444',embed_footer:'',embed_author:''}
+  };
   api('/ticket-panels/'+id+'/messages/'+type).then(function(m){
-    if(!m) return;
+    if(!m){m=templates[type]||{};}
     if(document.getElementById('me-title')) document.getElementById('me-title').value=m.embed_title||'';
     if(document.getElementById('me-description')){document.getElementById('me-description').value=m.embed_description||'';if(document.getElementById('me-preview-desc')) document.getElementById('me-preview-desc').textContent=m.embed_description||'';}
     if(document.getElementById('me-color-hex')){document.getElementById('me-color-hex').value=m.embed_color||'#16a34a';if(document.getElementById('me-preview-embed')&&m.embed_color) document.getElementById('me-preview-embed').style.borderLeftColor=m.embed_color;}
