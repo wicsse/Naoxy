@@ -505,20 +505,17 @@ module.exports = (client, app) => {
       const channelId = req.body.channelId || panel.channel_id;
       const ch = req.guild.channels.cache.get(channelId);
       if (!ch) return res.status(400).json({ error: 'Salon introuvable' });
-      const { StringSelectMenuBuilder, ActionRowBuilder, EmbedBuilder } = require('discord.js');
+      const { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder } = require('discord.js');
       const embed = new EmbedBuilder()
-        .setTitle(panel.embed_title || '🎫 Ouvrir un ticket')
-        .setDescription(panel.embed_description || 'Sélectionnez une catégorie.')
+        .setTitle(panel.embed_title || '🎫 Support')
+        .setDescription(panel.embed_description || 'Pour créer un ticket, cliquez sur le bouton ci-dessous.')
         .setColor(panel.embed_color || '#7c3aed');
-      const menu = new StringSelectMenuBuilder()
-        .setCustomId('ticket_open')
-        .setPlaceholder('Choisis une catégorie')
-        .addOptions([
-          { label: '🎧 Support général', value: 'support' },
-          { label: '🛒 Commande / Achat', value: 'commande' },
-          { label: '📩 Autre', value: 'autre' },
-        ]);
-      await ch.send({ embeds: [embed], components: [new ActionRowBuilder().addComponents(menu)] });
+      const button = new ButtonBuilder()
+        .setCustomId('ticket_btn_' + panel.id)
+        .setLabel(panel.button_label || 'Créer un ticket')
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji('🎫');
+      await ch.send({ embeds: [embed], components: [new ActionRowBuilder().addComponents(button)] });
       res.json({ success: true });
     } catch(e) { res.status(400).json({ error: e.message }); }
   });
