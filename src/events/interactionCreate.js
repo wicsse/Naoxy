@@ -57,13 +57,10 @@ module.exports = {
         const panel = db.prepare('SELECT * FROM ticket_panels WHERE id = ?').get(panelId);
         const categories = db.prepare('SELECT * FROM ticket_categories WHERE panel_id = ?').all(panelId);
 
+        const allPanels = db.prepare('SELECT * FROM ticket_panels WHERE guild_id = ?').all(panel?.guild_id);
         let options = categories.length > 0
           ? categories.map(c => ({ label: c.label || c.name, value: String(c.id), emoji: c.emoji || undefined }))
-          : [
-              { label: '🎧 Support général', value: 'support' },
-              { label: '🛒 Commande / Achat', value: 'commande' },
-              { label: '📩 Autre', value: 'autre' },
-            ];
+          : allPanels.map(p => ({ label: p.name || 'Panel #' + p.id, value: 'panel_' + p.id }));
 
         const menu = new StringSelectMenuBuilder()
           .setCustomId('ticket_open')
