@@ -489,11 +489,13 @@ module.exports = (client, app) => {
   router.patch('/api/guild/:id/ticket-panels/:pid', requireAuth, requireGuildAccess, (req, res) => {
     try {
       const fields = [], values = [];
-      const allowed = ['name','embed_title','embed_description','embed_color','button_label','button_style','welcome_message','support_role_id','additional_role_id','category_open_id','closed_category_id','ticket_open_name','ticket_close_name','two_step_close','buttons_per_row','transcript_channel_id','log_channel_id','auto_close_enabled','auto_close_hours','max_tickets','claiming_enabled','escalate_role_id','form_enabled','form_title'];
+      const allowed = ['name','embed_title','embed_description','embed_color','button_label','button_style','welcome_message','support_role_id','category_open_id','category_closed_id','ticket_open_name','ticket_close_name','two_step_close','buttons_per_row','transcript_channel_id','log_channel_id','claiming_enabled','form_enabled','form_title','max_open_per_user','dm_on_close','auto_pin'];
       // Aliases
       if(req.body.category_id !== undefined) req.body.category_open_id = req.body.category_id;
+      if(req.body.closed_category_id !== undefined) req.body.category_closed_id = req.body.closed_category_id;
       if(req.body.name_format !== undefined) req.body.ticket_open_name = req.body.name_format;
       if(req.body.closed_name_format !== undefined) req.body.ticket_close_name = req.body.closed_name_format;
+      if(req.body.max_tickets !== undefined) req.body.max_open_per_user = req.body.max_tickets;
       allowed.forEach(k => { if(req.body[k] !== undefined) { fields.push(k+' = ?'); values.push(req.body[k]); } });
       if(fields.length) { values.push(req.params.pid, req.guild.id); db.prepare('UPDATE ticket_panels SET '+fields.join(', ')+' WHERE id=? AND guild_id=?').run(...values); }
       res.json({ success: true });
