@@ -489,7 +489,7 @@ module.exports = (client, app) => {
   router.patch('/api/guild/:id/ticket-panels/:pid', requireAuth, requireGuildAccess, (req, res) => {
     try {
       const fields = [], values = [];
-      const allowed = ['name','embed_title','embed_description','embed_color','button_label','button_style','welcome_message','support_role_id','category_open_id','category_closed_id','ticket_open_name','ticket_close_name','two_step_close','buttons_per_row','transcript_channel_id','log_channel_id','claiming_enabled','form_enabled','form_title','max_open_per_user','dm_on_close','auto_pin','name_format','closed_name_format'];
+      const allowed = ['name','embed_title','embed_description','embed_color','button_label','button_style','welcome_message','support_role_id','category_open_id','category_closed_id','ticket_open_name','ticket_close_name','two_step_close','buttons_per_row','transcript_channel_id','log_channel_id','claiming_enabled','form_enabled','form_title','max_open_per_user','dm_on_close','auto_pin'];
       // Aliases
       console.log('[PATCH ticket-panels] body:', JSON.stringify(req.body));
       if(req.body.category_id !== undefined) req.body.category_open_id = req.body.category_id;
