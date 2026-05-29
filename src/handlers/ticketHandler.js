@@ -4,7 +4,7 @@ const { db } = require("../database/db.js");
 async function handleTicketButton(interaction) {
   const panelId = interaction.customId.replace('ticket_btn_', '');
   const panel = db.prepare('SELECT * FROM ticket_panels WHERE id = ? AND guild_id = ?').get(panelId, interaction.guildId);
-  if (!panel) return interaction.reply({ content: '❌ Panel introuvable.', ephemeral: true });
+  if (!panel) return interaction.reply({ content: '❌ Panel introuvable.', flags: 64 });
 
   const categories = db.prepare('SELECT * FROM ticket_categories WHERE panel_id = ?').all(panelId);
 
@@ -24,7 +24,7 @@ async function handleTicketButton(interaction) {
         .setTitle(panel.embed_title || 'Support')
         .setDescription('Choisissez une catégorie pour ouvrir un ticket.')],
       components: [new ActionRowBuilder().addComponents(menu)],
-      ephemeral: true
+      flags: 64
     });
   }
 
@@ -34,7 +34,7 @@ async function handleTicketButton(interaction) {
 async function handleTicketSelect(interaction) {
   const panelId = interaction.customId.replace('ticket_open_', '');
   const panel = db.prepare('SELECT * FROM ticket_panels WHERE id = ? AND guild_id = ?').get(panelId, interaction.guildId);
-  if (!panel) return interaction.reply({ content: '❌ Panel introuvable.', ephemeral: true });
+  if (!panel) return interaction.reply({ content: '❌ Panel introuvable.', flags: 64 });
 
   const catId = interaction.values[0];
   const cat = db.prepare('SELECT * FROM ticket_categories WHERE id = ?').get(catId);
@@ -47,9 +47,9 @@ async function createTicket(interaction, panel, cat) {
   const gid = guild.id;
 
   const existing = db.prepare("SELECT * FROM tickets WHERE guild_id = ? AND user_id = ? AND status = 'open'").get(gid, interaction.user.id);
-  if (existing) return interaction.reply({ content: `❌ Tu as déjà un ticket ouvert : <#${existing.channel_id}>`, ephemeral: true });
+  if (existing) return interaction.reply({ content: `❌ Tu as déjà un ticket ouvert : <#${existing.channel_id}>`, flags: 64 });
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: 64 });
 
   const count = (db.prepare("SELECT COUNT(*) as c FROM tickets WHERE guild_id = ?").get(gid)?.c ?? 0) + 1;
   const nameFormat = panel.name_format || 'ticket-{count}-{username}';
@@ -103,7 +103,7 @@ async function createTicket(interaction, panel, cat) {
 
 async function closeTicket(interaction) {
   const ticket = db.prepare("SELECT * FROM tickets WHERE channel_id = ? AND status = 'open'").get(interaction.channelId);
-  if (!ticket) return interaction.reply({ content: '❌ Ce salon n\'est pas un ticket ouvert.', ephemeral: true });
+  if (!ticket) return interaction.reply({ content: '❌ Ce salon n\'est pas un ticket ouvert.', flags: 64 });
 
   db.prepare("UPDATE tickets SET status = 'closed' WHERE channel_id = ?").run(interaction.channelId);
 
