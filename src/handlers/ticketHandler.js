@@ -86,16 +86,16 @@ async function createTicket(interaction, panel, cat) {
     new ButtonBuilder().setCustomId("ticket_close_btn").setLabel("🔒 Fermer le ticket").setStyle(ButtonStyle.Danger)
   );
 
-  const welcome = (panel.welcome_message || 'Bonjour {user} ! Décrivez votre demande et le staff vous répondra dès que possible.').replace('{user}', `<@${interaction.user.id}>`);
+  const rawMsg = panel.ticket_open_message || panel.welcome_message || 'Bonjour {user} ! 👋\n\nMerci d\'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.';
+  const welcome = rawMsg
+    .replace(/\{user\}/g, `<@${interaction.user.id}>`)
+    .replace(/\{username\}/g, interaction.user.username)
+    .replace(/\{server\}/g, guild.name);
 
   const embed = new EmbedBuilder()
     .setColor(panel.embed_color || '#7c3aed')
     .setTitle(panel.name || panel.embed_title || '🎫 Ticket')
     .setDescription(welcome)
-    .addFields(
-      { name: 'Ouvert par', value: `<@${interaction.user.id}>`, inline: true },
-      { name: 'Sujet', value: panel.name || 'Support', inline: true }
-    )
     .setTimestamp();
 
   await channel.send({
