@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType, PermissionFlagsBits } = require("discord.js");
-const { openTicket, closeTicket } = require("../handlers/ticketHandler.js");
+const { handleTicketButton, handleTicketSelect, closeTicket } = require("../handlers/ticketHandler.js");
 const { db, getGuildSettings } = require("../database/db.js");
 const { COLORS, successEmbed, errorEmbed } = require("../utils/helpers.js");
 
@@ -20,13 +20,17 @@ module.exports = {
 
     // ── Select Menu (Tickets) ──
     if (interaction.isStringSelectMenu()) {
-      if (interaction.customId === "ticket_open") {
-        return openTicket(interaction);
+      if (interaction.customId.startsWith("ticket_open_")) {
+        return handleTicketSelect(interaction);
       }
     }
 
     // ── Buttons ──
     if (interaction.isButton()) {
+
+      if (interaction.customId.startsWith("ticket_btn_")) {
+        return handleTicketButton(interaction);
+      }
 
       if (interaction.customId === "ticket_close_btn") {
         const ticket = db.prepare("SELECT * FROM tickets WHERE channel_id = ? AND status = 'open'").get(interaction.channelId);
