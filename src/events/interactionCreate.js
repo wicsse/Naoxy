@@ -20,7 +20,7 @@ module.exports = {
 
     // ── Select Menu (Tickets) ──
     if (interaction.isStringSelectMenu()) {
-      if (interaction.customId.startsWith("ticket_open_")) {
+      if (interaction.customId === 'ticket_open_panel' || interaction.customId.startsWith('ticket_open_')) {
         return handleTicketSelect(interaction);
       }
     }
