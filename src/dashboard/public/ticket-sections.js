@@ -53,6 +53,22 @@ function renderTicketSection(name,p,roles,channels){
 
   if(name==='integrations') return '<div class="ts-page">'+section('Integrations','<div class="ts-small-text">Integrations de bots externes disponibles avec la version premium.</div>')+'</div>';
 
+  if(name==='dropdown_style') {
+    var gid=getGid();
+    var panelId=getPanelId();
+    return '<div class="ts-page">'+
+      section('Sujets du menu déroulant',
+        '<div id="ts-categories-list" style="margin-bottom:12px;"></div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">'+
+          '<input class="ts-input" id="ts-cat-emoji" placeholder="Emoji ex: 🎫" style="width:80px">'+
+          '<input class="ts-input" id="ts-cat-label" placeholder="Nom du sujet ex: Support" style="flex:1">'+
+          '<select class="ts-select" id="ts-cat-channel" style="flex:1"><option value="">Catégorie Discord (optionnel)</option>'+catOpts+'</select>'+
+          '<select class="ts-select" id="ts-cat-role" style="flex:1"><option value="">Rôle support (optionnel)</option>'+rolesOpts+'</select>'+
+          '<button class="ts-save-btn" onclick="addTicketCategory()">+ Ajouter</button>'+
+        '</div>'
+      )+'</div>';
+  }
+
   return '<div class="ts-page">'+section(name,'<div class="ts-small-text">En cours de developpement.</div>')+'</div>';
 }
 
@@ -74,6 +90,7 @@ function openSection(name){
     api('/channels').catch(function(){return [];})
   ]).then(function(results){
     content.innerHTML=renderTicketSection(name,results[0]||{},results[1]||[],results[2]||[]);
+    if(name==='dropdown_style') loadTicketCategories();
   });
 }
 
@@ -186,4 +203,57 @@ async function saveMessageEditor(type){
   if(!id||!type) return;
   var data={embed_title:getVal('me-title'),embed_description:getVal('me-description'),embed_color:getVal('me-color-hex'),embed_footer:getVal('me-footer'),embed_author:getVal('me-author')};
   try{await apiPost('/ticket-panels/'+id+'/messages/'+type,data);toast('Sauvegarde !','success');}catch(e){toast('Erreur','error');}
+}
+
+async function loadTicketCategories() {
+  var id = getPanelId();
+  var gid = getGid();
+  if (!id) return;
+  try {
+    var cats = await api('/ticket-panels/' + id + '/categories');
+    var list = document.getElementById('ts-categories-list');
+    if (!list) return;
+    if (!cats || cats.length === 0) {
+      list.innerHTML = '<div class="ts-small-text">Aucun sujet configuré.</div>';
+      return;
+    }
+    list.innerHTML = cats.map(function(c) {
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border-radius:8px;margin-bottom:6px;">' +
+        '<span style="font-size:20px">' + (c.emoji || '🎫') + '</span>' +
+        '<span style="flex:1;font-weight:600">' + c.label + '</span>' +
+        '<button class="ts-save-btn" style="background:var(--red)" onclick="deleteTicketCategory(' + c.id + ')">Supprimer</button>' +
+        '</div>';
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function addTicketCategory() {
+  var id = getPanelId();
+  var gid = getGid();
+  var emoji = document.getElementById('ts-cat-emoji')?.value || '🎫';
+  var label = document.getElementById('ts-cat-label')?.value;
+  var category_id = document.getElementById('ts-cat-channel')?.value || null;
+  var support_role_id = document.getElementById('ts-cat-role')?.value || null;
+  if (!label) { toast('Le nom du sujet est requis', 'error'); return; }
+  try {
+    await fetch('/api/guild/' + gid + '/ticket-panels/' + id + '/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label, emoji, category_id, support_role_id })
+    });
+    document.getElementById('ts-cat-emoji').value = '';
+    document.getElementById('ts-cat-label').value = '';
+    toast('Sujet ajouté !', 'success');
+    loadTicketCategories();
+  } catch(e) { toast('Erreur: ' + e.message, 'error'); }
+}
+
+async function deleteTicketCategory(catId) {
+  var id = getPanelId();
+  var gid = getGid();
+  try {
+    await fetch('/api/guild/' + gid + '/ticket-panels/' + id + '/categories/' + catId, { method: 'DELETE' });
+    toast('Sujet supprimé !', 'success');
+    loadTicketCategories();
+  } catch(e) { toast('Erreur: ' + e.message, 'error'); }
 }
