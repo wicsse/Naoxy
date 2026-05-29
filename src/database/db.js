@@ -272,7 +272,35 @@ const ticketCols = [
 ];
 for (const sql of ticketCols) { try { db.exec(sql); } catch(_) {} }
 try { db.exec('ALTER TABLE ticket_messages ADD COLUMN embed_author TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN auto_pin INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN dm_on_close INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN ticket_open_name TEXT DEFAULT \'ticket-{username}\''); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN ticket_close_name TEXT DEFAULT \'closed-{username}\''); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN two_step_close INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN buttons_per_row INTEGER DEFAULT 3'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN category_open_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN category_closed_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN log_channel_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN transcript_channel_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN claiming_enabled INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN form_enabled INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN form_title TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN max_open_per_user INTEGER DEFAULT 1'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_messages ADD COLUMN embed_author TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN auto_pin INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN dm_on_close INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN ticket_open_name TEXT DEFAULT \'ticket-{username}\''); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN ticket_close_name TEXT DEFAULT \'closed-{username}\''); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN two_step_close INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN buttons_per_row INTEGER DEFAULT 3'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN category_open_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN category_closed_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN log_channel_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN transcript_channel_id TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN claiming_enabled INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN form_enabled INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN form_title TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE ticket_panels ADD COLUMN max_open_per_user INTEGER DEFAULT 1'); } catch(_) {}
 
 db.exec(`CREATE TABLE IF NOT EXISTS ticket_messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
