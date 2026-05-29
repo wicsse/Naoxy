@@ -8,19 +8,27 @@ async function handleTicketButton(interaction) {
   if (panels.length > 1) {
     const menu = new StringSelectMenuBuilder()
       .setCustomId('ticket_open_panel')
-      .setPlaceholder('Choisir un sujet')
+      .setPlaceholder('Choisir le sujet')
       .addOptions(panels.slice(0, 25).map(p => ({
         label: p.name || p.embed_title || 'Support',
         value: String(p.id),
         emoji: '🎫'
       })));
 
+    const cancelBtn = new ButtonBuilder()
+      .setCustomId('ticket_cancel')
+      .setLabel('Annuler')
+      .setStyle(ButtonStyle.Danger);
+
     return interaction.reply({
       embeds: [new EmbedBuilder()
         .setColor('#7c3aed')
         .setTitle('Ouvrir un ticket')
-        .setDescription('Choisissez le sujet de votre demande.')],
-      components: [new ActionRowBuilder().addComponents(menu)],
+        .setDescription('Bonjour, votre demande a bien été prise en compte, pour procéder à la suite veuillez choisir le sujet de votre demande:')],
+      components: [
+        new ActionRowBuilder().addComponents(menu),
+        new ActionRowBuilder().addComponents(cancelBtn)
+      ],
       flags: 64
     });
   }
