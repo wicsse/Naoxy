@@ -271,11 +271,12 @@ const ticketCols = [
   "ALTER TABLE ticket_panels ADD COLUMN buttons_per_row INTEGER DEFAULT 5",
 ];
 for (const sql of ticketCols) { try { db.exec(sql); } catch(_) {} }
+try { db.exec('ALTER TABLE ticket_messages ADD COLUMN embed_author TEXT'); } catch(_) {}
 
 db.exec(`CREATE TABLE IF NOT EXISTS ticket_messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   panel_id INTEGER, guild_id TEXT, type TEXT,
   content TEXT, embed_title TEXT, embed_description TEXT,
-  embed_color TEXT, embed_footer TEXT,
+  embed_color TEXT, embed_footer TEXT, embed_author TEXT,
   UNIQUE(panel_id, type)
 );`);
