@@ -498,7 +498,7 @@ module.exports = (client, app) => {
       if(req.body.closed_name_format !== undefined) req.body.ticket_close_name = req.body.closed_name_format;
       if(req.body.max_tickets !== undefined) req.body.max_open_per_user = req.body.max_tickets;
       allowed.forEach(k => { if(req.body[k] !== undefined) { fields.push(k+' = ?'); values.push(req.body[k]); } });
-      if(fields.length) { values.push(req.params.pid, req.guild.id); db.prepare('UPDATE ticket_panels SET '+fields.join(', ')+' WHERE id=? AND guild_id=?').run(...values); }
+      if(fields.length) { values.push(req.params.pid, req.guild.id); const result = db.prepare('UPDATE ticket_panels SET '+fields.join(', ')+' WHERE id=? AND guild_id=?').run(...values); console.log('[DB UPDATE] changes:', result.changes, 'fields:', fields, 'pid:', req.params.pid); }
       res.json({ success: true });
     } catch(e) { res.status(400).json({ error: e.message }); }
   });
