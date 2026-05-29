@@ -86,7 +86,7 @@ async function createTicket(interaction, panel, cat) {
     new ButtonBuilder().setCustomId("ticket_close_btn").setLabel("🔒 Fermer le ticket").setStyle(ButtonStyle.Danger)
   );
 
-  const ticketMsg = db.prepare("SELECT * FROM ticket_messages WHERE panel_id = ? AND type = 'ticket_message'").get(panel.id);
+  const ticketMsg = db.prepare("SELECT * FROM ticket_messages WHERE panel_id = ? AND type = 'open'").get(panel.id);
   const rawMsg = ticketMsg?.embed_description || panel.welcome_message || 'Bonjour {user} ! 👋\n\nMerci d\'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.';
   const welcome = rawMsg
     .replace(/\{user\}/g, `<@${interaction.user.id}>`)
