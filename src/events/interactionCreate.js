@@ -50,46 +50,7 @@ module.exports = {
         await interaction.reply({ embeds: [successEmbed("Fermeture annulée")], ephemeral: true });
       }
 
-      // ── Ticket Bouton ──
-      if (interaction.customId.startsWith('ticket_btn_')) {
-        const panelId = interaction.customId.replace('ticket_btn_', '');
-        const { StringSelectMenuBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-        const panel = db.prepare('SELECT * FROM ticket_panels WHERE id = ?').get(panelId);
-        const categories = db.prepare('SELECT * FROM ticket_categories WHERE panel_id = ?').all(panelId);
 
-        const allPanels = db.prepare('SELECT * FROM ticket_panels WHERE guild_id = ?').all(panel?.guild_id);
-        let options = categories.length > 0
-          ? categories.map(c => ({ label: c.label || c.name, value: String(c.id), emoji: c.emoji || undefined }))
-          : allPanels.map(p => ({ label: p.name || 'Panel #' + p.id, value: 'panel_' + p.id }));
-
-        const menu = new StringSelectMenuBuilder()
-          .setCustomId('ticket_open')
-          .setPlaceholder('Choisir le sujet')
-          .addOptions(options);
-
-        const cancelBtn = new ButtonBuilder()
-          .setCustomId('ticket_cancel_open')
-          .setLabel('Annuler')
-          .setStyle(ButtonStyle.Danger);
-
-        const embed = new EmbedBuilder()
-          .setColor(panel?.embed_color || '#7c3aed')
-          .setTitle(panel?.embed_title || 'Support')
-          .setDescription('Bonjour, votre demande a bien été prise en compte, pour procéder à la suite veuillez choisir le sujet de votre demande:');
-
-        return interaction.reply({
-          embeds: [embed],
-          components: [
-            new ActionRowBuilder().addComponents(menu),
-            new ActionRowBuilder().addComponents(cancelBtn)
-          ],
-          ephemeral: true
-        });
-      }
-
-      if (interaction.customId === 'ticket_cancel_open') {
-        return interaction.update({ embeds: [], components: [], content: '❌ Demande annulée.' });
-      }
 
       // ── Reaction Roles ──
       if (interaction.customId.startsWith('rr_btn_')) {
