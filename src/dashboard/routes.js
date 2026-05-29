@@ -500,7 +500,7 @@ module.exports = (client, app) => {
       allowed.forEach(k => { if(req.body[k] !== undefined) { fields.push(k+' = ?'); values.push(req.body[k]); } });
       if(fields.length) { values.push(req.params.pid, req.guild.id); const result = db.prepare('UPDATE ticket_panels SET '+fields.join(', ')+' WHERE id=? AND guild_id=?').run(...values); console.log('[DB UPDATE] changes:', result.changes, 'fields:', fields, 'pid:', req.params.pid); }
       res.json({ success: true });
-    } catch(e) { res.status(400).json({ error: e.message }); }
+    } catch(e) { console.error('[PATCH ticket-panels ERROR]', e.message); res.status(400).json({ error: e.message }); }
   });
   router.delete('/api/guild/:id/ticket-panels/:pid', requireAuth, requireGuildAccess, (req, res) => {
     try { db.prepare('DELETE FROM ticket_panels WHERE id=? AND guild_id=?').run(req.params.pid, req.guild.id); res.json({ success: true }); } catch(e) { res.status(400).json({ error: e.message }); }
