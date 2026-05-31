@@ -168,7 +168,7 @@ function openMessageEditor(type){
     var btn=document.getElementById('me-save-btn');
     if(desc&&prev) desc.addEventListener('input',function(){prev.textContent=desc.value;});
     if(col&&emb) col.addEventListener('input',function(){if(/^#[0-9A-Fa-f]{6}$/.test(col.value)) emb.style.borderLeftColor=col.value;});
-    if(btn) btn.onclick=function(){saveMessageEditor(type);};
+    if(btn) btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();saveMessageEditor(type);});
   },100);
   var templates={
     ticket_message:{embed_title:'🎫 Ticket_{name}',embed_description:'Bonjour {user} 👋\n\nMerci d\'avoir ouvert un ticket. Le staff va vous répondre dès que possible.\n\nDécrivez votre demande ci-dessous.',embed_color:'#7c3aed',embed_footer:'Ouvert par {user}',embed_author:''},
