@@ -187,7 +187,7 @@ function openMessageEditor(type){
   };
   var loadType={ticket_message:'open',opened_message:'open',closed_message:'close',panel_message:'panel',close_question:'close_question'}[type]||type;
   api('/ticket-panels/'+id+'/messages/'+loadType).then(function(m){
-    if(!m||(!m.embed_title&&!m.embed_description)){m=templates[type]||{};}
+    if(!m){m={};}
     if(document.getElementById('me-title')) document.getElementById('me-title').value=m.embed_title||'';
     if(document.getElementById('me-description')){document.getElementById('me-description').value=m.embed_description||'';if(document.getElementById('me-preview-desc')) document.getElementById('me-preview-desc').textContent=m.embed_description||'';}
     if(document.getElementById('me-color-hex')){document.getElementById('me-color-hex').value=m.embed_color||'#16a34a';if(document.getElementById('me-preview-embed')&&m.embed_color) document.getElementById('me-preview-embed').style.borderLeftColor=m.embed_color;}
