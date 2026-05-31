@@ -617,7 +617,7 @@ module.exports = (client, app) => {
 
   // ── Ticket Messages ──
   router.get('/api/guild/:id/ticket-panels/:pid/messages/:type', requireAuth, requireGuildAccess, (req, res) => {
-    try { res.json(db.prepare('SELECT * FROM ticket_messages WHERE panel_id=? AND guild_id=? AND type=?').get(req.params.pid, req.guild.id, req.params.type) || {}); } catch(e) { res.json({}); }
+    try { res.json(db.prepare('SELECT * FROM ticket_messages WHERE panel_id=? AND type=?').get(req.params.pid, req.params.type) || {}); } catch(e) { res.json({}); }
   });
   router.post('/api/guild/:id/ticket-panels/:pid/messages/:type', requireAuth, requireGuildAccess, (req, res) => {
     try {
