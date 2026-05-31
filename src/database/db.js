@@ -272,6 +272,14 @@ const ticketCols = [
 ];
 for (const sql of ticketCols) { try { db.exec(sql); } catch(_) {} }
 try { db.exec('ALTER TABLE ticket_messages ADD COLUMN embed_author TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_enabled INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_hub TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_category TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_name TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_limit INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_rename INTEGER DEFAULT 1'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_limit_perm INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_lock INTEGER DEFAULT 0'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN auto_pin INTEGER DEFAULT 0'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN dm_on_close INTEGER DEFAULT 0'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN ticket_open_name TEXT DEFAULT \'ticket-{username}\''); } catch(_) {}
@@ -287,6 +295,14 @@ try { db.exec('ALTER TABLE ticket_panels ADD COLUMN form_enabled INTEGER DEFAULT
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN form_title TEXT'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN max_open_per_user INTEGER DEFAULT 1'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_messages ADD COLUMN embed_author TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_enabled INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_hub TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_category TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_name TEXT'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_limit INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_rename INTEGER DEFAULT 1'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_limit_perm INTEGER DEFAULT 0'); } catch(_) {}
+try { db.exec('ALTER TABLE guild_settings ADD COLUMN tempchan_lock INTEGER DEFAULT 0'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN auto_pin INTEGER DEFAULT 0'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN dm_on_close INTEGER DEFAULT 0'); } catch(_) {}
 try { db.exec('ALTER TABLE ticket_panels ADD COLUMN ticket_open_name TEXT DEFAULT \'ticket-{username}\''); } catch(_) {}
