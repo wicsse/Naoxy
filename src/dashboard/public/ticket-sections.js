@@ -186,7 +186,7 @@ function openMessageEditor(type){
     delete_message:{embed_title:'🗑️ Ticket Supprimé',embed_description:'Ce ticket a été supprimé.',embed_color:'#ef4444',embed_footer:'',embed_author:''}
   };
   var loadType={ticket_message:'open',opened_message:'open',closed_message:'close',panel_message:'panel',close_question:'close_question'}[type]||type;
-  api('/ticket-panels/'+id+'/messages/'+loadType).then(function(m){
+  api('/ticket-panels/'+id+'/messages/'+loadType+'?v=2').then(function(m){
     if(!m||(!m.embed_title&&!m.embed_description&&!m.embed_color&&!m.embed_footer&&!m.embed_author)){m=templates[type]||{};}
     if(document.getElementById('me-title')) document.getElementById('me-title').value=m.embed_title||'';
     if(document.getElementById('me-description')){document.getElementById('me-description').value=m.embed_description||'';if(document.getElementById('me-preview-desc')) document.getElementById('me-preview-desc').textContent=m.embed_description||'';}
