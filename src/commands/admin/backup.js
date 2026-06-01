@@ -45,6 +45,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
+    if (!interaction.guild) return interaction.reply({ content: "❌ Cette commande doit être utilisée dans un serveur.", flags: 64 });
     const sub = interaction.options.getSubcommand();
     const gid = interaction.guildId;
 
