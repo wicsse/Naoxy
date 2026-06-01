@@ -22,9 +22,7 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-const slashCommandsData = [  "1446586019628585152", // Discord Illégal
-  "1501996274596057168", // Discord Anim
-];
+const slashCommandsData = [];
 const commandsPath = path.join(__dirname, "commands");
 for (const folder of fs.readdirSync(commandsPath)) {
   const folderPath = path.join(commandsPath, folder);
